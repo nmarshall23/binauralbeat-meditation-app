@@ -6,7 +6,7 @@
       </q-card-section>
 
       <q-card-section>
-        <count-down :duration="duration" :is-playing="isPlaying"/>
+        <count-down :remanding-duration="remandingDuration" />
       </q-card-section>
       <q-card-actions align="center">
         <q-btn
@@ -46,21 +46,21 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, computed } from "vue";
+import { computed } from "vue";
 import { usePlaybackState } from "../../state/playbackState";
 import { useMainChannel } from "../../state/mainChannel";
-import { useNoiseGen } from "../../tones/gen/noiseGen";
+import { useNoiseGen } from "../../tones/gen/lpBrownNoiseGen";
 import { useBBGen01 } from "../../tones/gen/bbgen01";
 import CountDown from "../../components/CountDown.vue";
 
 const {
-  duration,
   isPlaying,
   toggleIsPlaying,
   resetInit,
   onPlayBackPaused,
   onPlayBackStarted,
   onPlayBackStopped,
+  remandingDuration,
 } = usePlaybackState();
 
 const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
@@ -85,7 +85,7 @@ onPlayBackPaused(() => {
 
 onPlayBackStarted(() => {
   noiseGen.start()
-  // bbgen01.start()
+  bbgen01.start()
 })
 
 </script>

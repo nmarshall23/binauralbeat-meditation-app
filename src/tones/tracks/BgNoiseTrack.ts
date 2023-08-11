@@ -1,5 +1,5 @@
 import * as Tone from "tone";
-import { NoiseGenEventType, useNoiseGen } from "../gen/noiseGen";
+import { NoiseGenEventType, useNoiseGen } from "../gen/lpBrownNoiseGen";
 
 
 

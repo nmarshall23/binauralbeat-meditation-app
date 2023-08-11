@@ -4,14 +4,13 @@ import composeExtension from "@harlem/extension-compose";
 import * as Tone from "tone";
 import { createEventHook, isDefined, whenever } from "@vueuse/core";
 import { logicNot } from "@vueuse/math";
-import { computed } from "vue";
-import { Temporal } from '@js-temporal/polyfill'
-import * as Duration from 'duration-fns'
 
+import { Temporal } from "@js-temporal/polyfill";
+import { match } from "ts-pattern";
 
 // The initial state for this store
 const STATE = {
-  duration: 70,
+  duration: 4200,
   temporalDuration: null as null | Temporal.Duration,
   hasInit: false,
   stopEventId: null as null | number,
@@ -19,80 +18,103 @@ const STATE = {
   isPlaying: false,
 };
 
-export const { state, computeState, mutation, action, ...store } = createStore(
-  "playback",
-  STATE,
-  {
-    extensions: [composeExtension()],
-  }
-);
+export const {
+  state,
+  computeState,
+  mutation,
+  reset,
+  onAfterMutation,
+  getter,
+  ...store
+} = createStore("playback", STATE, {
+  extensions: [composeExtension()],
+});
 
 const durationEventId = computeState((state) => state.durationEventId);
+const duration = computeState((state) => state.duration, "set-duration");
+const temporalDuration = computeState((state) => state.temporalDuration);
+const stopEventId = computeState((state) => state.stopEventId);
 
-const setDuration = mutation("set-duration", (state, duration: number) => {
+onAfterMutation("set-duration", (event) => {
+  console.log(
+    "set-duration trigger - duration %o event %o",
+    duration.value,
+    event
+  );
   if (isDefined(durationEventId)) {
     Tone.Transport.clear(durationEventId.value);
   }
 
   durationEventId.value = Tone.Transport.scheduleRepeat(durationCountDown, 1);
-
-  state.duration = duration;
-  state.temporalDuration = Temporal.Duration.from({ seconds: duration })
+  temporalDuration.value = Temporal.Duration.from({
+    seconds: duration.value,
+  }).round({ largestUnit: "hour" });
 });
 
-const duration = computed({
-  set: setDuration,
-  get: () => state.duration,
-});
-
-const subtractDuration = mutation("update-duration", (state, seconds: number) => {
-  if(isDefined(state.temporalDuration)) {
-    // const largestUnit = Temporal.Duration.compare(state.temporalDuration, Temporal.Duration.from({ hours: 1 }) > -1 ? 'hour' : ''
-
-    state.temporalDuration = state.temporalDuration.subtract({ seconds }).round({ largestUnit: 'hour' })
+const remandingDuration = getter("remandingDuration", (state) => {
+  if (isDefined(state.temporalDuration)) {
+    return {
+      hours: state.temporalDuration.hours,
+      minutes: state.temporalDuration.minutes,
+      seconds: state.temporalDuration.seconds,
+    };
   }
+  return {
+    hours: null,
+    minutes: null,
+    seconds: null,
+  };
+});
 
-})
+const subtractDuration = mutation(
+  "update-duration",
+  (state, seconds: number) => {
+    if (isDefined(state.temporalDuration)) {
+      state.temporalDuration = state.temporalDuration
+        .subtract({ seconds })
+        .round({ largestUnit: "hour" });
+    }
+  }
+);
 
 function durationCountDown(time: number) {
   Tone.Draw.schedule(() => {
     console.log("Duration Timer - Time: %o", Math.round(time));
-    subtractDuration(1)
+    subtractDuration(1);
 
     console.log(
       "Duration Timer - Remaning Duration: %o : %o : %o",
-      state.temporalDuration?.hours,
-      state.temporalDuration?.minutes,
-      state.temporalDuration?.seconds,
-      
+      remandingDuration.value.hours,
+      remandingDuration.value.minutes,
+      remandingDuration.value.seconds
     );
   }, time);
 }
 
-const stopEventId = computeState((state) => state.stopEventId);
-
 const setHasInit = mutation("setHasInit", (state, payload: boolean) => {
-  if (!isDefined(durationEventId)) {
-    setDuration(state.duration);
+  if (!isDefined(state.durationEventId)) {
+    duration.value = state.duration;
   }
 
-  if (isDefined(stopEventId)) {
-    Tone.Transport.clear(stopEventId.value);
+  if (isDefined(state.stopEventId)) {
+    Tone.Transport.clear(state.stopEventId);
   }
 
-  stopEventId.value = Tone.Transport.scheduleOnce((time) => {
-    Tone.Draw.schedule(() => {
-      console.log("PlayBack Stopped Tigger %o", Math.round(time));
-      playBackStopped.trigger(time);
-    }, time);
-  }, Tone.now() + duration.value + 1);
+  if (payload) {
+    state.stopEventId = Tone.Transport.scheduleOnce((time) => {
+      Tone.Draw.schedule(() => {
+        console.log("PlayBack Stopped Tigger %o", Math.round(time));
+        playBackStopped.trigger(time);
+      }, time);
+    }, Tone.now() + duration.value + 1);
+  }
 
   state.hasInit = payload;
 });
 
 const resetInit = () => setHasInit(false);
 
-const isPlaying = computeState((state) => state.isPlaying);
+const isPlaying = computeState((state) => state.isPlaying, "set-isPlaying");
 const toggleIsPlaying = () => (isPlaying.value = !isPlaying.value);
 
 const playBackStarted = createEventHook<Tone.Unit.Time>();
@@ -102,6 +124,48 @@ const playBackPaused = createEventHook<Tone.Unit.Time>();
 playBackStarted.on(() => Tone.Transport.start());
 playBackStopped.on(() => Tone.Transport.stop());
 playBackPaused.on(() => Tone.Transport.pause());
+
+// onAfterMutation("set-isPlaying", async (event) => {
+//   const action = await match({
+//     isPlaying: state.isPlaying,
+//     hasInit: state.hasInit,
+//   })
+//     .with(
+//       {
+//         isPlaying: true,
+//         hasInit: false,
+//       },
+//       async () => {
+//         await Tone.start();
+//         setHasInit(true);
+//         playBackStarted.trigger(Tone.now());
+//         return "start-init";
+//       }
+//     )
+//     .with(
+//       {
+//         isPlaying: true,
+//         hasInit: true,
+//       },
+//       async () => {
+//         playBackStarted.trigger(Tone.now());
+//         return "play";
+//       }
+//     )
+//     .with(
+//       {
+//         isPlaying: false,
+//         hasInit: true,
+//       },
+//       async () => {
+//         playBackPaused.trigger(Tone.now());
+//         return "paused";
+//       }
+//     )
+//     .otherwise(async () => "unknown");
+
+//   console.log("isPlaying trigger - action %o, event %o", action, event);
+// });
 
 whenever(isPlaying, async () => {
   if (!state.hasInit) {
@@ -126,5 +190,6 @@ export function usePlaybackState() {
     onPlayBackPaused: playBackPaused.on,
     onPlayBackStarted: playBackStarted.on,
     onPlayBackStopped: playBackStopped.on,
+    remandingDuration,
   };
 }
