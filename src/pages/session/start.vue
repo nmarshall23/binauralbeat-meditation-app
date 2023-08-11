@@ -41,6 +41,14 @@
           </q-popup-proxy>
         </q-btn>
       </q-card-actions>
+
+      <q-card-section>
+        <div class="text-subtitle2">Sound Generators</div>
+        <sound-generator-controls
+          name="Binaural Beat"
+          v-model:mute-ctrl="bbgenMuteCtrl"
+        />
+      </q-card-section>
     </q-card>
   </q-page>
 </template>
@@ -52,6 +60,7 @@ import { useMainChannel } from "../../state/mainChannel";
 import { useNoiseGen } from "../../tones/gen/lpBrownNoiseGen";
 import { useBBGen01 } from "../../tones/gen/bbgen01";
 import CountDown from "../../components/CountDown.vue";
+import SoundGeneratorControls from "../../components/SoundGeneratorControls.vue";
 
 const {
   isPlaying,
@@ -70,22 +79,21 @@ resetInit();
 
 const { volumeRef, volumeSliderOptions } = useMainChannel();
 
-const noiseGen = useNoiseGen();
-const bbgen01 = useBBGen01();
+const { controls: noiseGenCtrl, muteCtrl: noiseGenMuteCtrl } = useNoiseGen();
+const { controls: bbgenCtrl, muteCtrl: bbgenMuteCtrl } = useBBGen01();
 
 onPlayBackStopped(() => {
-  noiseGen.stop();
-  bbgen01.stop();
+  noiseGenCtrl.stop();
+  bbgenCtrl.stop();
 });
 
 onPlayBackPaused(() => {
-  noiseGen.pause()
-  bbgen01.pause()
-})
+  noiseGenCtrl.pause();
+  bbgenCtrl.pause();
+});
 
 onPlayBackStarted(() => {
-  noiseGen.start()
-  bbgen01.start()
-})
-
+  noiseGenCtrl.start();
+  bbgenCtrl.start();
+});
 </script>

@@ -1,5 +1,6 @@
 import * as Tone from "tone";
 import { computed } from "vue";
+import { useTrackToneNode } from "../../use/useTrackToneNode";
 
 export type NoiseGenEventType = "stop" | "start";
 export interface NoiseGenEvent {
@@ -8,7 +9,9 @@ export interface NoiseGenEvent {
 }
 
 export function useNoiseGen() {
-  const channel = new Tone.Channel(0).send("main");
+  const channel = new Tone.Channel(0);
+
+  channel.send("main");
 
   const filter = new Tone.Filter({
     frequency: 500,
@@ -32,7 +35,9 @@ export function useNoiseGen() {
   }).connect(envNode);
 
   function start() {
-    noiseGen.start("+0.1");
+    if (noiseGen.state === "stopped") {
+      noiseGen.start("+0.1");
+    }
 
     envNode.set({
       release: 10,
@@ -49,7 +54,6 @@ export function useNoiseGen() {
   }
 
   function pause() {
-    noiseGen.stop("+2.1");
     envNode.set({
       release: 2,
       attack: 2,
@@ -58,15 +62,14 @@ export function useNoiseGen() {
     envNode.triggerRelease("+0.1");
   }
 
-  const muteCtrl = computed({
-    get: () => noiseGen.mute,
-    set: (mute) => noiseGen.set({ mute })
-  })
+  const muteCtrl = useTrackToneNode(channel, 'mute')
 
   return {
-    start,
-    stop,
-    pause,
+    controls: {
+      start,
+      stop,
+      pause,
+    },
     muteCtrl,
   };
 }

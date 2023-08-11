@@ -2,11 +2,19 @@ import { createStore } from "harlem";
 import composeExtension from "@harlem/extension-compose";
 
 import * as Tone from "tone";
-import { createEventHook, isDefined, whenever } from "@vueuse/core";
+import {
+  createEventHook,
+  isDefined,
+  refDebounced,
+  refThrottled,
+  useThrottleFn,
+  whenever,
+} from "@vueuse/core";
 import { logicNot } from "@vueuse/math";
 
 import { Temporal } from "@js-temporal/polyfill";
 import { match } from "ts-pattern";
+import { watch } from "vue";
 
 // The initial state for this store
 const STATE = {
@@ -115,15 +123,17 @@ const setHasInit = mutation("setHasInit", (state, payload: boolean) => {
 const resetInit = () => setHasInit(false);
 
 const isPlaying = computeState((state) => state.isPlaying, "set-isPlaying");
+const throttledIsPlaying = refThrottled(isPlaying, 2500, false);
+
 const toggleIsPlaying = () => (isPlaying.value = !isPlaying.value);
 
-const playBackStarted = createEventHook<Tone.Unit.Time>();
-const playBackStopped = createEventHook<Tone.Unit.Time>();
-const playBackPaused = createEventHook<Tone.Unit.Time>();
+const playBackStarted = createEventHook<number>();
+const playBackStopped = createEventHook<number>();
+const playBackPaused = createEventHook<number>();
 
-playBackStarted.on(() => Tone.Transport.start());
-playBackStopped.on(() => Tone.Transport.stop());
-playBackPaused.on(() => Tone.Transport.pause());
+playBackStarted.on(() => Tone.Transport.start('+0.1'));
+playBackStopped.on(() => Tone.Transport.stop('+0.1'));
+playBackPaused.on(() => Tone.Transport.pause('+0.1'));
 
 // onAfterMutation("set-isPlaying", async (event) => {
 //   const action = await match({
@@ -167,23 +177,38 @@ playBackPaused.on(() => Tone.Transport.pause());
 //   console.log("isPlaying trigger - action %o, event %o", action, event);
 // });
 
-whenever(isPlaying, async () => {
-  if (!state.hasInit) {
-    await Tone.start();
+const updatePlayingState = async (isPlaying: boolean) => {
+  if (isPlaying) {
+    if (!state.hasInit) {
+      await Tone.start();
 
-    setHasInit(true);
+      setHasInit(true);
+    }
+    playBackStarted.trigger(Tone.now() + 0.1);
+  } else {
+    playBackPaused.trigger(Tone.now() + 0.1);
   }
-  playBackStarted.trigger(Tone.now());
-});
+};
 
-whenever(logicNot(isPlaying), () => {
-  playBackPaused.trigger(Tone.now());
-});
+watch(isPlaying, updatePlayingState);
+
+// whenever(isPlaying, async () => {
+//   if (!state.hasInit) {
+//     await Tone.start();
+
+//     setHasInit(true);
+//   }
+//   playBackStarted.trigger(Tone.now() + 0.1);
+// });
+
+// whenever(logicNot(isPlaying), () => {
+//   playBackPaused.trigger(Tone.now() + 0.1);
+// });
 
 export function usePlaybackState() {
   return {
     duration,
-    isPlaying,
+    isPlaying: throttledIsPlaying,
     toggleIsPlaying,
     stopEventId,
     resetInit,
