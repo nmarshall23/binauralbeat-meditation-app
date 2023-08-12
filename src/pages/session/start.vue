@@ -42,11 +42,18 @@
         </q-btn>
       </q-card-actions>
 
-      <q-card-section>
+      <q-card-section class="sg-container">
         <div class="text-subtitle2">Sound Generators</div>
+
         <sound-generator-controls
           name="Binaural Beat"
           v-model:mute-ctrl="bbgenMuteCtrl"
+          
+        />
+
+        <sound-generator-controls
+          name="LF Filtered Brown Noise"
+          v-model:mute-ctrl="noiseGenMuteCtrl"
         />
       </q-card-section>
     </q-card>
@@ -82,6 +89,9 @@ const { volumeRef, volumeSliderOptions } = useMainChannel();
 const { controls: noiseGenCtrl, muteCtrl: noiseGenMuteCtrl } = useNoiseGen();
 const { controls: bbgenCtrl, muteCtrl: bbgenMuteCtrl } = useBBGen01();
 
+
+
+
 onPlayBackStopped(() => {
   noiseGenCtrl.stop();
   bbgenCtrl.stop();
@@ -97,3 +107,17 @@ onPlayBackStarted(() => {
   bbgenCtrl.start();
 });
 </script>
+
+<style scoped lang="scss">
+@use "sass:map";
+@use  "quasar/src/css/variables" as q;
+
+.sg-container {
+  display: grid; 
+  grid-template-columns: 1fr; 
+  grid-template-rows: min-content 1fr; 
+  row-gap: map.get(q.$space-md, "y");
+}
+
+
+</style>

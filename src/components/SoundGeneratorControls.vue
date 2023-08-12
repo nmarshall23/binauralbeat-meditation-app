@@ -3,11 +3,10 @@
     class="my-card text-white"
     style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
   >
-    <q-card-section>
-      <div class="text-h6">{{ name }}</div>
+    <q-card-section class="q-pb-none">
+      <div class="text-h6 text-left">{{ name }}</div>
     </q-card-section>
 
-    <q-card-section> </q-card-section>
 
     <q-card-actions vertical align="right">
       <q-checkbox
