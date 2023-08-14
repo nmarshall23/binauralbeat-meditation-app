@@ -1,6 +1,6 @@
 import * as Tone from "tone";
-import { computed } from "vue";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
+import { PlaybackTriggers } from "../Types";
 
 export type NoiseGenEventType = "stop" | "start";
 export interface NoiseGenEvent {
@@ -8,13 +8,23 @@ export interface NoiseGenEvent {
   time: Tone.Unit.Time;
 }
 
-export function useNoiseGen() {
+export type UseBinBeatGenOptions = {
+  lpFreq?: number;
+  eventHandler: PlaybackTriggers;
+};
+
+export function useNoiseGen(
+  generatorName: string,
+  options: UseBinBeatGenOptions
+) {
+  const { lpFreq = 500, eventHandler } = options;
+
   const channel = new Tone.Channel(0);
 
   channel.send("main");
 
   const filter = new Tone.Filter({
-    frequency: 500,
+    frequency: lpFreq,
     type: "lowpass",
   }).connect(channel);
 
@@ -62,14 +72,14 @@ export function useNoiseGen() {
     envNode.triggerRelease("+0.1");
   }
 
-  const muteCtrl = useTrackToneNode(channel, 'mute')
+  eventHandler.onPlayBackStarted(() => start());
+  eventHandler.onPlayBackPaused(() => pause());
+  eventHandler.onPlayBackStopped(() => stop());
+
+  const muteCtrl = useTrackToneNode(channel, "mute", false);
 
   return {
-    controls: {
-      start,
-      stop,
-      pause,
-    },
+    generatorName,
     muteCtrl,
   };
 }

@@ -1,9 +1,46 @@
-import { isDefined } from "@vueuse/core";
 import * as Tone from "tone";
-import { computed, customRef, ref } from "vue";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
 
-export function useBBGen01(frequency = 200, bb = 4) {
+import { PlaybackTriggers } from "../Types";
+import { getLogger } from "../../use/useLogger";
+import { isDefined } from "@vueuse/core";
+import { PatternName } from "tone/build/esm/event/PatternGenerator";
+import { match, P } from "ts-pattern";
+
+
+type BinBeatGenPatternEventFreq = {
+  freq: number;
+  rampTime: Tone.Unit.Time;
+};
+
+type BinBeatGenPatternEventBeat = {
+  beatFreq: number;
+  rampTime: Tone.Unit.Time;
+};
+
+export type UseBinBeatGenOptions = {
+  frequency?: number;
+  beatFreq?: number;
+  eventHandler: PlaybackTriggers;
+  patternLoop?: {
+    humanize: Tone.Unit.Time;
+    probability: Tone.Unit.NormalRange;
+    interval: Tone.Unit.Time;
+    pattern: PatternName;
+    values: Array<BinBeatGenPatternEventBeat | BinBeatGenPatternEventFreq>;
+  };
+};
+
+const logger = getLogger("tone.generators").getChildCategory("binBeat");
+
+export function useBBGen01(
+  generatorName: string,
+  options: UseBinBeatGenOptions
+) {
+  const { frequency = 200, beatFreq = 4, eventHandler, patternLoop } = options;
+
+  console.debug(`Init BinBeat Gen ${generatorName}`);
+
   const channel = new Tone.Channel({
     volume: -20,
     mute: false,
@@ -38,20 +75,22 @@ export function useBBGen01(frequency = 200, bb = 4) {
     .connect(merge, 0, 1)
     .sync();
 
-  //=== Signals ===
+  // === Signals === //
 
   const signalFreq = new Tone.Signal({
     value: frequency,
     units: "frequency",
   }).connect(oscGenR.frequency);
 
-  const add = new Tone.Add(bb).connect(oscGenL.frequency);
+  const add = new Tone.Add(beatFreq).connect(oscGenL.frequency);
 
   signalFreq.connect(add);
 
-  // const tryStartEventId = ref<number | null>(null);
+  // === Playback === //
 
   function start() {
+    console.info("start");
+
     if (oscGenL.state === "stopped") {
       oscGenR.start("+0.1");
       oscGenL.start("+0.1");
@@ -66,6 +105,8 @@ export function useBBGen01(frequency = 200, bb = 4) {
   }
 
   function stop() {
+    console.info("stop");
+
     oscGenR.stop("+8.1");
     oscGenL.stop("+8.1");
 
@@ -73,6 +114,8 @@ export function useBBGen01(frequency = 200, bb = 4) {
   }
 
   function pause() {
+    console.info("paused");
+
     envNode.set({
       release: 2.5,
       attack: 2.5,
@@ -82,7 +125,7 @@ export function useBBGen01(frequency = 200, bb = 4) {
   }
 
   // const mutedCtrl = customRef((track, trigger) => {
-  //   return {
+  //   return {with
   //     get() {
   //       track()
   //       return channel.mute
@@ -97,16 +140,58 @@ export function useBBGen01(frequency = 200, bb = 4) {
   //   }
   // })
 
-  const muteCtrl = useTrackToneNode(channel, 'mute')
+  if (isDefined(patternLoop)) {
+    const { values, humanize, probability, interval } = patternLoop;
+
+    const tonePattern = new Tone.Pattern<
+      BinBeatGenPatternEventBeat | BinBeatGenPatternEventFreq
+    >({
+      values,
+      humanize,
+      probability,
+      interval,
+      callback: (time, value) => {
+        console.log(
+          "%o Pattern Triggered - time %o value %o",
+          generatorName,
+          time,
+          value
+        );
+        match(value)
+          .with(
+            {
+              freq: P.number.positive(),
+              rampTime: P.not(P.nullish),
+            },
+            ({ freq, rampTime }) => {
+              signalFreq.rampTo(freq, rampTime, time);
+            }
+          )
+          .with(
+            {
+              beatFreq: P.number.positive(),
+              rampTime: P.not(P.nullish),
+            },
+            ({ beatFreq, rampTime }) => {
+              add.addend.rampTo(beatFreq, rampTime, time);
+            }
+          )
+          .otherwise((event) => console.warn("Unknown pattern %o", event));
+      },
+    });
+
+    eventHandler.onPlayBackStarted((time) => tonePattern.start(time));
+    eventHandler.onPlayBackPaused((time) => tonePattern.stop(time));
+  }
+
+  eventHandler.onPlayBackStarted(() => start());
+  eventHandler.onPlayBackPaused(() => pause());
+  eventHandler.onPlayBackStopped(() => stop());
+
+  const muteCtrl = useTrackToneNode(channel, "mute", false);
 
   return {
-    controls: {
-      start,
-      stop,
-      pause,
-    },
-
+    generatorName,
     muteCtrl,
-
   };
 }

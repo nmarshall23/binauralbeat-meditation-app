@@ -4,15 +4,16 @@ type ToneNode = {
   set: (props: object) => ToneNode;
 };
 
-export function useTrackToneNode<T extends ToneNode, K extends keyof T>(
+export function useTrackToneNode<T extends ToneNode, K extends keyof T, V extends T[K]>(
   toneNode: T,
-  prop: K
+  prop: K,
+  defaultValue: V
 ) {
   const trackedProp = customRef((track, trigger) => {
     return {
       get() {
         track();
-        return toneNode[prop];
+        return toneNode[prop] ?? defaultValue;
       },
       set(newValue) {
         toneNode.set({

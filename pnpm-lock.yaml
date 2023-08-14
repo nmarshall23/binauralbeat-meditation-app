@@ -44,6 +44,12 @@ dependencies:
   ts-pattern:
     specifier: ^5.0.4
     version: 5.0.4
+  typescript-logging:
+    specifier: ^2.1.0
+    version: 2.1.0
+  typescript-logging-category-style:
+    specifier: ^2.1.0
+    version: 2.1.0(typescript-logging@2.1.0)
   vue:
     specifier: ^3.3.4
     version: 3.3.4
@@ -1051,6 +1057,18 @@ packages:
 
   /tslib@2.6.0:
     resolution: {integrity: sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==}
+    dev: false
+
+  /typescript-logging-category-style@2.1.0(typescript-logging@2.1.0):
+    resolution: {integrity: sha512-LiKjM0hrGP1IlJvTPRoFireP84LY5hNK7yOpTXqehrfTgehVqllVtEYDP3GmsqvBQpsJoN6/G7jJQL0V7dD0uQ==}
+    peerDependencies:
+      typescript-logging: ~2.1.0
+    dependencies:
+      typescript-logging: 2.1.0
+    dev: false
+
+  /typescript-logging@2.1.0:
+    resolution: {integrity: sha512-3xi7Z0fslj8eQIEkiJSEvt5x8I4YDpwp7bdUcN8JDWXJ0RGD6RKkHhOCKgKu4KQU+4X0rm9zyxTK6TQst2hvWw==}
     dev: false
 
   /typescript@5.0.2:

@@ -8,14 +8,15 @@
     </q-card-section>
 
 
-    <q-card-actions vertical align="right">
+    <q-card-actions vertical align="right" class="q-py-none" >
       <q-checkbox
         v-model="muteCtrl"
         label="Mute"
         checked-icon="volume_off"
         unchecked-icon="volume_up"
-        color="green"
         keep-color
+        left-label
+        color="red"
       />
     </q-card-actions>
   </q-card>

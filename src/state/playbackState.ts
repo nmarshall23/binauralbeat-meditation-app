@@ -5,15 +5,11 @@ import * as Tone from "tone";
 import {
   createEventHook,
   isDefined,
-  refDebounced,
   refThrottled,
-  useThrottleFn,
-  whenever,
+
 } from "@vueuse/core";
-import { logicNot } from "@vueuse/math";
 
 import { Temporal } from "@js-temporal/polyfill";
-import { match } from "ts-pattern";
 import { watch } from "vue";
 
 // The initial state for this store
