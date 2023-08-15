@@ -40,6 +40,9 @@ import type {
 declare module 'vue-router/auto/routes' {
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
+    '/program/[id]': RouteRecordInfo<'/program/[id]', '/program/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/program/[id]/play': RouteRecordInfo<'/program/[id]/play', '/program/:id/play', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/program/[id]/select-duration': RouteRecordInfo<'/program/[id]/select-duration', '/program/:id/select-duration', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/session/duration': RouteRecordInfo<'/session/duration', '/session/duration', Record<never, never>, Record<never, never>>,
     '/session/start': RouteRecordInfo<'/session/start', '/session/start', Record<never, never>, Record<never, never>>,
   }

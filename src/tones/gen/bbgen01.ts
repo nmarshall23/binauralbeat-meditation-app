@@ -31,7 +31,6 @@ export type UseBinBeatGenOptions = {
   };
 };
 
-const logger = getLogger("tone.generators").getChildCategory("binBeat");
 
 export function useBBGen01(
   generatorName: string,
@@ -124,21 +123,6 @@ export function useBBGen01(
     envNode.triggerRelease("+0.1");
   }
 
-  // const mutedCtrl = customRef((track, trigger) => {
-  //   return {with
-  //     get() {
-  //       track()
-  //       return channel.mute
-  //     },
-  //     set(mute) {
-  //       console.log("BB Mute %o channel %o", mute, channel.mute);
-  //       channel.set({
-  //         mute,
-  //       });
-  //       trigger()
-  //     }
-  //   }
-  // })
 
   if (isDefined(patternLoop)) {
     const { values, humanize, probability, interval } = patternLoop;

@@ -34,9 +34,9 @@
 <script setup lang="ts">
 import { useDialogPluginComponent } from "quasar";
 
-const props = defineProps({
-  // ...your custom props
-});
+const props = defineProps<{
+  title: string
+}>()
 
 defineEmits([
   // REQUIRED; need to specify some events that your
