@@ -1,23 +1,39 @@
 <template>
-    <q-card class="ND_card  text-white text-left bg-grey-9">
-      <q-card-section :class="color">
-        <slot name="header" />
-      </q-card-section>
-      <slot />
-    </q-card>
-</template> 
+  <q-card class="ND_card text-white text-left bg-grey-9">
+    <q-card-section :class="color">
+      <slot name="header" />
+    </q-card-section>
+    <slot />
+  </q-card>
+</template>
 
 <script setup lang="ts">
 defineProps<{
-  color: string
-
+  color: string;
 }>();
-
 </script>
 
-
-<style scoped>
+<style scoped lang="scss">
+@use "quasar/src/css/variables" as q;
 .ND_card {
-  width: 500px;
+  @media (max-width: $breakpoint-xs-max) {
+    max-width: 360px;
+  }
+
+  @media (min-width: $breakpoint-sm-min) and (max-width: $breakpoint-sm-max) {
+    max-width: 360px;
+  }
+
+  @media (min-width: $breakpoint-md-min) and (max-width: $breakpoint-md-max) { 
+    max-width: 450px;
+  }
+
+  @media (min-width: $breakpoint-lg-min) and (max-width: $breakpoint-lg-max) {
+    max-width: 450px;
+  }
+
+  @media (min-width: $breakpoint-xl-min) {
+    max-width: 450px;
+  }
 }
 </style>

@@ -1,17 +1,17 @@
 <template>
-  <q-page class="column q-gutter-sm items-start">
+  <q-page padding class="column q-gutter-sm items-start">
     <nm-card color="bg-secondary">
       <template #header>
         <div class="text-h6">What Are Binaural Beats?</div>
         <q-card-section class="q-pt-none">
-        A binaural beat is an illusion created by the brain when you listen to
-        two tones with slightly different frequencies at the same time.
-      </q-card-section>
-      <q-card-section class="q-py-none">
-        To experience this effect you need to wear headphones.
-      </q-card-section>
+          A binaural beat is an illusion created by the brain when you listen to
+          two tones with slightly different frequencies at the same time.
+        </q-card-section>
+        <q-card-section class="q-py-none">
+          To experience this effect you need to wear headphones.
+        </q-card-section>
       </template>
-      
+
       <q-separator dark />
       <q-card-actions class="q-pt-none">
         <q-btn flat href="https://www.webmd.com/balance/what-are-binaural-beats"
@@ -20,15 +20,11 @@
       </q-card-actions>
     </nm-card>
 
-
-    
-
-    <q-card class="ND_card text-white text-left bg-grey-9">
-      <q-card-section class="bg-purple">
-        <div class="text-h6">Programs</div>
+    <nm-card color="bg-purple">
+      <template #header>
+        <div class="text-h6">Meditation Programs</div>
         <div class="text-subtitle2">Select one to begin your session</div>
-      </q-card-section>
-
+      </template>
       <q-list dark bordered separator>
         <q-item
           clickable
@@ -45,14 +41,14 @@
           </q-item-section>
         </q-item>
       </q-list>
-    </q-card>
+    </nm-card>
+    
   </q-page>
 </template>
 
 <script setup lang="ts">
 import NmCard from "../components/nmCard.vue";
 import { useBinauralBeatPrograms } from "../state/bbPrograms";
-
 
 const { programs } = useBinauralBeatPrograms();
 </script>

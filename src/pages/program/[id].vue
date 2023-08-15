@@ -6,7 +6,7 @@
 
 
 <template>
-    <q-page class="column q-gutter-sm items-start">
+    <q-page padding class="column q-gutter-sm items-start">
       <router-view />
   
     </q-page>
