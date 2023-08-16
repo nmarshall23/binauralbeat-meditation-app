@@ -2,6 +2,7 @@ import * as Tone from "tone";
 import { PlaybackTriggers } from "../Types";
 import { SoundGeneratorBasicNoiseGenOptions } from "../SoundGenerators";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
+import { reactive } from "vue";
 
 export function createBasicNoiseGen(
   generatorName: string,
@@ -71,8 +72,8 @@ export function createBasicNoiseGen(
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
 
-  return {
+  return reactive({
     generatorName,
     muteCtrl,
-  };
+  })
 }
