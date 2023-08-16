@@ -3,7 +3,6 @@ import { createStore } from "harlem";
 import { useMinDurationToSec } from "../use/useDurationInSec";
 import { SoundGenerators } from "../tones/SoundGenerators";
 import composeExtension from "@harlem/extension-compose";
-import { computed } from "vue";
 
 export type BinauarlBeatProgram = {
   id: string;
@@ -74,7 +73,7 @@ const STATE = {
             beatFreq: 4,
             osc: {
               frequency: 180,
-              phase: 180,
+              phase: 90,
             },
           },
         },
@@ -89,7 +88,7 @@ const STATE = {
         {
           type: "NoiseFilteredGen",
           options: {
-            gain: 1,
+            gain: 100,
             noise: {
               type: "brown",
             },
@@ -99,10 +98,11 @@ const STATE = {
             },
           },
         },
+
         {
           type: "AdvBinauarlBeatOsc",
           options: {
-            gain: 0.7,
+            gain: 70,
             beatFreq: 4,
             osc: {
               frequency: 230,
@@ -112,33 +112,28 @@ const STATE = {
         {
           type: "AdvBinauarlBeatOsc",
           options: {
-            gain: 0.7,
+            gain: 70,
             beatFreq: 4,
             osc: {
               frequency: 230,
+              phase: 90,
             },
             loopEvents: {
               humanize: 10,
-              interval: useMinDurationToSec(4),
+              interval: 30, //useMinDurationToSec(1),
               probability: 1,
               pattern: "upDown",
               values: [
                 {
-                  rampTime: useMinDurationToSec(1),
+                  rampTime: 30, //useMinDurationToSec(1),
                   signal: {
-                    frequency: 255,
+                    frequency: 180,
                   },
                 },
                 {
-                  rampTime: useMinDurationToSec(1),
+                  rampTime: 30, //useMinDurationToSec(1),
                   signal: {
-                    frequency: 220,
-                  },
-                },
-                {
-                  rampTime: useMinDurationToSec(1),
-                  signal: {
-                    frequency: 190,
+                    frequency: 230,
                   },
                 },
               ],
@@ -157,19 +152,21 @@ export const {
   getter,
   ...store
 } = createStore("binauralBeatPrograms", STATE, {
-    extensions: [composeExtension()],
+  extensions: [composeExtension()],
 });
 
-const programs = getter('getPrograms', state => state.programs)
+const programs = getter("getPrograms", (state) => state.programs);
 
-const currentProgramId = computeState((state) => state.currentProgramId)
+const currentProgramId = computeState((state) => state.currentProgramId);
 
-const currentProgram = getter('currentProgram', state => state.programs.find(p => p.id === state.currentProgramId) )
+const currentProgram = getter("currentProgram", (state) =>
+  state.programs.find((p) => p.id === state.currentProgramId)
+);
 
 export function useBinauralBeatPrograms() {
-    return {
-        programs,
-        currentProgramId,
-        currentProgram,
-    }
+  return {
+    programs,
+    currentProgramId,
+    currentProgram,
+  };
 }

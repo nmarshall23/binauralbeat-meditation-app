@@ -26,3 +26,20 @@ export function useTrackToneNode<T extends ToneNode, K extends keyof T, V extend
 
   return trackedProp;
 }
+
+// export function useTrackToneParam<P extends Param>(param: P) {
+//   customRef((track, trigger) => {
+//     return {
+//       get() {
+//         track();
+//         return param
+//       },
+//       set(newValue) {
+//         toneNode.set({
+//           [prop]: newValue,
+//         });
+//         trigger();
+//       },
+//     };
+//   });
+// }

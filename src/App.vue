@@ -2,8 +2,8 @@
   <q-layout view="hHh lpr fff">
     <q-header elevated class="bg-primary text-white" height-hint="50">
       <q-toolbar class="justify-between">
-        <q-toolbar-title class="text-left"> Binaual Beat Meditation App </q-toolbar-title>
-        <q-space />
+        <q-toolbar-title class="text-left" > Binaual Beat Meditation App </q-toolbar-title>
+        
 
         <q-btn
           v-if="showResetButton"

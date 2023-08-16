@@ -4,24 +4,10 @@
       <div class="text-h6">{{ currentProgram?.title }}</div>
     </template>
 
-    <!-- <q-list dark bordered separator>
-        <q-item
-          clickable
-          v-ripple
-          v-for="gen in currentProgram?.generators"
-          
-        >
-          <q-item-section>
-            <q-item-label>{{ gen.type }}</q-item-label>
-            
-          </q-item-section>
-        </q-item>
-      </q-list> -->
-
-    <q-card-actions align="center" class="q-pt-md">
+    <q-card-actions align="center" class="q-pt-md playToggle_section">
       <q-btn
         @click="toggleIsPlaying()"
-        class="btn-fixed-width"
+        class="btn-fixed-width playToggle_section_btn"
         color="green"
         :label="playBtnLabel"
         :icon="playBtnIcon"
@@ -29,13 +15,23 @@
         size="1rem"
       />
 
-      <q-btn @click="changeVolume()" round color="secondary" icon="tune" />
+      <q-btn
+        @click="changeMainVolume()"
+        round
+        color="secondary"
+        icon="tune"
+        class="playToggle_section_vol"
+      />
     </q-card-actions>
 
     <q-slide-transition>
       <div v-show="isPlaying">
         <q-separator dark />
-        <q-linear-progress size="25px" :value="progressBar" color="accent">
+        <q-linear-progress
+          size="25px"
+          :value="remandingDurationPercentage"
+          color="accent"
+        >
           <div class="absolute-full flex flex-center">
             <q-badge color="white" text-color="accent" :label="progressLabel" />
           </div>
@@ -49,41 +45,51 @@
       <div class="text-subtitle2">Sound Generators</div>
 
       <template v-for="g in generators">
-       <sound-generator-controls
-            :name="g?.generatorName"
-            v-model:mute-ctrl="g.muteCtrl"
-          /> 
+        <sound-generator-controls
+          :name="g.generatorName"
+          v-model:mute-ctrl="g.muteCtrl"
+          @show-volume-dialog="showVolumeDialog(`${g.generatorName} Volume`, g.volumeCtrl, (n) => g.volumeCtrl = n)"
+        />
       </template>
     </q-card-section>
+
+    <volume-dialog ref="volumeDialogRef" />
   </nm-card>
-  <volume-dialog ref="volumeDialogRef"  />
+
+  <!-- <nm-card color="bg-purple">
+    <template #header>
+      <div class="text-h6">Meters</div>
+    </template>
+
+    <q-card-section>
+      <meter-vis />
+    </q-card-section>
+  </nm-card> -->
 </template>
 
 <script setup lang="ts">
-import { useQuasar } from "quasar";
 import NmCard from "../../../components/nmCard.vue";
 import SoundGeneratorControls from "../../../components/SoundGeneratorControls.vue";
 import VolumeDialog from "../../../components/dialogs/volumeDialog.vue";
 
 import { useBinauralBeatPrograms } from "../../../state/bbPrograms";
-import { InjectionKey, Ref, computed, provide, ref } from "vue";
-import { match } from "ts-pattern";
+import { computed, ref } from "vue";
 
 import { usePlaybackState } from "../../../state/playbackState";
 import { useMainChannel } from "../../../state/mainChannel";
-import { createBasicNoiseGen } from "../../../tones/gen/createBasicNoiseGen";
 import { isDefined } from "@vueuse/core";
 
-const $q = useQuasar();
+// import MeterVis from "../../../components/MeterVis.vue";
+import { SoundGenerators } from "../../../tones/SoundGenerators";
+import { setupProgramGenerators } from "../../../use/setupProgramGenerators";
 
 const {
   isPlaying,
   toggleIsPlaying,
   resetInit,
-  onPlayBackPaused,
-  onPlayBackStarted,
-  onPlayBackStopped,
+  eventHandler,
   remandingDuration,
+  remandingDurationPercentage,
 } = usePlaybackState();
 
 const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
@@ -91,67 +97,69 @@ const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
 
 resetInit();
 
-const progressBar = ref(0.3);
 const progressLabel = computed(
-  () => `${remandingDuration.value.hours}:${remandingDuration.value.minutes}:${remandingDuration.value.seconds}`
+  () =>
+    `${remandingDuration.value.hours}:${remandingDuration.value.minutes}:${remandingDuration.value.seconds}`
 );
 
-const expanded = ref(true)
-
-const { volumeRef, volumeSliderOptions } = useMainChannel();
-
-const eventHandler = {
-  onPlayBackPaused,
-  onPlayBackStarted,
-  onPlayBackStopped,
-};
-
-
-const myInjectionKey = Symbol('location') as InjectionKey<{ 
-  volume: Ref<number>, 
-    updateVolume: (value: number) => void }>
-
+const { volumeRef } = useMainChannel();
 
 function updateVolume(value: number) {
-  console.log('updateVol %o', value)
-  volumeRef.value =value
+  console.log("updateVol %o", value);
+  volumeRef.value = value;
 }
 
-provide(myInjectionKey, {
-  volume: volumeRef,
-  updateVolume
-})
+const volumeDialogRef = ref<InstanceType<typeof VolumeDialog> | null>(null);
+async function changeMainVolume() {
+  showVolumeDialog("Main Volume", volumeRef.value, updateVolume);
+}
 
-const volumeDialogRef = ref<InstanceType<typeof VolumeDialog> | null>(null)
-async function changeVolume() {
-  if(isDefined(volumeDialogRef)) {
-    const data = await volumeDialogRef.value.reveal({
-      title: "Main Volume",
-      volume: volumeRef.value,
+async function showVolumeDialog(
+  title: string,
+  volume: number,
+  updateVolume: (val: number) => void
+) {
+  if (isDefined(volumeDialogRef)) {
+    await volumeDialogRef.value.reveal({
+      title,
+      volume,
       updateVolume,
-    })
+    });
 
-    console.log('vol %o', volumeRef.value)
+    console.log("vol %o", volumeRef.value);
   }
- 
 }
 
 const { currentProgram } = useBinauralBeatPrograms();
 
 const generators = computed(() => {
-  const generators = currentProgram.value?.generators ?? [];
-
-  return generators.map((genDef) =>
-    match(genDef).with(
-      {
-        type: "BasicNoiseGen",
-      },
-      (def) => createBasicNoiseGen("Noise", eventHandler, def.options)
-
-    ).otherwise((def) => {
-      console.log('Unkown Generator %o', def)
-      return null
-    })
-  ).filter((i) => isDefined(i))
+  const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;
+  return setupProgramGenerators(gs, eventHandler);
 });
 </script>
+
+<style scoped lang="scss">
+@use "sass:map";
+@use "quasar/src/css/variables" as q;
+
+.sg-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: min-content 1fr;
+  row-gap: map.get(q.$space-md, "y");
+}
+
+.playToggle_section {
+  display: grid;
+  grid-template-columns: 1fr 140px 1fr;
+}
+
+.playToggle_section_btn {
+  grid-column: 2 / 3;
+}
+
+.playToggle_section_vol {
+  grid-column: 3 / 4;
+  justify-self: right;
+}
+</style>

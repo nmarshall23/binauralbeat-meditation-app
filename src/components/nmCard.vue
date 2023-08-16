@@ -17,23 +17,23 @@ defineProps<{
 @use "quasar/src/css/variables" as q;
 .ND_card {
   @media (max-width: $breakpoint-xs-max) {
-    max-width: 360px;
+    width: 360px;
   }
 
   @media (min-width: $breakpoint-sm-min) and (max-width: $breakpoint-sm-max) {
-    max-width: 360px;
+    width: 360px;
   }
 
   @media (min-width: $breakpoint-md-min) and (max-width: $breakpoint-md-max) { 
-    max-width: 450px;
+    width: 450px;
   }
 
   @media (min-width: $breakpoint-lg-min) and (max-width: $breakpoint-lg-max) {
-    max-width: 450px;
+    width: 450px;
   }
 
   @media (min-width: $breakpoint-xl-min) {
-    max-width: 450px;
+    width: 450px;
   }
 }
 </style>

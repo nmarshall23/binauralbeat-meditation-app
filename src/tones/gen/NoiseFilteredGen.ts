@@ -1,25 +1,36 @@
 import * as Tone from "tone";
 import { PlaybackTriggers } from "../Types";
-import { SoundGeneratorBasicNoiseGenOptions } from "../SoundGenerators";
+import { NoiseFilteredGenOptions } from "../SoundGenerators";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
+import { capitalCase } from "change-case";
+import { useVolumeControl } from "../../use/useVolumeControl";
 
-export function createBasicNoiseGen(
+export function createNoiseFilteredGen(
   generatorName: string,
   eventHandler: PlaybackTriggers,
-  options: SoundGeneratorBasicNoiseGenOptions
+  options: NoiseFilteredGenOptions
 ) {
-  const { gain, noise: noiseOptions } = options;
+  const { gain, noise: noiseOptions, filter: filterOptions } = options;
 
   console.debug(
-    `createBasicNoiseGen ${generatorName} gain %o, opt %o`,
+    `createNoiseFilteredGen ${generatorName} gain %o, opt %o`,
     gain,
     options
   );
 
   const channel = new Tone.Channel(0);
 
-  channel.send("main");
+  const channelGainNode = channel.send("main");
+
+  // channelGainNode.set({ gain })
+
+  console.debug(
+    `createNoiseFilteredGen ${generatorName} channelGainNode %o`,
+    channelGainNode.gain.value
+  );
+
+  const filter = new Tone.Filter(filterOptions).connect(channel);
 
   const envNode = new Tone.AmplitudeEnvelope({
     attack: 5,
@@ -28,7 +39,7 @@ export function createBasicNoiseGen(
     release: 10,
     attackCurve: "sine",
     releaseCurve: "sine",
-  }).connect(channel);
+  }).connect(filter);
 
   const noiseNode = new Tone.Noise(noiseOptions).connect(envNode);
 
@@ -68,12 +79,27 @@ export function createBasicNoiseGen(
     envNode.triggerRelease("+0.1");
   });
 
+  /* === Dispay === */
+
+  const displayName = computed(() => {
+    return `${generatorName} - ${capitalCase(noiseNode.type)}`;
+  });
+
   /* === Controls === */
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
+  const gainCtrl = computed({
+    get: () => channelGainNode.gain.value,
+    set: (value) => channelGainNode.gain.rampTo(value, "+0.5"),
+  });
+
+ 
+  const { volumeRef } = useVolumeControl(channel.volume, { defaultValue: gain })
 
   return reactive({
-    generatorName,
+    generatorName: displayName,
     muteCtrl,
-  })
+    gainCtrl,
+    volumeCtrl: volumeRef,
+  });
 }

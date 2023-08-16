@@ -2,12 +2,7 @@ import { createStore } from "harlem";
 import composeExtension from "@harlem/extension-compose";
 
 import * as Tone from "tone";
-import {
-  createEventHook,
-  isDefined,
-  refThrottled,
-
-} from "@vueuse/core";
+import { createEventHook, isDefined } from "@vueuse/core";
 
 import { Temporal } from "@js-temporal/polyfill";
 import { watch } from "vue";
@@ -54,6 +49,22 @@ onAfterMutation("set-duration", (event) => {
     seconds: duration.value,
   }).round({ largestUnit: "hour" });
 });
+
+const remandingDurationPercentage = getter(
+  "remandingDurationPercentage",
+  (state) => {
+    if (isDefined(state.temporalDuration)) {
+      const remandingSec = state.temporalDuration.round({
+        largestUnit: "second",
+      }).seconds;
+
+      console.log("Duration Progress Bar %o %o", remandingSec, state.duration);
+
+      return remandingSec / state.duration;
+    }
+    return 0;
+  }
+);
 
 const remandingDuration = getter("remandingDuration", (state) => {
   if (isDefined(state.temporalDuration)) {
@@ -118,60 +129,20 @@ const setHasInit = mutation("setHasInit", (state, payload: boolean) => {
 
 const resetInit = () => setHasInit(false);
 
-const isPlaying = computeState((state) => state.isPlaying, "set-isPlaying");
-const throttledIsPlaying = refThrottled(isPlaying, 2500, false);
+const isPlaying = getter("getisPlaying", (state) => state.isPlaying);
+const setIsPlaying = mutation("setIsPlaying", (state, payload: boolean) => {
+  state.isPlaying = payload;
+});
 
-const toggleIsPlaying = () => (isPlaying.value = !isPlaying.value);
+const toggleIsPlaying = () => setIsPlaying(!state.isPlaying);
 
 const playBackStarted = createEventHook<number>();
 const playBackStopped = createEventHook<number>();
 const playBackPaused = createEventHook<number>();
 
-playBackStarted.on(() => Tone.Transport.start('+0.1'));
-playBackStopped.on(() => Tone.Transport.stop('+0.1'));
-playBackPaused.on(() => Tone.Transport.pause('+0.1'));
-
-// onAfterMutation("set-isPlaying", async (event) => {
-//   const action = await match({
-//     isPlaying: state.isPlaying,
-//     hasInit: state.hasInit,
-//   })
-//     .with(
-//       {
-//         isPlaying: true,
-//         hasInit: false,
-//       },
-//       async () => {
-//         await Tone.start();
-//         setHasInit(true);
-//         playBackStarted.trigger(Tone.now());
-//         return "start-init";
-//       }
-//     )
-//     .with(
-//       {
-//         isPlaying: true,
-//         hasInit: true,
-//       },
-//       async () => {
-//         playBackStarted.trigger(Tone.now());
-//         return "play";
-//       }
-//     )
-//     .with(
-//       {
-//         isPlaying: false,
-//         hasInit: true,
-//       },
-//       async () => {
-//         playBackPaused.trigger(Tone.now());
-//         return "paused";
-//       }
-//     )
-//     .otherwise(async () => "unknown");
-
-//   console.log("isPlaying trigger - action %o, event %o", action, event);
-// });
+playBackStarted.on(() => Tone.Transport.start("+0.1"));
+playBackStopped.on(() => Tone.Transport.stop("+0.1"));
+playBackPaused.on(() => Tone.Transport.pause("+0.1"));
 
 const updatePlayingState = async (isPlaying: boolean) => {
   if (isPlaying) {
@@ -180,37 +151,31 @@ const updatePlayingState = async (isPlaying: boolean) => {
 
       setHasInit(true);
     }
-    playBackStarted.trigger(Tone.now() + 0.1);
+
+    playBackStarted.trigger(Tone.now());
   } else {
-    playBackPaused.trigger(Tone.now() + 0.1);
+    playBackPaused.trigger(Tone.now());
   }
+  console.log("isPlaying %o", isPlaying);
 };
 
 watch(isPlaying, updatePlayingState);
 
-// whenever(isPlaying, async () => {
-//   if (!state.hasInit) {
-//     await Tone.start();
-
-//     setHasInit(true);
-//   }
-//   playBackStarted.trigger(Tone.now() + 0.1);
-// });
-
-// whenever(logicNot(isPlaying), () => {
-//   playBackPaused.trigger(Tone.now() + 0.1);
-// });
+const eventHandler = {
+  onPlayBackPaused: playBackPaused.on,
+  onPlayBackStarted: playBackStarted.on,
+  onPlayBackStopped: playBackStopped.on,
+};
 
 export function usePlaybackState() {
   return {
     duration,
-    isPlaying: throttledIsPlaying,
+    isPlaying,
     toggleIsPlaying,
     stopEventId,
     resetInit,
-    onPlayBackPaused: playBackPaused.on,
-    onPlayBackStarted: playBackStarted.on,
-    onPlayBackStopped: playBackStopped.on,
+    eventHandler,
     remandingDuration,
+    remandingDurationPercentage,
   };
 }

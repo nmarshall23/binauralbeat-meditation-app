@@ -7,8 +7,7 @@
       <div class="text-h6 text-left">{{ name }}</div>
     </q-card-section>
 
-
-    <q-card-actions  align="right" class="q-py-none" >
+    <q-card-actions align="right" class="q-py-none">
       <q-checkbox
         v-model="muteCtrl"
         label="Mute"
@@ -25,36 +24,27 @@
 
 <script setup lang="ts">
 import { useVModel } from "@vueuse/core";
-import { SoundGeneratorControls } from "../tones/Types";
-import { useQuasar } from "quasar";
-import volumeDialogVue from "./dialogs/volumeDialog.vue";
 
 const props = defineProps<{
   name: string;
-  // controls: SoundGeneratorControls;
-    muteCtrl: boolean
+  muteCtrl: boolean;
 }>();
 
 const emit = defineEmits<{
-    (e: 'update:muteCtrl', controls: SoundGeneratorControls): void
-}>()
-
-const muteCtrl = useVModel(props, 'muteCtrl', emit)
-
-const $q = useQuasar()
-
-function showVolumeDialog () {
-  $q.dialog({
-    component: volumeDialogVue,
-    position: 'bottom',
-    componentProps: {
-      name: props.name,
+  (e: "update:muteCtrl", muteCtrl: boolean): void;
+  (
+    e: "showVolumeDialog",
+    options: {
+      title: string;
     }
-  }).onOk(()=> {
-    console.log('OK')
+  ): void;
+}>();
+
+const muteCtrl = useVModel(props, "muteCtrl", emit);
+
+function showVolumeDialog() {
+  emit('showVolumeDialog', {
+    title: 'Foo'
   })
 }
-
-
-
 </script>
