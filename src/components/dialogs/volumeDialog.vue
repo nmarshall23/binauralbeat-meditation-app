@@ -1,64 +1,83 @@
 <template>
   <q-dialog
+    v-model="isRevealed"
     ref="dialogRef"
-    @hide="onDialogHide"
     persistent
     maximized
     transition-show="slide-up"
     transition-hide="slide-down"
   >
-    <q-card class="q-dialog-plugin bg-primary text-whit ">
-        <q-bar>
-          <q-space />
+    <q-card dark class="q-dialog-plugin bg-blue-grey text-whit">
+      <q-bar class="justify-between">
+        <q-btn @click="confirm()" dense flat icon="close" class="item-start">
+          <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+        </q-btn>
 
-          
-          <q-btn dense flat icon="close" v-close-popup>
-            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
-          </q-btn>
-        </q-bar>
-
-      <!--
-          ...content
-          ... use q-card-section for it?
-        -->
+        <span> {{ title }} </span>
+        <q-icon name="equalizer" />
+      </q-bar>
 
       <!-- buttons example -->
-      <q-card-actions align="right">
-        <q-btn color="primary" label="OK" @click="onOKClick" />
-        <q-btn color="primary" label="Cancel" @click="onDialogCancel" />
+      <q-card-actions vertical align="center" class="q-pt-lg q-gutter-md">
+        <q-badge color="secondary" class="q-pa-sm">
+          {{ volume }}
+        </q-badge>
+        <q-slider
+          @change="updateVolume"
+          v-model="volume"
+          :min="0"
+          :max="100"
+          vertical
+          track-size="76px"
+          thumb-size="0"
+          reverse
+        />
+
+        <q-chip size="lg">
+          <q-btn rounded color="primary" label="Mute" />
+
+          <q-separator vertical spaced />
+        </q-chip>
+
+        <q-btn-group rounded>
+          <q-btn rounded color="primary" label="Mute" />
+
+          <q-btn rounded color="primary" label="Two" />
+        </q-btn-group>
       </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
 
 <script setup lang="ts">
-import { useDialogPluginComponent } from "quasar";
+import { useConfirmDialog } from "@vueuse/core";
+import { ref } from "vue";
 
-const props = defineProps<{
-  title: string
-}>()
+type VolumeDialogRevealData = {
+  title: string;
+  volume: number;
+  updateVolume: (v: number) => void;
+};
 
-defineEmits([
-  // REQUIRED; need to specify some events that your
-  // component will emit through useDialogPluginComponent()
-  ...useDialogPluginComponent.emits,
-]);
+const { isRevealed, reveal, onReveal, onConfirm, confirm } =
+  useConfirmDialog<VolumeDialogRevealData>();
 
-const { dialogRef, onDialogHide, onDialogOK, onDialogCancel } =
-  useDialogPluginComponent();
-// dialogRef      - Vue ref to be applied to QDialog
-// onDialogHide   - Function to be used as handler for @hide on QDialog
-// onDialogOK     - Function to call to settle dialog with "ok" outcome
-//                    example: onDialogOK() - no payload
-//                    example: onDialogOK({ /*...*/ }) - with payload
-// onDialogCancel - Function to call to settle dialog with "cancel" outcome
+defineExpose({
+  reveal,
+});
 
-// this is part of our example (so not required)
-function onOKClick() {
-  // on OK, it is REQUIRED to
-  // call onDialogOK (with optional payload)
-  onDialogOK();
-  // or with payload: onDialogOK({ ... })
-  // ...and it will also hide the dialog automatically
-}
+const title = ref("");
+const volume = ref(10);
+const updateVolume = ref((_v: number) => {});
+
+onReveal((data) => {
+  title.value = data.title;
+  volume.value = data.volume;
+  updateVolume.value = data.updateVolume;
+});
+
+onConfirm(() => {
+  title.value = "";
+  volume.value = 10;
+});
 </script>
