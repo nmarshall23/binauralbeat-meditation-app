@@ -78,8 +78,13 @@ export function useNoiseGen(
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
 
+  function dispose() {
+    channel.dispose()
+  }
+
   return {
     generatorName,
     muteCtrl,
+    dispose,
   };
 }

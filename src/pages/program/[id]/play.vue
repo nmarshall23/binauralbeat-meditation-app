@@ -48,7 +48,13 @@
         <sound-generator-controls
           :name="g.generatorName"
           v-model:mute-ctrl="g.muteCtrl"
-          @show-volume-dialog="showVolumeDialog(`${g.generatorName} Volume`, g.volumeCtrl, (n) => g.volumeCtrl = n)"
+          @show-volume-dialog="
+            showVolumeDialog(
+              `${g.generatorName} Volume`,
+              g.volumeCtrl,
+              (n) => (g.volumeCtrl = n)
+            )
+          "
         />
       </template>
     </q-card-section>
@@ -73,7 +79,7 @@ import SoundGeneratorControls from "../../../components/SoundGeneratorControls.v
 import VolumeDialog from "../../../components/dialogs/volumeDialog.vue";
 
 import { useBinauralBeatPrograms } from "../../../state/bbPrograms";
-import { computed, ref } from "vue";
+import { computed, onBeforeUnmount, ref } from "vue";
 
 import { usePlaybackState } from "../../../state/playbackState";
 import { useMainChannel } from "../../../state/mainChannel";
@@ -135,6 +141,10 @@ const { currentProgram } = useBinauralBeatPrograms();
 const generators = computed(() => {
   const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;
   return setupProgramGenerators(gs, eventHandler);
+});
+
+onBeforeUnmount(() => {
+  generators.value.forEach((i) => i.dispose());
 });
 </script>
 

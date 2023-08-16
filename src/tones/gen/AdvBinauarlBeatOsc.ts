@@ -175,10 +175,15 @@ export function createAdvBinauarlBeatOsc(
 
   const { volumeRef } = useVolumeControl(channel.volume, { defaultValue: gain })
 
+  function dispose() {
+    channel.dispose()
+  }
+
   return reactive({
     generatorName: displayName,
     muteCtrl,
     volumeCtrl: volumeRef,
+    dispose,
   });
 }
 

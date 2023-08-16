@@ -85,11 +85,15 @@ export function createBasicNoiseGen(
     set: (value) => channel.volume.rampTo(value, "+0.5"),
   });
 
+  function dispose() {
+    channel.dispose()
+  }
 
   return reactive({
     generatorName: displayName,
     muteCtrl,
     gainCtrl,
     volumeCtrl,
+    dispose,
   });
 }

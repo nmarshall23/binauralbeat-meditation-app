@@ -96,10 +96,15 @@ export function createNoiseFilteredGen(
  
   const { volumeRef } = useVolumeControl(channel.volume, { defaultValue: gain })
 
+  function dispose() {
+    channel.dispose()
+  }
+
   return reactive({
     generatorName: displayName,
     muteCtrl,
     gainCtrl,
     volumeCtrl: volumeRef,
+    dispose,
   });
 }
