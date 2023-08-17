@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from "vue";
+import { ref, watch, watchEffect } from "vue";
 import { useProgramDurationStore } from "../../../state/programDuration";
 import { useMinDurationToSec } from "../../../use/useDurationInSec";
 import ChipOption from "../../../components/ChipOption.vue";
@@ -32,8 +32,10 @@ const timeOptions = ref([
 
 const selected = ref(timeOptions.value[0]);
 
-watchEffect(() => {
-  duration.value = selected.value.value;
-});
+watch(selected, (newSelection) => {
+  duration.value = newSelection.value
+})
+
+
 const { duration } = useProgramDurationStore();
 </script>
