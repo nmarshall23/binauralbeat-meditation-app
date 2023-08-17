@@ -36,6 +36,7 @@ export type NoiseFilteredGenOptions = {
     type: BiquadFilterType;
     frequency?: Tone.Unit.Frequency;
     Q?: number;
+    gain?: number
   };
 };
 
@@ -43,6 +44,8 @@ export type SoundGeneratorNoiseFilteredGen = {
   type: "NoiseFilteredGen";
   options: NoiseFilteredGenOptions;
 };
+
+
 
 export type LooppingEventsOptions<E> = {
   pattern: PatternName;
@@ -67,6 +70,24 @@ export type SoundGeneratorAdvBinauarlBeatOsc = {
   options: AdvBinauarlBeatOscOptions;
 };
 
+
+export type BinauralBeatSpinOscOptions = {
+  gain: Tone.Unit.GainFactor;
+  beatFreq: Tone.Unit.Hertz;
+  spinCrossFade: number
+  spinCycle: number
+  osc: {
+    frequency: Tone.Unit.Hertz;
+    phase?: Tone.Unit.Degrees;
+  };
+  loopEvents?: LooppingEventsOptions<BinauralBeatSpinEventSignal>;
+};
+
+export type BinauralBeatSpinOsc = {
+  type: "BinauralBeatSpinOsc";
+  options: BinauralBeatSpinOscOptions;
+};
+
 /// LoopEventValue<RequireAtLeastOne<BinauarlBeatOscLoopEventSignal>>
 
 export interface LoopEventValue<S> {
@@ -85,8 +106,17 @@ type BinauarlBeatOscLoopEventSignal = {
   gain: Tone.Unit.GainFactor;
 };
 
+type BinauralBeatSpinEventSignal = {
+  beatFreq: Tone.Unit.Hertz;
+  frequency: Tone.Unit.Hertz;
+  gain: Tone.Unit.GainFactor;
+  spinCrossFade: number
+  spinCycle: number
+};
+
 export type SoundGenerators =
   | SoundGeneratorBasicNoiseGen
   | SoundGeneratorBasicBinauarlBeatOsc
   | SoundGeneratorNoiseFilteredGen
-  | SoundGeneratorAdvBinauarlBeatOsc;
+  | SoundGeneratorAdvBinauarlBeatOsc
+  | BinauralBeatSpinOsc
