@@ -1,7 +1,7 @@
 import { EventHookOn } from "@vueuse/core"
 import { Ref } from "vue"
 
-export type SoundGeneratorControls = {
+export type GeneratorControls = {
     muteCtrl: Ref<boolean>
 
 }

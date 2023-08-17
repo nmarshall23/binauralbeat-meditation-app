@@ -35,7 +35,7 @@ export const isBinauralbeatAdvOscOptions = isMatching({
   //   }),
 });
 
-const defaultVolume = -18
+const defaultVolume = -18;
 
 export function createBinauralBeatwLoop(
   generatorName: string,
@@ -55,7 +55,6 @@ export function createBinauralBeatwLoop(
   channel.send("main");
 
   // const channelGainNode = new Tone.Gain(gain).connect(channel)
-
 
   const envNode = new Tone.AmplitudeEnvelope({
     attack: 4,
@@ -92,8 +91,6 @@ export function createBinauralBeatwLoop(
   const add = new Tone.Add(beatFreq).connect(oscGenL.frequency);
 
   freqSignal.connect(add);
-
-  
 
   // === Playback === //
 
@@ -173,10 +170,12 @@ export function createBinauralBeatwLoop(
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
 
-  const { volumeRef } = useVolumeControl(channel.volume, { defaultValue: gain })
+  const { volumeRef } = useVolumeControl(channel.volume, {
+    defaultValue: gain,
+  });
 
   function dispose() {
-    channel.dispose()
+    channel.dispose();
   }
 
   return reactive({

@@ -95,8 +95,8 @@ export function createBasicBinauralBeatOsc(
   const muteCtrl = useTrackToneNode(channel, "mute", false);
   const gainCtrl = computed({
     get: () => channelGainNode.gain.value,
-    set: (value) => channelGainNode.gain.rampTo(value, '+0.5')
-  })
+    set: (value) => channelGainNode.gain.rampTo(value, "+0.5"),
+  });
 
   const volumeCtrl = computed({
     get: () => channel.volume.value,
@@ -104,7 +104,7 @@ export function createBasicBinauralBeatOsc(
   });
 
   function dispose() {
-    channel.dispose()
+    channel.dispose();
   }
 
   return reactive({

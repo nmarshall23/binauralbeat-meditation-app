@@ -35,7 +35,6 @@ export function createBasicNoiseGen(
 
   /* === Signals === */
 
-
   // === Playback === //
 
   eventHandler.onPlayBackStarted(() => {
@@ -86,7 +85,7 @@ export function createBasicNoiseGen(
   });
 
   function dispose() {
-    channel.dispose()
+    channel.dispose();
   }
 
   return reactive({

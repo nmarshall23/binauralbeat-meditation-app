@@ -93,11 +93,12 @@ export function createNoiseFilteredGen(
     set: (value) => channelGainNode.gain.rampTo(value, "+0.5"),
   });
 
- 
-  const { volumeRef } = useVolumeControl(channel.volume, { defaultValue: gain })
+  const { volumeRef } = useVolumeControl(channel.volume, {
+    defaultValue: gain,
+  });
 
   function dispose() {
-    channel.dispose()
+    channel.dispose();
   }
 
   return reactive({
