@@ -2,9 +2,6 @@ import { createStore } from "harlem";
 import composeExtension from "@harlem/extension-compose";
 
 import * as Tone from "tone";
-import { createEventHook, isDefined } from "@vueuse/core";
-
-import { watch } from "vue";
 import { useProgramDurationStore } from "./programDuration";
 
 // The initial state for this store

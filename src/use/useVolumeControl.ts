@@ -1,8 +1,6 @@
 import * as Tone from "tone";
 
-import { useDebounceFn } from "@vueuse/core";
 import { createProjection } from "@vueuse/math";
-import { ref, watchEffect } from "vue";
 
 type UseVolumeControlOptions = {
   projectionMax?: number;

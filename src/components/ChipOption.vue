@@ -12,9 +12,6 @@
 </template>
 
 <script setup lang="ts">
-import { isDefined, useVModel } from "@vueuse/core";
-import { onBeforeMount, reactive } from "vue";
-
 export type ChipOption = {
   value: number;
   label: string;
@@ -41,13 +38,11 @@ onBeforeMount(() => {
   });
 
   if (isDefined(model)) {
-    chipsValue[model.value.value] = true
+    chipsValue[model.value.value] = true;
   }
 
-  console.log('model ', model.value)
+  console.log("model ", model.value);
 });
-
-
 
 function onChipClicked(item: ChipOption) {
   chipsValue[item.value] = true;

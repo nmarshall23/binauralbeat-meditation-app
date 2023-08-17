@@ -1,39 +1,11 @@
 import * as Tone from "tone";
 
-import { BinauralBeatwLoopOscOptions } from "../SoundGenerators";
-import { PlaybackTriggers } from "../Types";
-import { computed, reactive } from "vue";
-import { useTrackToneNode } from "../../use/useTrackToneNode";
+import { BinauralBeatwLoopOscOptions } from "@/tones/SoundGenerators";
+import { PlaybackTriggers } from "@/tones/Types";
+import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { isMatching, P } from "ts-pattern";
-import { isDefined } from "@vueuse/core";
-import { useVolumeControl } from "../../use/useVolumeControl";
+import { useVolumeControl } from "@/use/useVolumeControl";
 
-export const isBinauralbeatAdvOscOptions = isMatching({
-  gain: P.number,
-  beatFreq: P.number,
-  osc: {
-    frequency: P.number,
-    phase: P.optional(P.number.between(0, 360)),
-  },
-  // loopEvents: P.optional(),
-  //   loopEvents: P.optional({
-  //     pattern: P.union(
-  //       "up",
-  //       "down",
-  //       "upDown",
-  //       "downUp",
-  //       "alternateUp",
-  //       "alternateDown",
-  //       "random",
-  //       "randomOnce",
-  //       "randomWalk"
-  //     ),
-  //     interval: P.number,
-  //     humanize: P.optional(P.union(P.boolean, P.number)),
-  //     probability: P.optional(P.number),
-  //     values: P.any,
-  //   }),
-});
 
 const defaultVolume = -18;
 

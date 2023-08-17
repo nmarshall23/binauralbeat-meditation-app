@@ -23,8 +23,6 @@
 </template>
 
 <script setup lang="ts">
-import { useVModel } from "@vueuse/core";
-
 const props = defineProps<{
   name: string;
   muteCtrl: boolean;
@@ -43,8 +41,8 @@ const emit = defineEmits<{
 const muteCtrl = useVModel(props, "muteCtrl", emit);
 
 function showVolumeDialog() {
-  emit('showVolumeDialog', {
-    title: 'Foo'
-  })
+  emit("showVolumeDialog", {
+    title: "Foo",
+  });
 }
 </script>

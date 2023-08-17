@@ -7,14 +7,11 @@
 </template>
 
 <script setup lang="ts">
-
 defineProps<{
   remandingDuration: {
     hours: number | null;
     minutes: number | null;
     seconds: number | null;
   };
-
 }>();
-
 </script>

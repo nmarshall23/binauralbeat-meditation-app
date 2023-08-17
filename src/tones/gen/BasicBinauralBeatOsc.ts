@@ -2,7 +2,6 @@ import * as Tone from "tone";
 
 import { BasicBinauralBeatOscOptions } from "../SoundGenerators";
 import { PlaybackTriggers } from "../Types";
-import { computed, reactive } from "vue";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
 
 export function createBasicBinauralBeatOsc(

@@ -6,10 +6,6 @@ import "@quasar/extras/material-icons/material-icons.css";
 import "quasar/src/css/index.sass";
 import "./style.css";
 
-import VueScrollPicker from "vue-scroll-picker";
-
-import "vue-scroll-picker/lib/style.css";
-
 import App from "./App.vue";
 
 import { createVuePlugin } from "harlem";
@@ -32,5 +28,4 @@ createApp(App)
       dark: 'auto'
     }
   })
-  .use(VueScrollPicker)
   .mount("#app");

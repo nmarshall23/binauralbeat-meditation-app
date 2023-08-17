@@ -1,5 +1,6 @@
 import * as Tone from "tone";
 import { PatternName } from "tone/build/esm/event/PatternGenerator";
+import { LooppingEventsOptions, BinauralBeatOscLoopEventSignal, BinauralBeatSpinEventSignal } from './LoopPattern'
 
 // === Options ===
 

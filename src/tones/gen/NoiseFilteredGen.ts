@@ -2,7 +2,6 @@ import * as Tone from "tone";
 import { PlaybackTriggers } from "../Types";
 import { NoiseFilteredGenOptions } from "../SoundGenerators";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
-import { computed, reactive } from "vue";
 import { capitalCase } from "change-case";
 import { useVolumeControl } from "../../use/useVolumeControl";
 

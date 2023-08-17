@@ -2,7 +2,6 @@ import * as Tone from "tone";
 import { PlaybackTriggers } from "../Types";
 import { BasicNoiseGenOptions } from "../SoundGenerators";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
-import { computed, reactive } from "vue";
 import { capitalCase } from "change-case";
 
 export function createBasicNoiseGen(

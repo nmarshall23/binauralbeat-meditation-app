@@ -50,9 +50,6 @@
 </template>
 
 <script setup lang="ts">
-import { useConfirmDialog } from "@vueuse/core";
-import { ref } from "vue";
-
 type VolumeDialogRevealData = {
   title: string;
   volume: number;

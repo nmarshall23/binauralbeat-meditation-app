@@ -79,11 +79,9 @@ import SoundGeneratorControls from "../../../components/SoundGeneratorControls.v
 import VolumeDialog from "../../../components/dialogs/volumeDialog.vue";
 
 import { useBinauralBeatPrograms } from "../../../state/bbPrograms";
-import { computed, onBeforeUnmount, ref } from "vue";
 
 import { usePlaybackState } from "../../../state/playbackState";
 import { useMainChannel } from "../../../state/mainChannel";
-import { isDefined } from "@vueuse/core";
 
 // import MeterVis from "../../../components/MeterVis.vue";
 import { SoundGenerators } from "../../../tones/SoundGenerators";

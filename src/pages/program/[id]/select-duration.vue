@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, watchEffect } from "vue";
 import { useProgramDurationStore } from "../../../state/programDuration";
 import { useMinDurationToSec } from "../../../use/useDurationInSec";
 import ChipOption from "../../../components/ChipOption.vue";

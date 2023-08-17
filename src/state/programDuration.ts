@@ -3,7 +3,6 @@ import composeExtension from "@harlem/extension-compose";
 
 import { Temporal } from "@js-temporal/polyfill";
 import * as Tone from "tone";
-import { isDefined } from "@vueuse/core";
 import { useMinDurationToSec } from "../use/useDurationInSec";
 
 // The initial state for this store

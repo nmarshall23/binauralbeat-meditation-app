@@ -2,10 +2,8 @@ import * as Tone from "tone";
 
 import { BinauralBeatSpinOscOptions } from "../SoundGenerators";
 import { PlaybackTriggers } from "../Types";
-import { computed, reactive } from "vue";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
 import { isMatching, P } from "ts-pattern";
-import { isDefined } from "@vueuse/core";
 import { useVolumeControl } from "../../use/useVolumeControl";
 
 const defaultVolume = -18;
