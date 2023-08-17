@@ -16,9 +16,9 @@ const STATE = {
   programs: [
     {
       id: "BNBB_01",
-      title: "Basic Noise and Binauarl Beat Osc",
+      title: "Noise and Binaural Beat Osc",
       description:
-        "Really simple Program. Just Pink Noise and a Single 4hz Binauarl Beat",
+        "Really simple Program. Pink Noise and Binaural Beat Sine Osc 4hz",
       generators: [
         {
           type: "BasicNoiseGen",
@@ -43,8 +43,8 @@ const STATE = {
     },
     {
       id: "BNBB_02",
-      title: "Basic Noise and 2 out of phase Binauarl Beat Osc",
-      description: "",
+      title: "Noise & Two Binaural Beat Osc",
+      description: "Binaural Beat Shift Frequency",
       generators: [
         {
           type: "BasicNoiseGen",
@@ -56,24 +56,80 @@ const STATE = {
           },
         },
         {
-          type: "BasicBinauarlBeatOsc",
+          type: "AdvBinauarlBeatOsc",
           options: {
-            gain: 0.7,
+            gain: 70,
             beatFreq: 4,
             osc: {
-              frequency: 120,
+              frequency: 140,
               phase: 0,
+            },
+            loopEvents: {
+              humanize: 10,
+              interval: useMinDurationToSec(2),
+              probability: 1,
+              pattern: "upDown",
+              values: [
+                {
+                  rampTime: 10,
+                  signal: {
+                    frequency: 140,
+                  },
+                },
+                {
+                  rampTime: 30,
+                  signal: {
+                    frequency: 180,
+                    beatFreq: 8,
+                  },
+                },
+                {
+                  rampTime: 30,
+                  signal: {
+                    frequency: 220,
+                    beatFreq: 4
+                  },
+                },
+              ]
             },
           },
         },
         {
-          type: "BasicBinauarlBeatOsc",
+          type: "AdvBinauarlBeatOsc",
           options: {
-            gain: 0.7,
-            beatFreq: 4,
+            gain: 70,
+            beatFreq: 6,
             osc: {
-              frequency: 180,
-              phase: 90,
+              frequency: 220,
+              phase: 45,
+            },
+            loopEvents: {
+              humanize: 10,
+              interval: useMinDurationToSec(1),
+              probability: 1,
+              pattern: "upDown",
+              values: [
+                {
+                  rampTime: 30,
+                  signal: {
+                    frequency: 220,
+                  },
+                },
+                {
+                  rampTime: 60,
+                  signal: {
+                    frequency: 160,
+                    beatFreq: 3,
+                  },
+                },
+                {
+                  rampTime: 30,
+                  signal: {
+                    frequency: 220,
+                    beatFreq: 6
+                  },
+                },
+              ]
             },
           },
         },
@@ -82,7 +138,7 @@ const STATE = {
 
     {
       id: "BrNBB_03",
-      title: "Low Pass Filtered Noise and Binauarl Beat Osc ",
+      title: "Low Pass Filtered Noise and Binaural Beat Osc ",
       description: "",
       generators: [
         {
