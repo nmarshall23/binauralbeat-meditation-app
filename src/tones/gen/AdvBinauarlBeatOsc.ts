@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 
-import { AdvBinauarlBeatOscOptions } from "../SoundGenerators";
+import { BinauralBeatwLoopOscOptions } from "../SoundGenerators";
 import { PlaybackTriggers } from "../Types";
 import { computed, reactive } from "vue";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
@@ -40,7 +40,7 @@ const defaultVolume = -18
 export function createAdvBinauarlBeatOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
-  options: AdvBinauarlBeatOscOptions
+  options: BinauralBeatwLoopOscOptions
 ) {
   const { gain, beatFreq, osc: oscOptions, loopEvents } = options;
 

@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 
-import { BasicBinauarlBeatOscOptions } from "../SoundGenerators";
+import { BasicBinauralBeatOscOptions } from "../SoundGenerators";
 import { PlaybackTriggers } from "../Types";
 import { computed, reactive } from "vue";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
@@ -8,7 +8,7 @@ import { useTrackToneNode } from "../../use/useTrackToneNode";
 export function createBasicBinauarlBeatOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
-  options: BasicBinauarlBeatOscOptions
+  options: BasicBinauralBeatOscOptions
 ) {
   const { gain, beatFreq, osc: oscOptions } = options;
 
