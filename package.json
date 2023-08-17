@@ -1,8 +1,8 @@
 {
-  "name": "nm-bbgen01",
+  "name": "binauralbeat-meditation-app",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "version": "1.0.0",
+  "homepage": "https://nmarshall23.github.io/binauralbeat-meditation-app/",
   "scripts": {
     "dev": "vite --host",
     "build": "vue-tsc && vite build",
@@ -16,14 +16,10 @@
     "@vueuse/core": "^10.2.1",
     "@vueuse/math": "^10.3.0",
     "change-case": "^4.1.2",
-    "duration-fns": "^3.0.2",
     "harlem": "^3.1.8",
     "quasar": "^2.12.3",
     "tone": "^14.7.77",
-    "ts-duration": "^1.1.0",
     "ts-pattern": "^5.0.4",
-    "typescript-logging": "^2.1.0",
-    "typescript-logging-category-style": "^2.1.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   },
