@@ -13,11 +13,9 @@
   </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 
 import { useVModel } from "@vueuse/core";
 
-import { usePlaybackState } from '../../state/playbackState'
 import { useBinauralBeatPrograms } from "../../state/bbPrograms";
 
 const props = defineProps<{

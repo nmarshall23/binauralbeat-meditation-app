@@ -6,34 +6,34 @@
         How long would you like your session to last?
       </div>
     </q-card-section>
+
     <q-card-actions>
-      <q-option-group v-model="duration" :options="timeOptions" inline />
+      <chip-option v-model:value="selected" :options="timeOptions" />
     </q-card-actions>
     <q-separator />
     <q-card-actions align="center">
-      <q-btn
-        push
-        color="primary"
-        label="Next"
-        style="width: 150px"
-        to="play"
-      />
+      <q-btn push color="primary" label="Next" style="width: 150px" to="play" />
     </q-card-actions>
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import { usePlaybackState } from "../../../state/playbackState";
+import { ref, watchEffect } from "vue";
+import { useProgramDurationStore } from "../../../state/programDuration";
+import { useMinDurationToSec } from "../../../use/useDurationInSec";
+import ChipOption from "../../../components/ChipOption.vue";
 
 const timeOptions = ref([
-  { label: "10 mins", value: 600 },
-  { label: "15 mins", value: 900 },
-  { label: "20 mins", value: 1200 },
-  { label: "30 mins", value: 1800 },
+  { label: "4 minutes", value: useMinDurationToSec(4) },
+  { label: "16 minutes", value: useMinDurationToSec(16) },
+  { label: "30 minutes", value: useMinDurationToSec(30) },
+  { label: "1 hour", value: useMinDurationToSec(60) },
 ]);
 
-// const currentValue = ref(timeOptions.value[0].value);
+const selected = ref(timeOptions.value[0]);
 
-const { duration } = usePlaybackState();
+watchEffect(() => {
+  duration.value = selected.value.value;
+});
+const { duration } = useProgramDurationStore();
 </script>

@@ -4,16 +4,13 @@ import composeExtension from "@harlem/extension-compose";
 import * as Tone from "tone";
 import { createEventHook, isDefined } from "@vueuse/core";
 
-import { Temporal } from "@js-temporal/polyfill";
 import { watch } from "vue";
+import { useProgramDurationStore } from "./programDuration";
 
 // The initial state for this store
 const STATE = {
-  duration: 4200,
-  temporalDuration: null as null | Temporal.Duration,
   hasInit: false,
   stopEventId: null as null | number,
-  durationEventId: null as null | number,
   isPlaying: false,
 };
 
@@ -29,87 +26,12 @@ export const {
   extensions: [composeExtension()],
 });
 
-const durationEventId = computeState((state) => state.durationEventId);
-const duration = computeState((state) => state.duration, "set-duration");
-const temporalDuration = computeState((state) => state.temporalDuration);
 const stopEventId = computeState((state) => state.stopEventId);
 
-onAfterMutation("set-duration", (event) => {
-  console.log(
-    "set-duration trigger - duration %o event %o",
-    duration.value,
-    event
-  );
-  if (isDefined(durationEventId)) {
-    Tone.Transport.clear(durationEventId.value);
-  }
-
-  durationEventId.value = Tone.Transport.scheduleRepeat(durationCountDown, 1);
-  temporalDuration.value = Temporal.Duration.from({
-    seconds: duration.value,
-  }).round({ largestUnit: "hour" });
-});
-
-const remandingDurationPercentage = getter(
-  "remandingDurationPercentage",
-  (state) => {
-    if (isDefined(state.temporalDuration)) {
-      const remandingSec = state.temporalDuration.round({
-        largestUnit: "second",
-      }).seconds;
-
-      console.log("Duration Progress Bar %o %o", remandingSec, state.duration);
-
-      return remandingSec / state.duration;
-    }
-    return 0;
-  }
-);
-
-const remandingDuration = getter("remandingDuration", (state) => {
-  if (isDefined(state.temporalDuration)) {
-    return {
-      hours: state.temporalDuration.hours,
-      minutes: state.temporalDuration.minutes,
-      seconds: state.temporalDuration.seconds,
-    };
-  }
-  return {
-    hours: null,
-    minutes: null,
-    seconds: null,
-  };
-});
-
-const subtractDuration = mutation(
-  "update-duration",
-  (state, seconds: number) => {
-    if (isDefined(state.temporalDuration)) {
-      state.temporalDuration = state.temporalDuration
-        .subtract({ seconds })
-        .round({ largestUnit: "hour" });
-    }
-  }
-);
-
-function durationCountDown(time: number) {
-  Tone.Draw.schedule(() => {
-    console.log("Duration Timer - Time: %o", Math.round(time));
-    subtractDuration(1);
-
-    console.log(
-      "Duration Timer - Remaning Duration: %o : %o : %o",
-      remandingDuration.value.hours,
-      remandingDuration.value.minutes,
-      remandingDuration.value.seconds
-    );
-  }, time);
-}
+const { initializeDurationCountdown, duration } = useProgramDurationStore()
 
 const setHasInit = mutation("setHasInit", (state, payload: boolean) => {
-  if (!isDefined(state.durationEventId)) {
-    duration.value = state.duration;
-  }
+  initializeDurationCountdown()
 
   if (isDefined(state.stopEventId)) {
     Tone.Transport.clear(state.stopEventId);
@@ -169,13 +91,10 @@ const eventHandler = {
 
 export function usePlaybackState() {
   return {
-    duration,
     isPlaying,
     toggleIsPlaying,
     stopEventId,
     resetInit,
     eventHandler,
-    remandingDuration,
-    remandingDurationPercentage,
   };
 }

@@ -88,15 +88,13 @@ import { isDefined } from "@vueuse/core";
 // import MeterVis from "../../../components/MeterVis.vue";
 import { SoundGenerators } from "../../../tones/SoundGenerators";
 import { setupProgramGenerators } from "../../../use/setupProgramGenerators";
+import { useProgramDurationStore } from "../../../state/programDuration";
 
-const {
-  isPlaying,
-  toggleIsPlaying,
-  resetInit,
-  eventHandler,
-  remandingDuration,
-  remandingDurationPercentage,
-} = usePlaybackState();
+const { isPlaying, toggleIsPlaying, resetInit, eventHandler } =
+  usePlaybackState();
+
+const { remandingDuration, remandingDurationPercentage } =
+  useProgramDurationStore();
 
 const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
 const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
