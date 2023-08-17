@@ -1,8 +1,8 @@
 import { createStore } from "harlem";
 
-import { useMinDurationToSec } from "../use/useDurationInSec";
-import { SoundGenerators } from "../tones/SoundGenerators";
 import composeExtension from "@harlem/extension-compose";
+import { SoundGenerators } from "@/tones/SoundGenerators";
+import { useMinDurationToSec } from "@/use/useDurationInSec";
 
 export type BinauralBeatProgram = {
   id: string;
@@ -18,7 +18,7 @@ const STATE = {
       id: "BNBB_01",
       title: "Noise and Binaural Beat Osc",
       description:
-        "Really simple Program. Pink Noise and Binaural Beat Sine Osc 4hz",
+        "Really simple Program. Pink Noise & Binaural Beat 4hz",
       generators: [
         {
           type: "BasicNoiseGen",

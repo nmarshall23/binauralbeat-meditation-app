@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import { resolve } from "node:path";
 import VueRouter from "unplugin-vue-router/vite";
 import AutoImport from "unplugin-auto-import/vite";
+import Components from "unplugin-vue-components/vite";
 
 import vue from "@vitejs/plugin-vue";
 import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
@@ -35,5 +36,6 @@ export default defineConfig({
     quasar({
       sassVariables: "src/quasar-variables.sass",
     }),
+    Components({ dts: true }),
   ],
 });

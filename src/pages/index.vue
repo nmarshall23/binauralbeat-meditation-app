@@ -42,19 +42,11 @@
         </q-item>
       </q-list>
     </nm-card>
-    
   </q-page>
 </template>
 
 <script setup lang="ts">
-import NmCard from "../components/nmCard.vue";
-import { useBinauralBeatPrograms } from "../state/bbPrograms";
+import { useBinauralBeatPrograms } from "@/state/bbPrograms";
 
 const { programs } = useBinauralBeatPrograms();
 </script>
-
-<style scoped>
-.ND_card {
-  width: 500px;
-}
-</style>

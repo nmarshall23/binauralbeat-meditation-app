@@ -32,18 +32,6 @@
           thumb-size="0"
           reverse
         />
-
-        <q-chip size="lg">
-          <q-btn rounded color="primary" label="Mute" />
-
-          <q-separator vertical spaced />
-        </q-chip>
-
-        <q-btn-group rounded>
-          <q-btn rounded color="primary" label="Mute" />
-
-          <q-btn rounded color="primary" label="Two" />
-        </q-btn-group>
       </q-card-actions>
     </q-card>
   </q-dialog>
