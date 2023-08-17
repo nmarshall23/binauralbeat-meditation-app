@@ -74,19 +74,13 @@
 </template>
 
 <script setup lang="ts">
-import NmCard from "../../../components/nmCard.vue";
-import SoundGeneratorControls from "../../../components/SoundGeneratorControls.vue";
-import VolumeDialog from "../../../components/dialogs/volumeDialog.vue";
-
-import { useBinauralBeatPrograms } from "../../../state/bbPrograms";
-
-import { usePlaybackState } from "../../../state/playbackState";
-import { useMainChannel } from "../../../state/mainChannel";
-
-// import MeterVis from "../../../components/MeterVis.vue";
-import { SoundGenerators } from "../../../tones/SoundGenerators";
-import { setupProgramGenerators } from "../../../use/setupProgramGenerators";
-import { useProgramDurationStore } from "../../../state/programDuration";
+import VolumeDialog from "@/components/dialogs/volumeDialog.vue";
+import { useBinauralBeatPrograms } from "@/state/bbPrograms";
+import { useMainChannel } from "@/state/mainChannel";
+import { usePlaybackState } from "@/state/playbackState";
+import { useProgramDurationStore } from "@/state/programDuration";
+import { SoundGenerators } from "@/tones/SoundGenerators";
+import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 
 const { isPlaying, toggleIsPlaying, resetInit, eventHandler } =
   usePlaybackState();
@@ -110,7 +104,6 @@ function updateVolume(value: number) {
   console.log("updateVol %o", value);
   volumeRef.value = value;
 }
-
 const volumeDialogRef = ref<InstanceType<typeof VolumeDialog> | null>(null);
 async function changeMainVolume() {
   showVolumeDialog("Main Volume", volumeRef.value, updateVolume);

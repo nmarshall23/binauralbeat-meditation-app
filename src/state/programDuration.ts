@@ -3,7 +3,7 @@ import composeExtension from "@harlem/extension-compose";
 
 import { Temporal } from "@js-temporal/polyfill";
 import * as Tone from "tone";
-import { useMinDurationToSec } from "../use/useDurationInSec";
+import { useMinDurationToSec } from "@/use/useDurationInSec";
 
 // The initial state for this store
 const STATE = {

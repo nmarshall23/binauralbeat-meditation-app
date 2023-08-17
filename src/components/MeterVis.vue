@@ -3,8 +3,8 @@
 </template>
 
 <script setup lang="ts">
+import { useMainChannel } from "@/state/mainChannel";
 import * as Tone from "tone";
-import { useMainChannel } from "../state/mainChannel";
 
 const { mainChannel } = useMainChannel();
 

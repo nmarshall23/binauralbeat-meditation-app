@@ -2,9 +2,9 @@ import * as Tone from "tone";
 
 import { BinauralBeatSpinOscOptions } from "../SoundGenerators";
 import { PlaybackTriggers } from "../Types";
-import { useTrackToneNode } from "../../use/useTrackToneNode";
 import { isMatching, P } from "ts-pattern";
-import { useVolumeControl } from "../../use/useVolumeControl";
+import { useTrackToneNode } from "@/use/useTrackToneNode";
+import { useVolumeControl } from "@/use/useVolumeControl";
 
 const defaultVolume = -18;
 

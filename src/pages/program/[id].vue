@@ -11,7 +11,8 @@
 </template>
 
 <script setup lang="ts">
-import { useBinauralBeatPrograms } from "../../state/bbPrograms";
+import { useBinauralBeatPrograms } from '@/state/bbPrograms';
+
 
 const props = defineProps<{
   id: string;

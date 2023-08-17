@@ -1,9 +1,9 @@
 import * as Tone from "tone";
 import { PlaybackTriggers } from "../Types";
 import { NoiseFilteredGenOptions } from "../SoundGenerators";
-import { useTrackToneNode } from "../../use/useTrackToneNode";
 import { capitalCase } from "change-case";
-import { useVolumeControl } from "../../use/useVolumeControl";
+import { useVolumeControl } from "@/use/useVolumeControl";
+import { useTrackToneNode } from "@/use/useTrackToneNode";
 
 export function createNoiseFilteredGen(
   generatorName: string,
