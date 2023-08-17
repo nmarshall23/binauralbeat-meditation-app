@@ -9,6 +9,7 @@ import { quasar, transformAssetUrls } from "@quasar/vite-plugin";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: process.env.NODE_ENV === "production" ? 'binauralbeat-meditation-app/' : "/",
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
