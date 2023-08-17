@@ -52,4 +52,6 @@ watchEffect(() => {
     showResetButton.value = true;
   }
 });
+
+console.log('App Ready')
 </script>

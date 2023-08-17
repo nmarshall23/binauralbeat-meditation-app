@@ -10,8 +10,10 @@ import App from "./App.vue";
 
 import { createVuePlugin } from "harlem";
 
+const base = process.env.NODE_ENV === "production" ? '/binauralbeat-meditation-app/' : ''
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(base),
+  
   // You don't need to pass the routes anymore,
   // the plugin writes it for you 🤖
 });

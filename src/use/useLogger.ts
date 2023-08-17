@@ -1,6 +1,6 @@
 
 
 
-export function getLogger(name: string) {
+export function getLogger(_name: string) {
   
 }
