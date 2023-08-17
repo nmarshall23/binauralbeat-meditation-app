@@ -67,12 +67,12 @@ export type GeneratorNoiseFilteredGen = {
 };
 
 export type GeneratorBasicBinauralBeatOsc = {
-  type: "BasicBinauarlBeatOsc";
+  type: "BasicBinauralBeatOsc";
   options: BasicBinauralBeatOscOptions;
 };
 
 export type GeneratorBinauralBeatwLoopOsc = {
-  type: "AdvBinauarlBeatOsc";
+  type: "BinauralBeatwLoop";
   options: BinauralBeatwLoopOscOptions;
 };
 

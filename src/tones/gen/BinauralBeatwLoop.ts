@@ -37,7 +37,7 @@ export const isBinauralbeatAdvOscOptions = isMatching({
 
 const defaultVolume = -18
 
-export function createAdvBinauarlBeatOsc(
+export function createBinauralBeatwLoop(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BinauralBeatwLoopOscOptions
@@ -45,7 +45,7 @@ export function createAdvBinauarlBeatOsc(
   const { gain, beatFreq, osc: oscOptions, loopEvents } = options;
 
   console.debug(
-    `createAdvBinauarlBeatOsc ${generatorName} gain %o, opt %o`,
+    `createBinauralBeatwLoop ${generatorName} gain %o, opt %o`,
     gain,
     options
   );

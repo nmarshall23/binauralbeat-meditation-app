@@ -4,7 +4,7 @@ import { useMinDurationToSec } from "../use/useDurationInSec";
 import { SoundGenerators } from "../tones/SoundGenerators";
 import composeExtension from "@harlem/extension-compose";
 
-export type BinauarlBeatProgram = {
+export type BinauralBeatProgram = {
   id: string;
   title: string;
   description: string;
@@ -30,7 +30,7 @@ const STATE = {
           },
         },
         {
-          type: "BasicBinauarlBeatOsc",
+          type: "BasicBinauralBeatOsc",
           options: {
             gain: 0.7,
             beatFreq: 4,
@@ -56,7 +56,7 @@ const STATE = {
           },
         },
         {
-          type: "AdvBinauarlBeatOsc",
+          type: "BinauralBeatwLoop",
           options: {
             gain: 70,
             beatFreq: 4,
@@ -95,7 +95,7 @@ const STATE = {
           },
         },
         {
-          type: "AdvBinauarlBeatOsc",
+          type: "BinauralBeatwLoop",
           options: {
             gain: 70,
             beatFreq: 6,
@@ -156,7 +156,7 @@ const STATE = {
         },
 
         {
-          type: "AdvBinauarlBeatOsc",
+          type: "BinauralBeatwLoop",
           options: {
             gain: 70,
             beatFreq: 4,
@@ -166,7 +166,7 @@ const STATE = {
           },
         },
         {
-          type: "AdvBinauarlBeatOsc",
+          type: "BinauralBeatwLoop",
           options: {
             gain: 70,
             beatFreq: 4,
@@ -264,7 +264,7 @@ const STATE = {
         },
       ],
     },
-  ] as BinauarlBeatProgram[],
+  ] as BinauralBeatProgram[],
 };
 
 export const {

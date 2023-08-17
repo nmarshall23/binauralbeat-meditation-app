@@ -25,7 +25,7 @@ export function createBinauralBeatSpinOsc(
   } = options;
 
   console.debug(
-    `createAdvBinauarlBeatOsc ${generatorName} gain %o, opt %o`,
+    `createBinauralBeatwLoop ${generatorName} gain %o, opt %o`,
     gain,
     options
   );

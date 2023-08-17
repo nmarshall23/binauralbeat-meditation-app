@@ -5,7 +5,7 @@ import { PlaybackTriggers } from "../Types";
 import { computed, reactive } from "vue";
 import { useTrackToneNode } from "../../use/useTrackToneNode";
 
-export function createBasicBinauarlBeatOsc(
+export function createBasicBinauralBeatOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BasicBinauralBeatOscOptions

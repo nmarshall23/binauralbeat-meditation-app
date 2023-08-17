@@ -1,6 +1,6 @@
 import { match } from "ts-pattern";
 import { createBasicNoiseGen } from "../tones/gen/BasicNoiseGen";
-import { createBasicBinauarlBeatOsc } from "../tones/gen/BasicBinauarlBeatOsc";
+import { createBasicBinauralBeatOsc } from "../tones/gen/BasicBinauralBeatOsc";
 import {
   BinauralBeatwLoopOscOptions,
   BinauralBeatSpinOscOptions,
@@ -8,7 +8,7 @@ import {
 } from "../tones/SoundGenerators";
 import { EventHookOn } from "@vueuse/core";
 import { createNoiseFilteredGen } from "../tones/gen/NoiseFilteredGen";
-import { createAdvBinauarlBeatOsc } from "../tones/gen/AdvBinauarlBeatOsc";
+import { createBinauralBeatwLoop } from "../tones/gen/BinauralBeatwLoop";
 import { createBinauralBeatSpinOsc } from "../tones/gen/BinauralBeatSpinOsc";
 
 type EventHandler = {
@@ -42,11 +42,11 @@ export function setupProgramGenerators(
         )
         .with(
           {
-            type: "BasicBinauarlBeatOsc",
+            type: "BasicBinauralBeatOsc",
           },
           (def) => {
             binauralBeatOscCount++;
-            return createBasicBinauarlBeatOsc(
+            return createBasicBinauralBeatOsc(
               `Binaural Osc #${binauralBeatOscCount}`,
               eventHandler,
               def.options
@@ -68,11 +68,11 @@ export function setupProgramGenerators(
         )
         .with(
           {
-            type: "AdvBinauarlBeatOsc",
+            type: "BinauralBeatwLoop",
           },
           ({ options }) => {
             binauralBeatOscCount++;
-            return createAdvBinauarlBeatOsc(
+            return createBinauralBeatwLoop(
               `Binaural Osc #${binauralBeatOscCount}`,
               eventHandler,
               options as BinauralBeatwLoopOscOptions
