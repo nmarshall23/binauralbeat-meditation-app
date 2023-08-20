@@ -1,13 +1,27 @@
 import * as Tone from "tone";
 import { PatternName } from "tone/build/esm/event/PatternGenerator";
-import { LooppingEventsOptions, BinauralBeatOscLoopEventSignal, BinauralBeatSpinEventSignal } from './LoopPattern'
+import {
+  LooppingEventsOptions,
+  BinauralBeatOscLoopEventSignal,
+  BinauralBeatSpinEventSignal,
+} from "./LoopPattern";
 
+// === Options === //
+
+export type GeneratorDefType =
+  | "BasicNoiseGen"
+  | "NoiseFilteredGen"
+  | "BasicBinauralBeatOsc"
+  | "BinauralBeatwLoop"
+  | "BinauralBeatSpinOsc";
+
+// ===  === //
 
 export type PlaybackTriggers = {
-  onPlayBackPaused: EventHookOn<number>
-  onPlayBackStarted: EventHookOn<number>
-  onPlayBackStopped: EventHookOn<number>
-}
+  onPlayBackPaused: EventHookOn<number>;
+  onPlayBackStarted: EventHookOn<number>;
+  onPlayBackStopped: EventHookOn<number>;
+};
 
 // === Options ===
 
@@ -64,30 +78,35 @@ export type BinauralBeatSpinOscOptions = {
 
 // === Generator Def ===
 
-export type GeneratorBasicNoiseGen = {
-  type: "BasicNoiseGen";
-  options: BasicNoiseGenOptions;
+export type GeneratorDefBase<T extends GeneratorDefType, OptionsType> = {
+  type: T;
+  options: OptionsType;
 };
 
-export type GeneratorNoiseFilteredGen = {
-  type: "NoiseFilteredGen";
-  options: NoiseFilteredGenOptions;
-};
+export type GeneratorBasicNoiseGen = GeneratorDefBase<
+  "BasicNoiseGen",
+  BasicNoiseGenOptions
+>;
 
-export type GeneratorBasicBinauralBeatOsc = {
-  type: "BasicBinauralBeatOsc";
-  options: BasicBinauralBeatOscOptions;
-};
+export type GeneratorNoiseFilteredGen = GeneratorDefBase<
+  "NoiseFilteredGen",
+  NoiseFilteredGenOptions
+>;
 
-export type GeneratorBinauralBeatwLoopOsc = {
-  type: "BinauralBeatwLoop";
-  options: BinauralBeatwLoopOscOptions;
-};
+export type GeneratorBasicBinauralBeatOsc = GeneratorDefBase<
+  "BasicBinauralBeatOsc",
+  BasicBinauralBeatOscOptions
+>;
 
-export type GeneratorBinauralBeatSpinOsc = {
-  type: "BinauralBeatSpinOsc";
-  options: BinauralBeatSpinOscOptions;
-};
+export type GeneratorBinauralBeatwLoopOsc = GeneratorDefBase<
+  "BinauralBeatwLoop",
+  BinauralBeatwLoopOscOptions
+>;
+
+export type GeneratorBinauralBeatSpinOsc = GeneratorDefBase<
+  "BinauralBeatSpinOsc",
+  BinauralBeatSpinOscOptions
+>;
 
 export type SoundGenerators =
   | GeneratorBasicNoiseGen

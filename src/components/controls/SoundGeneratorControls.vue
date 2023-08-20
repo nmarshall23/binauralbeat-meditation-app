@@ -23,9 +23,12 @@
 </template>
 
 <script setup lang="ts">
+import { GeneratorDefType } from '@/types/GeneratorDef';
+
 const props = defineProps<{
   name: string;
   muteCtrl: boolean;
+  type: GeneratorDefType
 }>();
 
 const emit = defineEmits<{
@@ -45,4 +48,6 @@ function showVolumeDialog() {
     title: "Foo",
   });
 }
+
+
 </script>

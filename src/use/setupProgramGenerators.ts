@@ -5,28 +5,23 @@ import {
   BinauralBeatwLoopOscOptions,
   BinauralBeatSpinOscOptions,
   SoundGenerators,
+  PlaybackTriggers,
 } from "../types/GeneratorDef";
-import { EventHookOn } from "@vueuse/core";
-import { createNoiseFilteredGen } from "../types/NoiseFilteredGen";
+import { createNoiseFilteredGen } from "../tones/gen/NoiseFilteredGen";
 import { createBinauralBeatwLoop } from "../tones/gen/BinauralBeatwLoop";
 import { createBinauralBeatSpinOsc } from "../tones/gen/BinauralBeatSpinOsc";
-
-type EventHandler = {
-  onPlayBackPaused: EventHookOn<number>;
-  onPlayBackStarted: EventHookOn<number>;
-  onPlayBackStopped: EventHookOn<number>;
-};
+import { GeneratorControls } from "@/types/GeneratorControls";
 
 export function setupProgramGenerators(
   generators: Array<SoundGenerators>,
-  eventHandler: EventHandler
-) {
+  eventHandler: PlaybackTriggers
+): Array<GeneratorControls> {
   let noiseGenCount = 0;
   let binauralBeatOscCount = 0;
 
   return generators
     .map((genDef) =>
-      match(genDef)
+      match<SoundGenerators, GeneratorControls | null>(genDef)
         .with(
           {
             type: "BasicNoiseGen",

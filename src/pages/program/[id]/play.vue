@@ -47,6 +47,7 @@
       <template v-for="g in generators">
         <sound-generator-controls
           :name="g.generatorName"
+          :type="g.type"
           v-model:mute-ctrl="g.muteCtrl"
           @show-volume-dialog="
             showVolumeDialog(

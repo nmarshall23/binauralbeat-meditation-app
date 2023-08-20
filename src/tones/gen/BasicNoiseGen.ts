@@ -2,12 +2,13 @@ import * as Tone from "tone";
 import { capitalCase } from "change-case";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { PlaybackTriggers, BasicNoiseGenOptions } from "@/types/GeneratorDef";
+import { GeneratorControls } from "@/types/GeneratorControls";
 
 export function createBasicNoiseGen(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BasicNoiseGenOptions
-) {
+): GeneratorControls {
   const { gain, noise: noiseOptions } = options;
 
   console.debug(
@@ -88,6 +89,7 @@ export function createBasicNoiseGen(
 
   return reactive({
     generatorName: displayName,
+    type: 'BasicNoiseGen',
     muteCtrl,
     gainCtrl,
     volumeCtrl,

@@ -4,6 +4,7 @@ import { BinauralBeatwLoopOscOptions, PlaybackTriggers } from "@/types/Generator
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { isMatching, P } from "ts-pattern";
 import { useVolumeControl } from "@/use/useVolumeControl";
+import { GeneratorControls } from "@/types/GeneratorControls";
 
 
 const defaultVolume = -18;
@@ -12,7 +13,7 @@ export function createBinauralBeatwLoop(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BinauralBeatwLoopOscOptions
-) {
+): GeneratorControls {
   const { gain, beatFreq, osc: oscOptions, loopEvents } = options;
 
   console.debug(
@@ -151,6 +152,7 @@ export function createBinauralBeatwLoop(
 
   return reactive({
     generatorName: displayName,
+    type: 'BinauralBeatwLoop',
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,

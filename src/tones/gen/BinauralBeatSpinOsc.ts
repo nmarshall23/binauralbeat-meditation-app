@@ -4,6 +4,7 @@ import { isMatching, P } from "ts-pattern";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { PlaybackTriggers, BinauralBeatSpinOscOptions } from "@/types/GeneratorDef";
+import { GeneratorControls } from "@/types/GeneratorControls";
 
 const defaultVolume = -18;
 
@@ -11,7 +12,7 @@ export function createBinauralBeatSpinOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BinauralBeatSpinOscOptions
-) {
+): GeneratorControls {
   const {
     gain,
     beatFreq,
@@ -192,6 +193,7 @@ export function createBinauralBeatSpinOsc(
 
   return reactive({
     generatorName: displayName,
+    type: 'BinauralBeatSpinOsc',
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,

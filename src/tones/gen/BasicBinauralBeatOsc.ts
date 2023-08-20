@@ -1,6 +1,7 @@
 import * as Tone from "tone";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { BasicBinauralBeatOscOptions, PlaybackTriggers } from "@/types/GeneratorDef";
+import { GeneratorControls } from "@/types/GeneratorControls";
 
 
 
@@ -8,7 +9,7 @@ export function createBasicBinauralBeatOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BasicBinauralBeatOscOptions
-) {
+): GeneratorControls {
   const { gain, beatFreq, osc: oscOptions } = options;
 
   console.debug(
@@ -108,6 +109,7 @@ export function createBasicBinauralBeatOsc(
 
   return reactive({
     generatorName,
+    type: 'BasicBinauralBeatOsc',
     muteCtrl,
     gainCtrl,
     volumeCtrl,

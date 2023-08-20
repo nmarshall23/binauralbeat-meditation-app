@@ -1,15 +1,15 @@
 import * as Tone from "tone";
-import { PlaybackTriggers } from "./GeneratorControls";
-import { NoiseFilteredGenOptions } from "./GeneratorDef";
+import { NoiseFilteredGenOptions, PlaybackTriggers } from "@/types/GeneratorDef";
 import { capitalCase } from "change-case";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
+import { GeneratorControls } from "@/types/GeneratorControls";
 
 export function createNoiseFilteredGen(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: NoiseFilteredGenOptions
-) {
+): GeneratorControls {
   const { gain, noise: noiseOptions, filter: filterOptions } = options;
 
   console.debug(
@@ -102,6 +102,7 @@ export function createNoiseFilteredGen(
 
   return reactive({
     generatorName: displayName,
+    type: 'NoiseFilteredGen',
     muteCtrl,
     gainCtrl,
     volumeCtrl: volumeRef,
