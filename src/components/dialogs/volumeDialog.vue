@@ -8,14 +8,17 @@
     transition-hide="slide-down"
   >
     <q-card dark class="q-dialog-plugin bg-blue-grey text-whit">
-      <q-bar class="justify-between">
+      <q-toolbar elevated class="bg-primary text-white justify-between">
         <q-btn @click="confirm()" dense flat icon="close" class="item-start">
           <q-tooltip class="bg-white text-primary">Close</q-tooltip>
         </q-btn>
 
-        <span> {{ title }} </span>
+        <q-toolbar-title>
+          {{ title }}
+        </q-toolbar-title>
+
         <q-icon name="equalizer" />
-      </q-bar>
+      </q-toolbar>
 
       <!-- buttons example -->
       <q-card-actions vertical align="center" class="q-pt-lg q-gutter-md">

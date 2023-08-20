@@ -53,5 +53,4 @@ watchEffect(() => {
   }
 });
 
-console.log('App Ready')
 </script>
