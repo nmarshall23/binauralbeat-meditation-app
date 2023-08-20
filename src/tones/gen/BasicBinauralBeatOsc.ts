@@ -1,7 +1,6 @@
 import * as Tone from "tone";
-import { PlaybackTriggers } from "../Types";
-import { BasicBinauralBeatOscOptions } from "../SoundGenerators";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
+import { BasicBinauralBeatOscOptions, PlaybackTriggers } from "@/types/GeneratorDef";
 
 
 

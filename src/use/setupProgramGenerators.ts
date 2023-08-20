@@ -5,9 +5,9 @@ import {
   BinauralBeatwLoopOscOptions,
   BinauralBeatSpinOscOptions,
   SoundGenerators,
-} from "../tones/SoundGenerators";
+} from "../types/GeneratorDef";
 import { EventHookOn } from "@vueuse/core";
-import { createNoiseFilteredGen } from "../tones/gen/NoiseFilteredGen";
+import { createNoiseFilteredGen } from "../types/NoiseFilteredGen";
 import { createBinauralBeatwLoop } from "../tones/gen/BinauralBeatwLoop";
 import { createBinauralBeatSpinOsc } from "../tones/gen/BinauralBeatSpinOsc";
 

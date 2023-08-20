@@ -1,7 +1,7 @@
 import { createStore } from "harlem";
 
 import composeExtension from "@harlem/extension-compose";
-import { SoundGenerators } from "@/tones/SoundGenerators";
+import { SoundGenerators } from "@/types/GeneratorDef";
 import { useMinDurationToSec } from "@/use/useDurationInSec";
 
 export type BinauralBeatProgram = {

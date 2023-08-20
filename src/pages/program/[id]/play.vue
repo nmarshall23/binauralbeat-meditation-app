@@ -79,7 +79,7 @@ import { useBinauralBeatPrograms } from "@/state/bbPrograms";
 import { useMainChannel } from "@/state/mainChannel";
 import { usePlaybackState } from "@/state/playbackState";
 import { useProgramDurationStore } from "@/state/programDuration";
-import { SoundGenerators } from "@/tones/SoundGenerators";
+import { SoundGenerators } from "@/types/GeneratorDef";
 import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 
 const { isPlaying, toggleIsPlaying, resetInit, eventHandler } =
@@ -162,3 +162,4 @@ onBeforeUnmount(() => {
   justify-self: right;
 }
 </style>
+@/tones/GeneratorDef

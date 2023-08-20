@@ -1,10 +1,9 @@
 import * as Tone from "tone";
 
-import { BinauralBeatSpinOscOptions } from "../SoundGenerators";
-import { PlaybackTriggers } from "../Types";
 import { isMatching, P } from "ts-pattern";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { useVolumeControl } from "@/use/useVolumeControl";
+import { PlaybackTriggers, BinauralBeatSpinOscOptions } from "@/types/GeneratorDef";
 
 const defaultVolume = -18;
 
@@ -169,8 +168,8 @@ export function createBinauralBeatSpinOsc(
       },
     });
 
-    eventHandler.onPlayBackStarted((time) => tonePattern.start(time));
-    eventHandler.onPlayBackPaused((time) => tonePattern.stop(time));
+    eventHandler.onPlayBackStarted((time:number) => tonePattern.start(time));
+    eventHandler.onPlayBackPaused((time:number) => tonePattern.stop(time));
   }
 
   /* === Dispay === */

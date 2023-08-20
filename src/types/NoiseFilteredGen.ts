@@ -1,6 +1,6 @@
 import * as Tone from "tone";
-import { PlaybackTriggers } from "../Types";
-import { NoiseFilteredGenOptions } from "../SoundGenerators";
+import { PlaybackTriggers } from "./GeneratorControls";
+import { NoiseFilteredGenOptions } from "./GeneratorDef";
 import { capitalCase } from "change-case";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { useTrackToneNode } from "@/use/useTrackToneNode";

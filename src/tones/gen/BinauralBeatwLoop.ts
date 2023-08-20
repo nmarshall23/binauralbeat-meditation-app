@@ -1,7 +1,6 @@
 import * as Tone from "tone";
 
-import { BinauralBeatwLoopOscOptions } from "@/tones/SoundGenerators";
-import { PlaybackTriggers } from "@/tones/Types";
+import { BinauralBeatwLoopOscOptions, PlaybackTriggers } from "@/types/GeneratorDef";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { isMatching, P } from "ts-pattern";
 import { useVolumeControl } from "@/use/useVolumeControl";
@@ -128,8 +127,8 @@ export function createBinauralBeatwLoop(
       },
     });
 
-    eventHandler.onPlayBackStarted((time) => tonePattern.start(time));
-    eventHandler.onPlayBackPaused((time) => tonePattern.stop(time));
+    eventHandler.onPlayBackStarted((time:number) => tonePattern.start(time));
+    eventHandler.onPlayBackPaused((time:number) => tonePattern.stop(time));
   }
 
   /* === Dispay === */
