@@ -23,6 +23,7 @@ import { useMinDurationToSec } from '@/use/useDurationInSec';
 
 
 const timeOptions = ref([
+  { label: "1 minutes", value: useMinDurationToSec(1) },
   { label: "4 minutes", value: useMinDurationToSec(4) },
   { label: "16 minutes", value: useMinDurationToSec(16) },
   { label: "20 minutes", value: useMinDurationToSec(20) },
@@ -32,11 +33,14 @@ const timeOptions = ref([
   { label: "8 hours", value: useMinDurationToSec(0, 8) },
 ]);
 
+const { duration } = useProgramDurationStore();
+
 const selected = ref(timeOptions.value[0]);
 
 watch(selected, (newSelection) => {
   duration.value = newSelection.value;
+}, {
+  immediate: true,
 });
 
-const { duration } = useProgramDurationStore();
 </script>
