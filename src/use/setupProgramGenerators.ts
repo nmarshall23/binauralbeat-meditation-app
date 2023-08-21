@@ -5,12 +5,12 @@ import {
   BinauralBeatwLoopOscOptions,
   BinauralBeatSpinOscOptions,
   SoundGenerators,
-  PlaybackTriggers,
 } from "../types/GeneratorDef";
 import { createNoiseFilteredGen } from "../tones/gen/NoiseFilteredGen";
 import { createBinauralBeatwLoop } from "../tones/gen/BinauralBeatwLoop";
 import { createBinauralBeatSpinOsc } from "../tones/gen/BinauralBeatSpinOsc";
 import { GeneratorControls } from "@/types/GeneratorControls";
+import { PlaybackTriggers } from "@/types/PlaybackState";
 
 export function setupProgramGenerators(
   generators: Array<SoundGenerators>,

@@ -1,10 +1,11 @@
 import * as Tone from "tone";
 
-import { BinauralBeatwLoopOscOptions, PlaybackTriggers } from "@/types/GeneratorDef";
+import { BinauralBeatwLoopOscOptions } from "@/types/GeneratorDef";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { isMatching, P } from "ts-pattern";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { GeneratorControls } from "@/types/GeneratorControls";
+import { PlaybackTriggers } from "@/types/PlaybackState";
 
 
 const defaultVolume = -18;
@@ -90,8 +91,8 @@ export function createBinauralBeatwLoop(
   });
 
   eventHandler.onPlayBackStopped(() => {
-    oscGenR.start("+4");
-    oscGenL.start("+4");
+    // oscGenR.start("+4");
+    // oscGenL.start("+4");
 
     envNode.triggerRelease("+0.1");
   });

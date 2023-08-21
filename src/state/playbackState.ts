@@ -3,6 +3,8 @@ import composeExtension from "@harlem/extension-compose";
 
 import * as Tone from "tone";
 import { useProgramDurationStore } from "./programDuration";
+import { PlaybackStartEvent } from "@/types/PlaybackState";
+import { match } from "ts-pattern";
 
 // The initial state for this store
 const STATE = {
@@ -25,10 +27,10 @@ export const {
 
 const stopEventId = computeState((state) => state.stopEventId);
 
-const { initializeDurationCountdown, duration } = useProgramDurationStore()
+const { initializeDurationCountdown, duration } = useProgramDurationStore();
 
 const setHasInit = mutation("setHasInit", (state, payload: boolean) => {
-  initializeDurationCountdown()
+  initializeDurationCountdown();
 
   if (isDefined(state.stopEventId)) {
     Tone.Transport.clear(state.stopEventId);
@@ -55,7 +57,7 @@ const setIsPlaying = mutation("setIsPlaying", (state, payload: boolean) => {
 
 const toggleIsPlaying = () => setIsPlaying(!state.isPlaying);
 
-const playBackStarted = createEventHook<number>();
+const playBackStarted = createEventHook<PlaybackStartEvent>();
 const playBackStopped = createEventHook<number>();
 const playBackPaused = createEventHook<number>();
 
@@ -64,18 +66,70 @@ playBackStopped.on(() => Tone.Transport.stop("+0.1"));
 playBackPaused.on(() => Tone.Transport.pause("+0.1"));
 
 const updatePlayingState = async (isPlaying: boolean) => {
-  if (isPlaying) {
-    if (!state.hasInit) {
-      await Tone.start();
+  const action = match({
+    isPlaying,
+    hasInit: state.hasInit,
+  })
+    .with(
+      {
+        isPlaying: true,
+        hasInit: false,
+      },
+      async () => {
+        await Tone.start();
 
-      setHasInit(true);
-    }
+        setHasInit(true);
 
-    playBackStarted.trigger(Tone.now());
-  } else {
-    playBackPaused.trigger(Tone.now());
-  }
-  console.log("isPlaying %o", isPlaying);
+        await playBackStarted.trigger({
+          time: Tone.now(),
+          initialize: true,
+        });
+        return 'playing - initialize'
+      }
+    )
+    .with(
+      {
+        isPlaying: true,
+        hasInit: true,
+      },
+      async () => {
+        await Tone.start();
+
+        setHasInit(true);
+
+        await playBackStarted.trigger({
+          time: Tone.now(),
+          initialize: false,
+        });
+        return 'playing'
+      }
+    )
+    .otherwise(async () => {
+      await playBackPaused.trigger(Tone.now());
+      return 'paused'
+    });
+
+  // if (isPlaying) {
+  //   if (!state.hasInit) {
+  //     await Tone.start();
+
+  //     setHasInit(true);
+
+  //     playBackStarted.trigger({
+  //       time: Tone.now(),
+  //       initialize: true
+  //     });
+  //   } else {
+  //     playBackStarted.trigger({
+  //       time: Tone.now(),
+  //       initialize: false
+  //     });
+  //   }
+
+  // } else {
+  //   playBackPaused.trigger(Tone.now());
+  // }
+  console.log("updatePlayingState - action: %o", action);
 };
 
 watch(isPlaying, updatePlayingState);

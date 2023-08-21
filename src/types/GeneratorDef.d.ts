@@ -15,13 +15,7 @@ export type GeneratorDefType =
   | "BinauralBeatwLoop"
   | "BinauralBeatSpinOsc";
 
-// ===  === //
 
-export type PlaybackTriggers = {
-  onPlayBackPaused: EventHookOn<number>;
-  onPlayBackStarted: EventHookOn<number>;
-  onPlayBackStopped: EventHookOn<number>;
-};
 
 // === Options ===
 

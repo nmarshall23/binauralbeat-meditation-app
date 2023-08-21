@@ -1,7 +1,8 @@
 import * as Tone from "tone";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
-import { BasicBinauralBeatOscOptions, PlaybackTriggers } from "@/types/GeneratorDef";
+import { BasicBinauralBeatOscOptions } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
+import { PlaybackTriggers } from "@/types/PlaybackState";
 
 
 
@@ -84,8 +85,8 @@ export function createBasicBinauralBeatOsc(
   });
 
   eventHandler.onPlayBackStopped(() => {
-    oscGenR.start("+4");
-    oscGenL.start("+4");
+    // oscGenR.start("+4");
+    // oscGenL.start("+4");
 
     envNode.triggerRelease("+0.1");
   });

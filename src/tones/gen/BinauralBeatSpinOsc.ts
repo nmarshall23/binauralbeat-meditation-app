@@ -3,8 +3,9 @@ import * as Tone from "tone";
 import { isMatching, P } from "ts-pattern";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { useVolumeControl } from "@/use/useVolumeControl";
-import { PlaybackTriggers, BinauralBeatSpinOscOptions } from "@/types/GeneratorDef";
+import { BinauralBeatSpinOscOptions } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
+import { PlaybackTriggers } from "@/types/PlaybackState";
 
 const defaultVolume = -18;
 
@@ -114,8 +115,8 @@ export function createBinauralBeatSpinOsc(
   });
 
   eventHandler.onPlayBackStopped(() => {
-    oscGenR.start("+4");
-    oscGenL.start("+4");
+    // oscGenR.start("+4");
+    // oscGenL.start("+4");
 
     envNode.triggerRelease("+0.1");
   });

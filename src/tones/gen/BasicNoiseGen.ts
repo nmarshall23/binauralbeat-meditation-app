@@ -1,8 +1,9 @@
 import * as Tone from "tone";
 import { capitalCase } from "change-case";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
-import { PlaybackTriggers, BasicNoiseGenOptions } from "@/types/GeneratorDef";
+import { BasicNoiseGenOptions } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
+import { PlaybackTriggers } from "@/types/PlaybackState";
 
 export function createBasicNoiseGen(
   generatorName: string,
