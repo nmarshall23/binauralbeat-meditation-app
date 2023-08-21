@@ -3,12 +3,16 @@ import { createStore } from "harlem";
 import composeExtension from "@harlem/extension-compose";
 import { SoundGenerators } from "@/types/GeneratorDef";
 import { useMinDurationToSec } from "@/use/useDurationInSec";
+import { useMainChannel } from "./mainChannel";
+import { usePlaybackState } from "./playbackState";
+import { useProgramDurationStore } from "./programDuration";
 
 export type BinauralBeatProgram = {
   id: string;
   title: string;
   description: string;
   generators: Array<SoundGenerators>;
+  volumeLevel?: number
 };
 
 const STATE = {
@@ -203,6 +207,7 @@ const STATE = {
       id: "BrNBB_04",
       title: "Brown Noise & Spining Binaural Beat Osc ",
       description: "Brown Noise with a deep Lowpass filter.",
+      volumeLevel: 70,
       generators: [
         {
           type: "NoiseFilteredGen",
@@ -285,10 +290,26 @@ const currentProgram = getter("currentProgram", (state) =>
   state.programs.find((p) => p.id === state.currentProgramId)
 );
 
+/* === initializeProgram === */
+
+const { volumeRef } = useMainChannel();
+const { initializeDurationCountdown } = useProgramDurationStore();
+const { initializePlayBack } = usePlaybackState()
+
+function initializeProgram() {
+  if(isDefined(currentProgram) && isDefined(currentProgram.value.volumeLevel)) {
+    volumeRef.value = currentProgram.value.volumeLevel
+    initializePlayBack()
+    initializeDurationCountdown()
+  }
+  
+}
+
 export function useBinauralBeatPrograms() {
   return {
     programs,
     currentProgramId,
     currentProgram,
+    initializeProgram,
   };
 }

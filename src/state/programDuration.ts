@@ -12,7 +12,7 @@ const STATE = {
   durationEventId: null as null | number,
 };
 
-const { computeState, mutation, onAfterMutation, getter } = createStore(
+const { computeState, mutation, getter } = createStore(
   "programDuration",
   STATE,
   {
@@ -24,21 +24,24 @@ const durationEventId = computeState((state) => state.durationEventId);
 const duration = computeState((state) => state.duration, "set-duration");
 const temporalDuration = computeState((state) => state.temporalDuration);
 
-onAfterMutation("set-duration", (event) => {
-  console.log(
-    "set-duration trigger - duration %o event %o",
-    duration.value,
-    event
-  );
-  setupToneTransportCountDown();
-});
+// onAfterMutation("set-duration", (event) => {
+//   console.log(
+//     "set-duration trigger - duration %o event %o",
+//     duration.value,
+//     event
+//   );
+//   setupToneTransportCountDown();
+// });
 
 function setupToneTransportCountDown() {
   if (isDefined(durationEventId)) {
     Tone.Transport.clear(durationEventId.value);
   }
 
-  durationEventId.value = Tone.Transport.scheduleRepeat(durationCountDown, 1);
+  durationEventId.value = Tone.Transport.scheduleRepeat((time) => durationCountDown(time), 1);
+}
+
+function setupCountDownDuration() {
   temporalDuration.value = Temporal.Duration.from({
     seconds: duration.value,
   }).round({ largestUnit: "hour" });
@@ -106,7 +109,6 @@ const subtractDuration = mutation(
 
 function durationCountDown(time: number) {
   Tone.Draw.schedule(() => {
-    console.log("Duration Timer - Time: %o", Math.round(time));
     subtractDuration(1);
 
     console.log(
@@ -119,10 +121,12 @@ function durationCountDown(time: number) {
 }
 
 function initializeDurationCountdown() {
-  if (!isDefined(durationEventId)) {
+  // if (!isDefined(durationEventId)) {
     setupToneTransportCountDown();
-  }
+  // }
 }
+
+
 
 export function useProgramDurationStore() {
   return {
@@ -131,5 +135,6 @@ export function useProgramDurationStore() {
     remandingDurationPercentage,
     elapsedDuration,
     initializeDurationCountdown,
+    setupCountDownDuration,
   };
 }

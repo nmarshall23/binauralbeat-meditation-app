@@ -74,7 +74,7 @@ export function createNoiseFilteredGen(
     envNode.triggerRelease("+0.1");
   });
   eventHandler.onPlayBackStopped(() => {
-    noiseNode.stop("+20");
+    // noiseNode.stop("+20");
 
     envNode.triggerRelease("+0.1");
   });

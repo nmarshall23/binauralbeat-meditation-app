@@ -75,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+import * as Tone from "tone";
 import VolumeDialog from "@/components/dialogs/volumeDialog.vue";
 import { useBinauralBeatPrograms } from "@/state/bbPrograms";
 import { useMainChannel } from "@/state/mainChannel";
@@ -83,7 +84,11 @@ import { useProgramDurationStore } from "@/state/programDuration";
 import { SoundGenerators } from "@/types/GeneratorDef";
 import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 
-const { isPlaying, toggleIsPlaying, resetInit, eventHandler } =
+const { currentProgram, initializeProgram } = useBinauralBeatPrograms();
+
+initializeProgram()
+
+const { isPlaying, toggleIsPlaying, eventHandler } =
   usePlaybackState();
 
 const { remandingDuration, remandingDurationPercentage } =
@@ -92,7 +97,6 @@ const { remandingDuration, remandingDurationPercentage } =
 const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
 const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
 
-resetInit();
 
 const progressLabel = computed(
   () =>
@@ -126,7 +130,6 @@ async function showVolumeDialog(
   }
 }
 
-const { currentProgram } = useBinauralBeatPrograms();
 
 const generators = computed(() => {
   const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;
@@ -135,6 +138,7 @@ const generators = computed(() => {
 
 onBeforeUnmount(() => {
   generators.value.forEach((i) => i.dispose());
+  Tone.Transport.stop("+0.1")
 });
 </script>
 

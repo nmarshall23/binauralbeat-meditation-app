@@ -23,7 +23,7 @@ import { useMinDurationToSec } from '@/use/useDurationInSec';
 
 
 const timeOptions = ref([
-  { label: "1 minutes", value: useMinDurationToSec(1) },
+  // { label: "Testing", value: 10 },
   { label: "4 minutes", value: useMinDurationToSec(4) },
   { label: "16 minutes", value: useMinDurationToSec(16) },
   { label: "20 minutes", value: useMinDurationToSec(20) },

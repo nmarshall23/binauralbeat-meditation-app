@@ -9,7 +9,6 @@ import { match } from "ts-pattern";
 // The initial state for this store
 const STATE = {
   hasInit: false,
-  stopEventId: null as null | number,
   isPlaying: false,
 };
 
@@ -25,48 +24,44 @@ export const {
   extensions: [composeExtension()],
 });
 
-const stopEventId = computeState((state) => state.stopEventId);
+const isPlaying = computeState((state) => state.isPlaying);
+const toggleIsPlaying = () => (isPlaying.value = !state.isPlaying);
+const hasInit = computeState((state) => state.hasInit);
 
-const { initializeDurationCountdown, duration } = useProgramDurationStore();
+const { setupCountDownDuration, remandingDuration } = useProgramDurationStore();
 
-const setHasInit = mutation("setHasInit", (state, payload: boolean) => {
-  initializeDurationCountdown();
+/**
+ * Sets up Countdown timer, and stop event
+ */
+function initializePlayBack() {
+  setupCountDownDuration();
+}
 
-  if (isDefined(state.stopEventId)) {
-    Tone.Transport.clear(state.stopEventId);
+watch(remandingDuration, async (remanding) => {
+  if (isDefined(remanding.seconds) && remanding.seconds < -1) {
+    console.log(
+      "updatePlayingState - action: %o, time: %o",
+      "stop",
+      Math.round(Tone.now())
+    );
+    await playBackStopped.trigger(Tone.now());
+    isPlaying.value = false;
+    await nextTick();
+
+    setupCountDownDuration();
   }
-
-  if (payload) {
-    state.stopEventId = Tone.Transport.scheduleOnce((time) => {
-      Tone.Draw.schedule(() => {
-        console.log("PlayBack Stopped Tigger %o", Math.round(time));
-        playBackStopped.trigger(time);
-      }, time);
-    }, Tone.now() + duration.value + 1);
-  }
-
-  state.hasInit = payload;
 });
-
-const resetInit = () => setHasInit(false);
-
-const isPlaying = getter("getisPlaying", (state) => state.isPlaying);
-const setIsPlaying = mutation("setIsPlaying", (state, payload: boolean) => {
-  state.isPlaying = payload;
-});
-
-const toggleIsPlaying = () => setIsPlaying(!state.isPlaying);
 
 const playBackStarted = createEventHook<PlaybackStartEvent>();
 const playBackStopped = createEventHook<number>();
 const playBackPaused = createEventHook<number>();
 
 playBackStarted.on(() => Tone.Transport.start("+0.1"));
-playBackStopped.on(() => Tone.Transport.stop("+0.1"));
+playBackStopped.on(() => Tone.Transport.stop("+0.2"));
 playBackPaused.on(() => Tone.Transport.pause("+0.1"));
 
 const updatePlayingState = async (isPlaying: boolean) => {
-  const action = match({
+  const action = await match({
     isPlaying,
     hasInit: state.hasInit,
   })
@@ -78,13 +73,13 @@ const updatePlayingState = async (isPlaying: boolean) => {
       async () => {
         await Tone.start();
 
-        setHasInit(true);
+        hasInit.value = true;
 
         await playBackStarted.trigger({
           time: Tone.now(),
           initialize: true,
         });
-        return 'playing - initialize'
+        return "playing - initialize";
       }
     )
     .with(
@@ -93,43 +88,23 @@ const updatePlayingState = async (isPlaying: boolean) => {
         hasInit: true,
       },
       async () => {
-        await Tone.start();
-
-        setHasInit(true);
-
         await playBackStarted.trigger({
           time: Tone.now(),
           initialize: false,
         });
-        return 'playing'
+        return "playing";
       }
     )
     .otherwise(async () => {
       await playBackPaused.trigger(Tone.now());
-      return 'paused'
+      return "paused";
     });
 
-  // if (isPlaying) {
-  //   if (!state.hasInit) {
-  //     await Tone.start();
-
-  //     setHasInit(true);
-
-  //     playBackStarted.trigger({
-  //       time: Tone.now(),
-  //       initialize: true
-  //     });
-  //   } else {
-  //     playBackStarted.trigger({
-  //       time: Tone.now(),
-  //       initialize: false
-  //     });
-  //   }
-
-  // } else {
-  //   playBackPaused.trigger(Tone.now());
-  // }
-  console.log("updatePlayingState - action: %o", action);
+  console.log(
+    "updatePlayingState - action: %o, time: %o",
+    action,
+    Math.round(Tone.now())
+  );
 };
 
 watch(isPlaying, updatePlayingState);
@@ -144,8 +119,7 @@ export function usePlaybackState() {
   return {
     isPlaying,
     toggleIsPlaying,
-    stopEventId,
-    resetInit,
+    initializePlayBack,
     eventHandler,
   };
 }
