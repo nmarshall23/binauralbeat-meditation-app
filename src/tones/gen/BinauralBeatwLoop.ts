@@ -7,7 +7,6 @@ import { useVolumeControl } from "@/use/useVolumeControl";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 
-
 const defaultVolume = -18;
 
 export function createBinauralBeatwLoop(
@@ -129,8 +128,8 @@ export function createBinauralBeatwLoop(
       },
     });
 
-    eventHandler.onPlayBackStarted((time:number) => tonePattern.start(time));
-    eventHandler.onPlayBackPaused((time:number) => tonePattern.stop(time));
+    eventHandler.onPlayBackStarted(({ time }) => tonePattern.start(time));
+    eventHandler.onPlayBackPaused((time) => tonePattern.stop(time));
   }
 
   /* === Dispay === */
@@ -153,7 +152,7 @@ export function createBinauralBeatwLoop(
 
   return reactive({
     generatorName: displayName,
-    type: 'BinauralBeatwLoop',
+    type: "BinauralBeatwLoop",
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,

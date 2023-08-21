@@ -170,8 +170,8 @@ export function createBinauralBeatSpinOsc(
       },
     });
 
-    eventHandler.onPlayBackStarted((time:number) => tonePattern.start(time));
-    eventHandler.onPlayBackPaused((time:number) => tonePattern.stop(time));
+    eventHandler.onPlayBackStarted(({ time }) => tonePattern.start(time));
+    eventHandler.onPlayBackPaused((time) => tonePattern.stop(time));
   }
 
   /* === Dispay === */
