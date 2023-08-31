@@ -12,7 +12,7 @@ export function useVolumeControl(
   volume: Tone.Param<"decibels">,
   options?: UseVolumeControlOptions
 ) {
-  const { projectionMax = -5, projectionMin = -25, defaultValue = 75 } = options ?? {};
+  const { projectionMax = 0, projectionMin = -25, defaultValue = 50 } = options ?? {};
 
   const setVolume = useDebounceFn((n: number) => {
     // console.log('MainChannel Vol ', volume.value)

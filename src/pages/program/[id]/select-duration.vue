@@ -8,7 +8,7 @@
     </template>
 
     <q-card-actions>
-      <chip-option v-model:value="selected" :options="timeOptions" />
+      <chip-option v-model:value="selected" :options="durationOptions" />
     </q-card-actions>
     <q-separator />
     <q-card-actions align="center">
@@ -18,29 +18,34 @@
 </template>
 
 <script setup lang="ts">
-import { useProgramDurationStore } from '@/state/programDuration';
-import { useMinDurationToSec } from '@/use/useDurationInSec';
+import { useProgramDurationStore } from "@/state/programDuration";
+import { useMinDurationToSec } from "@/use/useDurationInSec";
 
-
-const timeOptions = ref([
-  // { label: "Testing", value: 10 },
+const durationOptions = ref([
   { label: "4 minutes", value: useMinDurationToSec(4) },
   { label: "16 minutes", value: useMinDurationToSec(16) },
   { label: "20 minutes", value: useMinDurationToSec(20) },
   { label: "30 minutes", value: useMinDurationToSec(30) },
   { label: "1 hour", value: useMinDurationToSec(60) },
-  
+
   { label: "8 hours", value: useMinDurationToSec(0, 8) },
 ]);
 
+if (process.env.NODE_ENV === "development") {
+  durationOptions.value.unshift({ label: "Testing", value: 10 });
+}
+
 const { duration } = useProgramDurationStore();
 
-const selected = ref(timeOptions.value[0]);
+const selected = ref(durationOptions.value[0]);
 
-watch(selected, (newSelection) => {
-  duration.value = newSelection.value;
-}, {
-  immediate: true,
-});
-
+watch(
+  selected,
+  (newSelection) => {
+    duration.value = newSelection.value;
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
