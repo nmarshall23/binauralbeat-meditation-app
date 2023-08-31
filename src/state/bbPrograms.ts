@@ -12,7 +12,7 @@ export type BinauralBeatProgram = {
   title: string;
   description: string;
   generators: Array<SoundGenerators>;
-  volumeLevel?: number
+  volumeLevel?: number;
 };
 
 const STATE = {
@@ -21,8 +21,7 @@ const STATE = {
     {
       id: "BNBB_01",
       title: "Noise and Binaural Beat Osc",
-      description:
-        "Really simple Program. Pink Noise & Binaural Beat 4hz",
+      description: "Really simple Program. Pink Noise & Binaural Beat 4hz",
       generators: [
         {
           type: "BasicNoiseGen",
@@ -91,10 +90,10 @@ const STATE = {
                   rampTime: 30,
                   signal: {
                     frequency: 220,
-                    beatFreq: 4
+                    beatFreq: 4,
                   },
                 },
-              ]
+              ],
             },
           },
         },
@@ -130,10 +129,10 @@ const STATE = {
                   rampTime: 30,
                   signal: {
                     frequency: 220,
-                    beatFreq: 6
+                    beatFreq: 6,
                   },
                 },
-              ]
+              ],
             },
           },
         },
@@ -248,7 +247,7 @@ const STATE = {
                 {
                   rampTime: 30,
                   signal: {
-                    spinCycle: 0.5
+                    spinCycle: 0.5,
                   },
                 },
                 {
@@ -260,7 +259,7 @@ const STATE = {
                 {
                   rampTime: 30,
                   signal: {
-                    spinCycle: 0.1
+                    spinCycle: 0.1,
                   },
                 },
               ],
@@ -294,15 +293,17 @@ const currentProgram = getter("currentProgram", (state) =>
 
 const { volumeRef } = useMainChannel();
 const { initializeDurationCountdown } = useProgramDurationStore();
-const { initializePlayBack } = usePlaybackState()
+const { initializePlayBack } = usePlaybackState();
 
 function initializeProgram() {
-  if(isDefined(currentProgram) && isDefined(currentProgram.value.volumeLevel)) {
-    volumeRef.value = currentProgram.value.volumeLevel
-    initializePlayBack()
-    initializeDurationCountdown()
+  if (isDefined(currentProgram)) {
+    initializePlayBack();
+    initializeDurationCountdown();
+
+    if (isDefined(currentProgram.value.volumeLevel)) {
+      volumeRef.value = currentProgram.value.volumeLevel;
+    }
   }
-  
 }
 
 export function useBinauralBeatPrograms() {
