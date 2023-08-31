@@ -13,9 +13,11 @@ export type LoopEventValue<S> = {
 }
 
 type BinauralBeatOscLoopEventSignal = {
-  beatFreq: Tone.Unit.Hertz;
-  frequency: Tone.Unit.Hertz;
   gain: Tone.Unit.GainFactor;
+  beatFreq: Tone.Unit.Hertz;
+  osc: {
+    frequency?: Tone.Unit.Frequency;
+  }
 };
 
 type BinauralBeatSpinEventSignal = {

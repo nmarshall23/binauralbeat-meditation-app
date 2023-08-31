@@ -31,6 +31,7 @@ export type BasicBinauralBeatOscOptions = {
   osc: {
     frequency: Tone.Unit.Frequency;
     phase?: Tone.Unit.Degrees;
+    detune?: number;
   };
 };
 
@@ -55,6 +56,7 @@ export interface BinauralBeatwLoopOscOptions {
   osc: {
     frequency: Tone.Unit.Hertz;
     phase?: Tone.Unit.Degrees;
+    detune?: number;
   };
   loopEvents?: LooppingEventsOptions<BinauralBeatOscLoopEventSignal>;
 }
@@ -67,6 +69,7 @@ export type BinauralBeatSpinOscOptions = {
   osc: {
     frequency: Tone.Unit.Hertz;
     phase?: Tone.Unit.Degrees;
+    detune?: number;
   };
   loopEvents?: LooppingEventsOptions<BinauralBeatSpinEventSignal>;
 };

@@ -67,21 +67,20 @@ export const lpBrownProgram: BinauralBeatProgram = {
     {
       type: "BinauralBeatwLoop",
       options: {
-        gain: 70,
-        beatFreq: 4,
+        gain: 0.5,
+        beatFreq: 8,
         osc: {
-          frequency: 230,
+          frequency: 210,
         },
       },
     },
     {
       type: "BinauralBeatwLoop",
       options: {
-        gain: 70,
+        gain: 0.5,
         beatFreq: 4,
         osc: {
-          frequency: 230,
-          phase: 90,
+          frequency: 160,
         },
         loopEvents: {
           humanize: 10,
@@ -92,13 +91,19 @@ export const lpBrownProgram: BinauralBeatProgram = {
             {
               rampTime: 30, //useMinDurationToSec(1),
               signal: {
-                frequency: 180,
+                gain: 0.6,
+                osc: {
+                  frequency: 140
+                }
               },
             },
             {
               rampTime: 30, //useMinDurationToSec(1),
               signal: {
-                frequency: 230,
+                gain: 0.4,
+                osc: {
+                  frequency: 170
+                }
               },
             },
           ],

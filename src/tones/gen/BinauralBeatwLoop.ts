@@ -2,12 +2,18 @@ import * as Tone from "tone";
 
 import { BinauralBeatwLoopOscOptions } from "@/types/GeneratorDef";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
-import { isMatching, P } from "ts-pattern";
+import { isMatching } from "ts-pattern";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
+import {
+  eventMatcherBinauralBeatFreq,
+  eventMatcherGain,
+  eventMatcherOscFreq,
+} from "@/use/useLoopEventMatchers";
+import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 
-const defaultVolume = -18;
+const defaultVolume = -16;
 
 export function createBinauralBeatwLoop(
   generatorName: string,
@@ -26,16 +32,16 @@ export function createBinauralBeatwLoop(
 
   channel.send("main");
 
-  // const channelGainNode = new Tone.Gain(gain).connect(channel)
+  const gainNode = new Tone.Gain(gain).connect(channel);
 
   const envNode = new Tone.AmplitudeEnvelope({
-    attack: 4,
+    attack: 6,
     decay: 0,
-    sustain: 0.5,
+    sustain: 1,
     release: 4,
-    attackCurve: "sine",
-    releaseCurve: "sine",
-  }).connect(channel);
+    attackCurve: "cosine",
+    releaseCurve: "linear",
+  }).connect(gainNode);
 
   const merge = new Tone.Merge().connect(envNode);
 
@@ -96,41 +102,30 @@ export function createBinauralBeatwLoop(
     envNode.triggerRelease("+0.1");
   });
 
-  if (isDefined(loopEvents)) {
-    const { values, humanize, probability, interval, pattern } = loopEvents;
+  setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
+    console.log(
+      "%o Pattern Triggered - Time %o, event.rampTime: %o event.signal %o",
+      generatorName,
+      Math.floor(time),
+      event?.rampTime,
+      toRaw(event?.signal)
+    );
 
-    const tonePattern = new Tone.Pattern({
-      pattern,
-      values,
-      humanize,
-      probability,
-      interval,
-      callback: (time, event) => {
-        console.log(
-          "%o Pattern Triggered - time %o event %o",
-          generatorName,
-          time,
-          event
-        );
+    if (isMatching(eventMatcherGain, event)) {
+      const { rampTime, signal } = event;
+      gainNode.gain.rampTo(signal.gain, rampTime, "+0.1");
+    }
 
-        if (isMatching(beatFreqEventPattern, event)) {
-          add.addend.rampTo(event.beatFreq, event.rampTime, time);
-        }
+    if (isMatching(eventMatcherBinauralBeatFreq, event)) {
+      const { rampTime, signal } = event;
+      add.addend.rampTo(signal.beatFreq, rampTime, "+0.1");
+    }
 
-        if (isMatching(frequencyEventPattern, event)) {
-          freqSignal.rampTo(event.frequency, event.rampTime, time);
-        }
-
-        // if (isMatching(gainEventPattern, event)) {
-        //   console.log("channelGainNode.gain %o", channelGainNode.gain.value);
-        //   channelGainNode.gain.rampTo(event.gain, event.rampTime, time);
-        // }
-      },
-    });
-
-    eventHandler.onPlayBackStarted(({ time }) => tonePattern.start(time));
-    eventHandler.onPlayBackPaused((time) => tonePattern.stop(time));
-  }
+    if (isMatching(eventMatcherOscFreq, event)) {
+      const { rampTime, signal } = event;
+      freqSignal.rampTo(signal.osc.frequency, rampTime, "+0.1");
+    }
+  });
 
   /* === Dispay === */
 
@@ -142,9 +137,7 @@ export function createBinauralBeatwLoop(
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
 
-  const { volumeRef } = useVolumeControl(channel.volume, {
-    defaultValue: gain,
-  });
+  const { volumeRef } = useVolumeControl(channel.volume);
 
   function dispose() {
     channel.dispose();
@@ -158,15 +151,3 @@ export function createBinauralBeatwLoop(
     dispose,
   });
 }
-
-const beatFreqEventPattern = {
-  beatFreq: P.number,
-};
-
-const frequencyEventPattern = {
-  frequency: P.number,
-};
-
-// const gainEventPattern = {
-//   gain: P.number,
-// };
