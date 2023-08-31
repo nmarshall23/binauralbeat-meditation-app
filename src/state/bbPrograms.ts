@@ -6,6 +6,7 @@ import { useMinDurationToSec } from "@/use/useDurationInSec";
 import { useMainChannel } from "./mainChannel";
 import { usePlaybackState } from "./playbackState";
 import { useProgramDurationStore } from "./programDuration";
+import storageExtension from "@harlem/extension-storage";
 
 export type BinauralBeatProgram = {
   id: string;
@@ -278,12 +279,21 @@ export const {
   getter,
   ...store
 } = createStore("binauralBeatPrograms", STATE, {
-  extensions: [composeExtension()],
+  extensions: [
+    composeExtension(),
+    storageExtension({
+      prefix: 'NMA',
+      restore: true,
+      include: "update-currentProgramId",
+      branch: (state) => state.currentProgramId,
+    }),
+  
+  ],
 });
 
 const programs = getter("getPrograms", (state) => state.programs);
 
-const currentProgramId = computeState((state) => state.currentProgramId);
+const currentProgramId = computeState((state) => state.currentProgramId, 'update-currentProgramId');
 
 const currentProgram = getter("currentProgram", (state) =>
   state.programs.find((p) => p.id === state.currentProgramId)

@@ -11,6 +11,9 @@ dependencies:
   '@harlem/extension-compose':
     specifier: ^3.1.8
     version: 3.1.8(@harlem/core@3.1.8)(vue@3.3.4)
+  '@harlem/extension-storage':
+    specifier: ^3.1.8
+    version: 3.1.8(@harlem/core@3.1.8)(vue@3.3.4)
   '@js-temporal/polyfill':
     specifier: ^0.4.4
     version: 0.4.4
@@ -344,6 +347,17 @@ packages:
       '@harlem/core': 3.1.8(vue@3.3.4)
       '@harlem/utilities': 3.1.8(vue@3.3.4)
       vue: 3.3.4
+    dev: false
+
+  /@harlem/extension-storage@3.1.8(@harlem/core@3.1.8)(vue@3.3.4):
+    resolution: {integrity: sha512-5KizBAwL9vOB+5DNVQY9nwZqz3XObdPCxCYYujwRbM3g5grQcsSI677Z9mCSi8QZPS6kkAgYtW8igBOwOxPdUA==}
+    peerDependencies:
+      '@harlem/core': ^3.0.0
+    dependencies:
+      '@harlem/core': 3.1.8(vue@3.3.4)
+      '@harlem/utilities': 3.1.8(vue@3.3.4)
+    transitivePeerDependencies:
+      - vue
     dev: false
 
   /@harlem/plugin-devtools@3.1.8(@harlem/core@3.1.8)(vue@3.3.4):

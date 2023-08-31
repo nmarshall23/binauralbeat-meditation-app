@@ -3,7 +3,6 @@
   "private": true,
   "version": "1.0.0",
   "homepage": "https://nmarshall23.github.io/binauralbeat-meditation-app/",
-
   "scripts": {
     "dev": "vite --host",
     "build": "rm -r dist && vue-tsc && vite build",
@@ -14,6 +13,7 @@
   "dependencies": {
     "@harlem/extension-action": "^3.1.8",
     "@harlem/extension-compose": "^3.1.8",
+    "@harlem/extension-storage": "^3.1.8",
     "@js-temporal/polyfill": "^0.4.4",
     "@quasar/extras": "^1.16.5",
     "@vueuse/core": "^10.3.0",

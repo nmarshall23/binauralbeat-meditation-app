@@ -4,6 +4,7 @@ import composeExtension from "@harlem/extension-compose";
 import { Temporal } from "@js-temporal/polyfill";
 import * as Tone from "tone";
 import { useMinDurationToSec } from "@/use/useDurationInSec";
+import storageExtension from "@harlem/extension-storage";
 
 // The initial state for this store
 const STATE = {
@@ -16,29 +17,31 @@ const { computeState, mutation, getter } = createStore(
   "programDuration",
   STATE,
   {
-    extensions: [composeExtension()],
+    extensions: [
+      composeExtension(),
+      storageExtension({
+        prefix: 'NMA',
+        restore: true,
+        include: "update-duration",
+        branch: (state) => state.duration,
+      }),
+    ],
   }
 );
 
 const durationEventId = computeState((state) => state.durationEventId);
-const duration = computeState((state) => state.duration, "set-duration");
+const duration = computeState((state) => state.duration, "update-duration");
 const temporalDuration = computeState((state) => state.temporalDuration);
-
-// onAfterMutation("set-duration", (event) => {
-//   console.log(
-//     "set-duration trigger - duration %o event %o",
-//     duration.value,
-//     event
-//   );
-//   setupToneTransportCountDown();
-// });
 
 function setupToneTransportCountDown() {
   if (isDefined(durationEventId)) {
     Tone.Transport.clear(durationEventId.value);
   }
 
-  durationEventId.value = Tone.Transport.scheduleRepeat((time) => durationCountDown(time), 1);
+  durationEventId.value = Tone.Transport.scheduleRepeat(
+    (time) => durationCountDown(time),
+    1
+  );
 }
 
 function setupCountDownDuration() {
@@ -122,11 +125,9 @@ function durationCountDown(time: number) {
 
 function initializeDurationCountdown() {
   // if (!isDefined(durationEventId)) {
-    setupToneTransportCountDown();
+  setupToneTransportCountDown();
   // }
 }
-
-
 
 export function useProgramDurationStore() {
   return {
