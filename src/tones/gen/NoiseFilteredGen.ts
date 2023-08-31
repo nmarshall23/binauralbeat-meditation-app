@@ -5,13 +5,31 @@ import { useVolumeControl } from "@/use/useVolumeControl";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
+import { isMatching } from "ts-pattern";
+import {
+  eventMatcherFilterDetune,
+  eventMatcherFilterFrequency,
+  eventMatcherFilterGain,
+  eventMatcherFilterQ,
+  eventMatcherGain,
+} from "@/use/useLoopEventMatchers";
+import {
+  LoopEventValue,
+  NoiseFilteredGenEventSignal,
+} from "@/types/LoopPattern";
+import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 
 export function createNoiseFilteredGen(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: NoiseFilteredGenOptions
 ): GeneratorControls {
-  const { gain, noise: noiseOptions, filter: filterOptions } = options;
+  const {
+    gain = 1,
+    noise: noiseOptions,
+    filter: filterOptions,
+    loopEvents,
+  } = options;
 
   console.debug(
     `createNoiseFilteredGen ${generatorName} gain %o, opt %o`,
@@ -30,16 +48,18 @@ export function createNoiseFilteredGen(
     channelGainNode.gain.value
   );
 
-  const filter = new Tone.Filter(filterOptions).connect(channel);
+  const gainNode = new Tone.Gain(gain).connect(channel);
+
+  const filterNode = new Tone.Filter(filterOptions).connect(gainNode);
 
   const envNode = new Tone.AmplitudeEnvelope({
     attack: 5,
     decay: 0,
     sustain: 0.5,
     release: 10,
-    attackCurve: "sine",
-    releaseCurve: "sine",
-  }).connect(filter);
+    attackCurve: "linear",
+    releaseCurve: "linear",
+  }).connect(filterNode);
 
   const noiseNode = new Tone.Noise(noiseOptions).connect(envNode);
 
@@ -79,6 +99,41 @@ export function createNoiseFilteredGen(
     envNode.triggerRelease("+0.1");
   });
 
+  setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
+    console.log(
+      "%o Pattern Triggered - Time %o, event.rampTime: %o event.signal %o",
+      generatorName,
+      Math.floor(time),
+      event?.rampTime,
+      toRaw(event?.signal)
+    );
+
+    if (isMatching(eventMatcherGain, event)) {
+      const { rampTime, signal } = event;
+      gainNode.gain.rampTo(signal.gain, rampTime, "+0.1");
+    }
+
+    if (isMatching(eventMatcherFilterFrequency, event)) {
+      const { rampTime, signal } = event;
+      filterNode.frequency.rampTo(signal.filter.frequency, rampTime, "+0.1");
+    }
+
+    if (isMatching(eventMatcherFilterQ, event)) {
+      const { rampTime, signal } = event;
+      filterNode.Q.rampTo(signal.filter.Q, rampTime, "+0.1");
+    }
+
+    if (isMatching(eventMatcherFilterGain, event)) {
+      const { rampTime, signal } = event;
+      filterNode.gain.rampTo(signal.filter.gain, rampTime, "+0.1");
+    }
+
+    if (isMatching(eventMatcherFilterDetune, event)) {
+      const { rampTime, signal } = event;
+      filterNode.detune.rampTo(signal.filter.detune, rampTime, "+0.1");
+    }
+  });
+
   /* === Dispay === */
 
   const displayName = computed(() => {
@@ -93,9 +148,7 @@ export function createNoiseFilteredGen(
     set: (value) => channelGainNode.gain.rampTo(value, "+0.5"),
   });
 
-  const { volumeRef } = useVolumeControl(channel.volume, {
-    defaultValue: gain,
-  });
+  const { volumeRef } = useVolumeControl(channel.volume);
 
   function dispose() {
     channel.dispose();
@@ -103,7 +156,7 @@ export function createNoiseFilteredGen(
 
   return reactive({
     generatorName: displayName,
-    type: 'NoiseFilteredGen',
+    type: "NoiseFilteredGen",
     muteCtrl,
     gainCtrl,
     volumeCtrl: volumeRef,

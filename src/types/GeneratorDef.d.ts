@@ -4,6 +4,7 @@ import {
   LooppingEventsOptions,
   BinauralBeatOscLoopEventSignal,
   BinauralBeatSpinEventSignal,
+  NoiseFilteredGenEventSignal,
 } from "./LoopPattern";
 
 // === Options === //
@@ -14,8 +15,6 @@ export type GeneratorDefType =
   | "BasicBinauralBeatOsc"
   | "BinauralBeatwLoop"
   | "BinauralBeatSpinOsc";
-
-
 
 // === Options ===
 
@@ -45,7 +44,9 @@ export type NoiseFilteredGenOptions = {
     frequency?: Tone.Unit.Frequency;
     Q?: number;
     gain?: number;
+    detune?: number;
   };
+  loopEvents?: LooppingEventsOptions<NoiseFilteredGenEventSignal>;
 };
 
 export interface BinauralBeatwLoopOscOptions {
@@ -61,8 +62,8 @@ export interface BinauralBeatwLoopOscOptions {
 export type BinauralBeatSpinOscOptions = {
   gain: Tone.Unit.GainFactor;
   beatFreq: Tone.Unit.Hertz;
-  spinCrossFade: number;
-  spinCycle: number;
+  spinCrossFade?: number;
+  spinCycle?: number;
   osc: {
     frequency: Tone.Unit.Hertz;
     phase?: Tone.Unit.Degrees;
