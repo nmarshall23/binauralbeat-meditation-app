@@ -45,7 +45,7 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
     {
       type: "BinauralBeatwLoop",
       options: {
-        gain: 70,
+        gain: 0.6,
         beatFreq: 4,
         osc: {
           frequency: 140,
@@ -91,7 +91,7 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
     {
       type: "BinauralBeatwLoop",
       options: {
-        gain: 70,
+        gain: 0.6,
         beatFreq: 6,
         osc: {
           frequency: 220,
