@@ -3,8 +3,7 @@ import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { BasicBinauralBeatOscOptions } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
-
-
+import { useVolumeControl } from "@/use/useVolumeControl";
 
 export function createBasicBinauralBeatOsc(
   generatorName: string,
@@ -16,93 +15,81 @@ export function createBasicBinauralBeatOsc(
   console.debug(
     `createBasicNoiseGen ${generatorName} gain %o, opt %o`,
     gain,
-    options
+    toRaw(options)
   );
 
-  const channel = new Tone.Channel(0);
+  const channel = new Tone.Channel();
 
-  const channelGainNode = channel.send("main");
+  const gainNode = new Tone.Gain(gain);
 
   const envNode = new Tone.AmplitudeEnvelope({
-    attack: 4,
+    attack: 6,
     decay: 0,
-    sustain: 0.5,
+    sustain: 1,
     release: 4,
-    attackCurve: "sine",
-    releaseCurve: "sine",
-  }).connect(channel);
+    attackCurve: "cosine",
+    releaseCurve: "linear",
+  });
 
-  const merge = new Tone.Merge().connect(envNode);
+  const merge = new Tone.Merge();
 
   const oscGenR = new Tone.OmniOscillator({
     type: "sine",
     ...oscOptions,
-  })
-    .connect(merge, 0, 0)
-    .sync();
+  });
 
   const oscGenL = new Tone.OmniOscillator({
     type: "sine",
     ...oscOptions,
-  })
-   .connect(merge, 0, 1)
-   .sync();
+  });
+
+  // === Connections === //
+  channel.send("main");
+  merge.chain(envNode, gainNode, channel);
+  oscGenL.connect(merge, 0, 1).sync();
+  oscGenR.connect(merge, 0, 0).sync();
 
   // === Signals === //
 
-  const signalFreq = new Tone.Signal({
+  const freqSignal = new Tone.Signal({
     value: oscOptions.frequency,
     units: "frequency",
   }).connect(oscGenR.frequency);
 
   const add = new Tone.Add(beatFreq).connect(oscGenL.frequency);
 
-  signalFreq.connect(add);
+  freqSignal.connect(add);
 
   // === Playback === //
 
-  eventHandler.onPlayBackStarted(() => {
-    if (oscGenR.state === "stopped") {
-      oscGenR.start("+0.1");
-      oscGenL.start("+0.1");
-    }
-
-    envNode.set({
-      release: 10,
-      attack: 5,
-    });
-
-    envNode.triggerAttack("+0.2");
+  eventHandler.onPlayBackStarted((event) => {
+    const seconds = oscGenL.toSeconds(event.time);
+    envNode.triggerAttack(seconds);
+    oscGenL.start(seconds);
+    oscGenR.start(seconds);
   });
 
-  eventHandler.onPlayBackPaused(() => {
-    envNode.set({
-      release: 2,
-      attack: 2,
-    });
-
-    envNode.triggerRelease("+0.1");
+  eventHandler.onPlayBackPaused((time) => {
+    const seconds = oscGenL.toSeconds(time);
+    envNode.triggerRelease(seconds);
+    const stopSeconds = seconds + envNode.toSeconds(envNode.release)
+    oscGenL.stop(stopSeconds);
+    oscGenR.stop(stopSeconds);
   });
 
-  eventHandler.onPlayBackStopped(() => {
-    // oscGenR.start("+4");
-    // oscGenL.start("+4");
-
-    envNode.triggerRelease("+0.1");
+  eventHandler.onPlayBackStopped((time) => {
+    const seconds = oscGenL.toSeconds(time);
+    envNode.triggerRelease(seconds);
+    const stopSeconds = seconds + envNode.toSeconds(envNode.release)
+    oscGenL.stop(stopSeconds);
+    oscGenR.stop(stopSeconds);
   });
 
   /* === Controls === */
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
-  const gainCtrl = computed({
-    get: () => channelGainNode.gain.value,
-    set: (value) => channelGainNode.gain.rampTo(value, "+0.5"),
-  });
 
-  const volumeCtrl = computed({
-    get: () => channel.volume.value,
-    set: (value) => channel.volume.rampTo(value, "+0.5"),
-  });
+  const { volumeRef } = useVolumeControl(channel.volume);
 
   function dispose() {
     channel.dispose();
@@ -110,10 +97,10 @@ export function createBasicBinauralBeatOsc(
 
   return reactive({
     generatorName,
-    type: 'BasicBinauralBeatOsc',
+    type: "BasicBinauralBeatOsc",
     muteCtrl,
-    gainCtrl,
-    volumeCtrl,
+
+    volumeCtrl: volumeRef,
     dispose,
   });
 }
