@@ -98,9 +98,10 @@ const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
 const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
 
 
+// Add a Second so label doesn't go negtive
 const progressLabel = computed(
   () =>
-    `${remandingDuration.value.hours}:${remandingDuration.value.minutes}:${remandingDuration.value.seconds}`
+    `${remandingDuration.value.hours}:${remandingDuration.value.minutes}:${remandingDuration.value.seconds + 1}`
 );
 
 const { volumeRef } = useMainChannel();

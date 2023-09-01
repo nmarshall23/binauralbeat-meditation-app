@@ -32,7 +32,7 @@ const durationOptions = ref([
 ]);
 
 if (process.env.NODE_ENV === "development") {
-  durationOptions.value.unshift({ label: "Testing", value: 10 });
+  durationOptions.value.unshift({ label: "Testing", value: 60 });
 }
 
 const { duration } = useProgramDurationStore();

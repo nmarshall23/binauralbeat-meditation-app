@@ -56,11 +56,13 @@ const playBackStarted = createEventHook<PlaybackStartEvent>();
 const playBackStopped = createEventHook<number>();
 const playBackPaused = createEventHook<number>();
 
-playBackStarted.on(() => Tone.Transport.start("+0.1"));
-playBackStopped.on(() => Tone.Transport.stop("+0.2"));
-playBackPaused.on(() => Tone.Transport.pause("+0.1"));
+playBackStarted.on(() => Tone.Transport.start());
+playBackStopped.on(() => Tone.Transport.stop('+4'));
+playBackPaused.on(() => Tone.Transport.pause());
 
 const updatePlayingState = async (isPlaying: boolean) => {
+  const time = Tone.Transport.seconds; // Tone.Transport.now() // - Tone.Transport.seconds
+
   const action = await match({
     isPlaying,
     hasInit: state.hasInit,
@@ -76,7 +78,7 @@ const updatePlayingState = async (isPlaying: boolean) => {
         hasInit.value = true;
 
         await playBackStarted.trigger({
-          time: Tone.now(),
+          time,
           initialize: true,
         });
         return "playing - initialize";
@@ -89,21 +91,21 @@ const updatePlayingState = async (isPlaying: boolean) => {
       },
       async () => {
         await playBackStarted.trigger({
-          time: Tone.now(),
+          time,
           initialize: false,
         });
         return "playing";
       }
     )
     .otherwise(async () => {
-      await playBackPaused.trigger(Tone.now());
+      await playBackPaused.trigger(time);
       return "paused";
     });
 
   console.log(
     "updatePlayingState - action: %o, time: %o",
     action,
-    Math.round(Tone.now())
+    Math.round(time)
   );
 };
 

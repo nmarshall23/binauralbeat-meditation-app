@@ -1,10 +1,12 @@
+import * as Tone from "tone";
+
 export type EventSequence<E> = {
-  startTime: string;
-  endTime: string;
+  startOffsetSeconds?: number;
+  // endOffsetSeconds: string;
   loop?: boolean | number;
   loopEnd?: string;
   loopStart?: string;
-  events: LoopEventValue<E>[];
+  events: EventValueType<E>[];
 };
 
 export type LooppingEventsOptions<E> = {
@@ -21,7 +23,11 @@ export type LoopEventValue<S> = {
   // signal: Partial<S>
 };
 
-type SignalBase = {
+export type EventValueType<S> = {
+  time: Tone.Unit.Time
+} & LoopEventValue<S>
+
+export type SignalBase = {
   gain: Tone.Unit.GainFactor;
 };
 

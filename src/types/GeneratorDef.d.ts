@@ -1,6 +1,7 @@
 import * as Tone from "tone";
 import { PatternName } from "tone/build/esm/event/PatternGenerator";
 import {
+  EventSequence,
   LooppingEventsOptions,
   BinauralBeatOscLoopEventSignal,
   BinauralBeatSpinEventSignal,

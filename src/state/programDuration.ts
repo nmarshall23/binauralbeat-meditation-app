@@ -75,9 +75,9 @@ const remandingDuration = getter("remandingDuration", (state) => {
     };
   }
   return {
-    hours: null,
-    minutes: null,
-    seconds: null,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
   };
 });
 

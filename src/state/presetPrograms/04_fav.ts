@@ -20,23 +20,45 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
       },
     },
     {
-      type: "BasicBinauralBeatOsc",
-      options: {
-        gain: 0.4,
-        beatFreq: 4,
-        osc: {
-          frequency: 140,
-        },
-      },
-    },
-    {
       type: "BinauralBeatwLoop",
       options: {
         gain: 0.4,
-        beatFreq: 4,
+        beatFreq: 6,
         osc: {
-          frequency: 140,
+          frequency: 180,
         },
+        eventSequence: {
+          events: [
+            // {
+            //   time: '+10',
+            //   rampTime: 20,
+            //   signal: {
+            //     gain: 0.6,
+            //     osc: {
+            //       frequency: 140,
+            //     },
+            //   }
+            // },
+            {
+              time: '%50',
+              rampTime: 10,
+              signal: {
+                gain: 0.6,
+                beatFreq: 4,
+                osc: {
+                  frequency: 100,
+                },
+              }
+            },
+            {
+              time: '-20',
+              rampTime: 20,
+              signal: {
+                gain: 0.1,
+              }
+            }
+          ]
+        }
       },
     },
     // {

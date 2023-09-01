@@ -13,6 +13,8 @@ import {
 } from "@/use/useLoopEventMatchers";
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
+import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
+import { BinauralBeatEventSignal, EventValueType } from "@/types/LoopPattern";
 
 const defaultVolume = 0;
 
@@ -21,7 +23,13 @@ export function createBinauralBeatwLoop(
   eventHandler: PlaybackTriggers,
   options: BinauralBeatwLoopOscOptions
 ): GeneratorControls {
-  const { gain, beatFreq, osc: oscOptions, loopEvents } = options;
+  const {
+    gain,
+    beatFreq,
+    osc: oscOptions,
+    loopEvents,
+    eventSequence,
+  } = options;
 
   console.debug(
     `createBinauralBeatwLoop ${generatorName} gain %o, opt %o`,
@@ -36,35 +44,36 @@ export function createBinauralBeatwLoop(
   const beatSynth = new BinauralBeatSynth({
     baseFrequency: oscOptions.frequency,
     beatFrequency: beatFreq,
-  })
+  });
 
   // === Connections === //
   channel.send("main");
-  beatSynth.chain(gainNode, channel)
+  beatSynth.chain(gainNode, channel);
 
   // === Signals === //
-
-
 
   // === Playback === //
 
   eventHandler.onPlayBackStarted((event) => {
-    beatSynth.triggerAttack(event.time)
+    beatSynth.triggerAttack(event.time);
   });
 
   eventHandler.onPlayBackPaused((time) => {
-    beatSynth.triggerRelease(time)
-
+    beatSynth.triggerRelease(time);
   });
 
   eventHandler.onPlayBackStopped((time) => {
-    beatSynth.triggerRelease(time)
+    beatSynth.triggerRelease(time);
   });
 
-
-  setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
+  function callback(
+    eventType: string,
+    time: number,
+    event: EventValueType<BinauralBeatEventSignal>
+  ) {
     console.log(
-      "%o Pattern Triggered - Time %o, event.rampTime: %o event.signal %o",
+      "%o %o Triggered - Time %o, event.rampTime: %o event.signal %o",
+      eventType,
       generatorName,
       Math.floor(time),
       event?.rampTime,
@@ -73,19 +82,38 @@ export function createBinauralBeatwLoop(
 
     if (isMatching(eventMatcherGain, event)) {
       const { rampTime, signal } = event;
-      gainNode.gain.rampTo(signal.gain, rampTime, "+0.1");
+      gainNode.gain.rampTo(signal.gain, rampTime, time);
     }
 
     if (isMatching(eventMatcherBinauralBeatFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, "+0.1");
+      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, time);
     }
 
     if (isMatching(eventMatcherOscFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, "+0.1");
+      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, time);
     }
-  });
+  }
+
+  const disposePattern = setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) =>
+    callback(
+      "Loop Event",
+      time,
+      event as EventValueType<BinauralBeatEventSignal>
+    )
+  );
+
+  const disposePart = setupEventSequenceHandlers(
+    eventHandler,
+    eventSequence,
+    (time: number, event) =>
+      callback(
+        "Event Sequence",
+        time,
+        event as EventValueType<BinauralBeatEventSignal>
+      )
+  );
 
   /* === Dispay === */
 
@@ -101,6 +129,8 @@ export function createBinauralBeatwLoop(
 
   function dispose() {
     channel.dispose();
+    disposePart()
+    disposePattern()
   }
 
   return reactive({
