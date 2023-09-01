@@ -11,10 +11,12 @@ import {
   eventMatcherFilterFrequency,
   eventMatcherFilterGain,
   eventMatcherFilterQ,
+  eventMatcherFilterWet,
   eventMatcherGain,
 } from "@/use/useLoopEventMatchers";
 
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
+import { FilterEffect } from "../effect/filterEffect";
 
 export function createNoiseFilteredGen(
   generatorName: string,
@@ -31,69 +33,58 @@ export function createNoiseFilteredGen(
   console.debug(
     `createNoiseFilteredGen ${generatorName} gain %o, opt %o`,
     gain,
-    options
+    toRaw(options)
   );
 
-  const channel = new Tone.Channel(0);
+  const channel = new Tone.Channel();
 
-  const channelGainNode = channel.send("main");
+  const gainNode = new Tone.Gain(gain);
 
-  // channelGainNode.set({ gain })
+  // const filterNode = new Tone.Filter(filterOptions);
 
-  console.debug(
-    `createNoiseFilteredGen ${generatorName} channelGainNode %o`,
-    channelGainNode.gain.value
-  );
+  const filterEffectNode = new FilterEffect({
+    filter: filterOptions
+  })
+  
+  // const envNode = new Tone.AmplitudeEnvelope({
+  //   attack: 5,
+  //   decay: 0,
+  //   sustain: 0.5,
+  //   release: 10,
+  //   attackCurve: "linear",
+  //   releaseCurve: "linear",
+  // }).connect(filterNode);
 
-  const gainNode = new Tone.Gain(gain).connect(channel);
+  // const noiseNode = new Tone.Noise(noiseOptions).connect(envNode);
 
-  const filterNode = new Tone.Filter(filterOptions).connect(gainNode);
+  const noiseSythNode = new Tone.NoiseSynth({
+    envelope: {
+      attack: 30,
+      decay: 0,
+      sustain: 1,
+      release: 30,
+    },
+    noise: noiseOptions,
+  });
 
-  const envNode = new Tone.AmplitudeEnvelope({
-    attack: 5,
-    decay: 0,
-    sustain: 0.5,
-    release: 10,
-    attackCurve: "linear",
-    releaseCurve: "linear",
-  }).connect(filterNode);
+  // === Connections === //
 
-  const noiseNode = new Tone.Noise(noiseOptions).connect(envNode);
+  channel.send("main");
+  noiseSythNode.chain(filterEffectNode, gainNode, channel);
 
   /* === === */
 
-  //   const gainSignal = new Tone.Signal({
-  //     value: gain,
-  //     units: ''
-  //   })
+  // === Playback === //
 
-  /* === === */
-
-  eventHandler.onPlayBackStarted(() => {
-    if (noiseNode.state === "stopped") {
-      noiseNode.start("+0.1");
-    }
-
-    envNode.set({
-      release: 10,
-      attack: 5,
-    });
-
-    envNode.triggerAttack("+0.2");
+  eventHandler.onPlayBackStarted((event) => {
+    noiseSythNode.triggerAttack(event.time);
   });
 
-  eventHandler.onPlayBackPaused(() => {
-    envNode.set({
-      release: 2,
-      attack: 2,
-    });
-
-    envNode.triggerRelease("+0.1");
+  eventHandler.onPlayBackPaused((time) => {
+    noiseSythNode.triggerRelease(time);
   });
-  eventHandler.onPlayBackStopped(() => {
-    // noiseNode.stop("+20");
-
-    envNode.triggerRelease("+0.1");
+  eventHandler.onPlayBackStopped((time) => {
+    noiseSythNode.triggerRelease(time);
   });
 
   setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
@@ -112,38 +103,39 @@ export function createNoiseFilteredGen(
 
     if (isMatching(eventMatcherFilterFrequency, event)) {
       const { rampTime, signal } = event;
-      filterNode.frequency.rampTo(signal.filter.frequency, rampTime, "+0.1");
+      filterEffectNode.filter.frequency.rampTo(signal.filter.frequency, rampTime, "+0.1");
     }
 
     if (isMatching(eventMatcherFilterQ, event)) {
       const { rampTime, signal } = event;
-      filterNode.Q.rampTo(signal.filter.Q, rampTime, "+0.1");
+      filterEffectNode.filter.Q.rampTo(signal.filter.Q, rampTime, "+0.1");
     }
 
     if (isMatching(eventMatcherFilterGain, event)) {
       const { rampTime, signal } = event;
-      filterNode.gain.rampTo(signal.filter.gain, rampTime, "+0.1");
+      filterEffectNode.filter.gain.rampTo(signal.filter.gain, rampTime, "+0.1");
     }
 
     if (isMatching(eventMatcherFilterDetune, event)) {
       const { rampTime, signal } = event;
-      filterNode.detune.rampTo(signal.filter.detune, rampTime, "+0.1");
+      filterEffectNode.filter.detune.rampTo(signal.filter.detune, rampTime, "+0.1");
+    }
+
+    if (isMatching(eventMatcherFilterWet, event)) {
+      const { rampTime, signal } = event;
+      filterEffectNode.wet.rampTo(signal.filter.wet, rampTime, '+0.1')
     }
   });
 
   /* === Dispay === */
 
   const displayName = computed(() => {
-    return `${generatorName} - ${capitalCase(noiseNode.type)}`;
+    return `${generatorName} - ${capitalCase(noiseSythNode.noise.type)}`;
   });
 
   /* === Controls === */
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
-  const gainCtrl = computed({
-    get: () => channelGainNode.gain.value,
-    set: (value) => channelGainNode.gain.rampTo(value, "+0.5"),
-  });
 
   const { volumeRef } = useVolumeControl(channel.volume);
 
@@ -155,7 +147,6 @@ export function createNoiseFilteredGen(
     generatorName: displayName,
     type: "NoiseFilteredGen",
     muteCtrl,
-    gainCtrl,
     volumeCtrl: volumeRef,
     dispose,
   });

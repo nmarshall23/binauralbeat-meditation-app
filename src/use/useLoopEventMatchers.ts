@@ -59,6 +59,15 @@ export const eventMatcherFilterDetune = {
   },
 };
 
+export const eventMatcherFilterWet = {
+  rampTime: Pattern.number,
+  signal: {
+    filter: {
+      wet: Pattern.number.between(0, 1)
+    }
+  },
+};
+
 export const eventMatcherSpinEffect = {
   rampTime: Pattern.number,
   signal: {
@@ -72,3 +81,4 @@ export const eventMatcherSpinCycleFreq = {
     spinCycleFreq: Pattern.number.between(0.1, 2)
   },
 };
+
