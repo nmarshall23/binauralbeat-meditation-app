@@ -60,20 +60,27 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
             {
               rampTime: 10,
               signal: {
-                frequency: 140,
+                beatFreq: 4,
+                osc: {
+                  frequency: 140,
+                },
               },
             },
             {
               rampTime: 30,
               signal: {
-                frequency: 180,
+                osc: {
+                  frequency: 180,
+                },
                 beatFreq: 8,
               },
             },
             {
               rampTime: 30,
               signal: {
-                frequency: 220,
+                osc: {
+                  frequency: 220,
+                },
                 beatFreq: 4,
               },
             },
@@ -99,21 +106,28 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
             {
               rampTime: 30,
               signal: {
-                frequency: 220,
+                beatFreq: 6,
+                osc: {
+                  frequency: 220,
+                },
               },
             },
             {
               rampTime: 60,
               signal: {
-                frequency: 160,
                 beatFreq: 3,
+                osc: {
+                  frequency: 160,
+                },
               },
             },
             {
               rampTime: 30,
               signal: {
-                frequency: 220,
                 beatFreq: 6,
+                osc: {
+                  frequency: 220,
+                },
               },
             },
           ],

@@ -19,7 +19,7 @@ export const lpBrownProgram: BinauralBeatProgram = {
         },
         loopEvents: {
           humanize: 30,
-          interval: 30,
+          interval: useMinDurationToSec(2),
           probability: 0.25,
           pattern: "randomWalk",
           values: [

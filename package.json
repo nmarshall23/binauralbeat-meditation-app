@@ -5,7 +5,7 @@
   "homepage": "https://nmarshall23.github.io/binauralbeat-meditation-app/",
   "scripts": {
     "dev": "vite --host",
-    "build": "rm -r dist && vue-tsc && vite build",
+    "build": " vue-tsc && vite build",
     "preview": "vite preview",
     "predeploy": "pnpm run build",
     "deploy": "gh-pages -d dist --dotfiles true "

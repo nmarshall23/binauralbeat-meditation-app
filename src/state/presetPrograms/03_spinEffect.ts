@@ -1,4 +1,3 @@
-import { useMinDurationToSec } from "@/use/useDurationInSec";
 import { BinauralBeatProgram } from "../bbPrograms";
 
 export const simpleSpinEffectProgram: BinauralBeatProgram = {
