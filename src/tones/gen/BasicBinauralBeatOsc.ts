@@ -19,7 +19,7 @@ export function createBasicBinauralBeatOsc(
     options
   );
 
-  const channel = new Tone.Channel(-16);
+  const channel = new Tone.Channel(0);
 
   const channelGainNode = channel.send("main");
 

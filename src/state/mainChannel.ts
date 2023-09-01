@@ -7,15 +7,16 @@ const volumeSliderOptions = {
   step: 10,
   innerMin: 1,
   innerMax: 99,
-  projectionMax: 3,
-  projectionMin: -25,
+  projectionMax: 5,
+  projectionMin: -20,
 };
-const mainChannel = new Tone.Channel(-10).receive("main").toDestination();
+
+const mainChannel = new Tone.Channel(0).receive("main").toDestination();
 
 const { volumeRef } = useVolumeControl(mainChannel.volume, {
   projectionMax: volumeSliderOptions.projectionMax,
   projectionMin: volumeSliderOptions.projectionMin,
-  defaultValue: 50
+  defaultValue: 50,
 });
 
 export function useMainChannel() {

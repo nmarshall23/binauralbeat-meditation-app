@@ -13,7 +13,7 @@ import {
 } from "@/use/useLoopEventMatchers";
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 
-const defaultVolume = -16;
+const defaultVolume = 0;
 
 export function createBinauralBeatwLoop(
   generatorName: string,

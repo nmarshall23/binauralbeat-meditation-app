@@ -17,7 +17,7 @@ import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
 import { SpinningPanner } from "../effect/spinningPanner";
 
-const defaultVolume = -18;
+const defaultVolume = 0;
 
 export function createBinauralBeatSpinOsc(
   generatorName: string,
