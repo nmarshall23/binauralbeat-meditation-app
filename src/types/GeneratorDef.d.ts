@@ -49,6 +49,7 @@ export type NoiseFilteredGenOptions = {
     detune?: number;
   };
   loopEvents?: LooppingEventsOptions<NoiseFilteredGenEventSignal>;
+  eventSequence?: EventSequence<NoiseFilteredGenEventSignal>
 };
 
 export interface BinauralBeatwLoopOscOptions {
@@ -75,6 +76,7 @@ export type BinauralBeatSpinOscOptions = {
     detune?: number;
   };
   loopEvents?: LooppingEventsOptions<BinauralBeatSpinEventSignal>;
+  eventSequence?: EventSequence<BinauralBeatSpinEventSignal>
 };
 
 // === Generator Def ===

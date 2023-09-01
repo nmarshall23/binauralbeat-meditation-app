@@ -13,7 +13,7 @@ export type LooppingEventsOptions<E> = {
   pattern: PatternName;
   interval: number;
   humanize?: boolean | number;
-  probability: Tone.Unit.NormalRange;
+  probability?: Tone.Unit.NormalRange;
   values: LoopEventValue<E>[];
 };
 

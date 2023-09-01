@@ -17,6 +17,11 @@ import {
 
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { FilterEffect } from "../effect/filterEffect";
+import {
+  EventValueType,
+  NoiseFilteredGenEventSignal,
+} from "@/types/LoopPattern";
+import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
 
 export function createNoiseFilteredGen(
   generatorName: string,
@@ -28,6 +33,7 @@ export function createNoiseFilteredGen(
     noise: noiseOptions,
     filter: filterOptions,
     loopEvents,
+    eventSequence,
   } = options;
 
   console.debug(
@@ -43,9 +49,9 @@ export function createNoiseFilteredGen(
   // const filterNode = new Tone.Filter(filterOptions);
 
   const filterEffectNode = new FilterEffect({
-    filter: filterOptions
-  })
-  
+    filter: filterOptions,
+  });
+
   // const envNode = new Tone.AmplitudeEnvelope({
   //   attack: 5,
   //   decay: 0,
@@ -87,9 +93,14 @@ export function createNoiseFilteredGen(
     noiseSythNode.triggerRelease(time);
   });
 
-  setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
+  function eventCallBack(
+    eventType: string,
+    time: number,
+    event: EventValueType<NoiseFilteredGenEventSignal>
+  ) {
     console.log(
-      "%o Pattern Triggered - Time %o, event.rampTime: %o event.signal %o",
+      "%o %o Triggered - Time %o, event.rampTime: %o event.signal %o",
+      eventType,
       generatorName,
       Math.floor(time),
       event?.rampTime,
@@ -98,34 +109,64 @@ export function createNoiseFilteredGen(
 
     if (isMatching(eventMatcherGain, event)) {
       const { rampTime, signal } = event;
-      gainNode.gain.rampTo(signal.gain, rampTime, "+0.1");
+      gainNode.gain.rampTo(signal.gain, rampTime, time);
     }
 
     if (isMatching(eventMatcherFilterFrequency, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.frequency.rampTo(signal.filter.frequency, rampTime, "+0.1");
+      filterEffectNode.filter.frequency.rampTo(
+        signal.filter.frequency,
+        rampTime,
+        time
+      );
     }
 
     if (isMatching(eventMatcherFilterQ, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.Q.rampTo(signal.filter.Q, rampTime, "+0.1");
+      filterEffectNode.filter.Q.rampTo(signal.filter.Q, rampTime, time);
     }
 
     if (isMatching(eventMatcherFilterGain, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.gain.rampTo(signal.filter.gain, rampTime, "+0.1");
+      filterEffectNode.filter.gain.rampTo(signal.filter.gain, rampTime, time);
     }
 
     if (isMatching(eventMatcherFilterDetune, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.detune.rampTo(signal.filter.detune, rampTime, "+0.1");
+      filterEffectNode.filter.detune.rampTo(
+        signal.filter.detune,
+        rampTime,
+        time
+      );
     }
 
     if (isMatching(eventMatcherFilterWet, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.wet.rampTo(signal.filter.wet, rampTime, '+0.1')
+      filterEffectNode.wet.rampTo(signal.filter.wet, rampTime, time);
     }
-  });
+  }
+
+  const disposePattern = setupLoopEventsHandlers(
+    eventHandler,
+    loopEvents,
+    (time, event) =>
+      eventCallBack(
+        "Loop",
+        time,
+        event as EventValueType<NoiseFilteredGenEventSignal>
+      )
+  );
+
+  const disposePart = setupEventSequenceHandlers(
+    eventHandler,
+    eventSequence,
+    (time: number, event) =>
+      eventCallBack(
+        "Event Sequence",
+        time,
+        event as EventValueType<NoiseFilteredGenEventSignal>
+      )
+  );
 
   /* === Dispay === */
 
@@ -141,6 +182,8 @@ export function createNoiseFilteredGen(
 
   function dispose() {
     channel.dispose();
+    disposePart();
+    disposePattern();
   }
 
   return reactive({

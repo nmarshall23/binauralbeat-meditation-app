@@ -16,6 +16,11 @@ import {
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
 import { SpinningPanner } from "../effect/spinningPanner";
+import {
+  BinauralBeatSpinEventSignal,
+  EventValueType,
+} from "@/types/LoopPattern";
+import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
 
 export function createBinauralBeatSpinOsc(
   generatorName: string,
@@ -29,6 +34,7 @@ export function createBinauralBeatSpinOsc(
     spinCycleFreq = 0.5,
     osc: oscOptions,
     loopEvents,
+    eventSequence,
   } = options;
 
   console.debug(
@@ -69,9 +75,14 @@ export function createBinauralBeatSpinOsc(
     beatSynth.triggerRelease(time);
   });
 
-  setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
+  function eventCallback(
+    eventType: string,
+    time: number,
+    event: EventValueType<BinauralBeatSpinEventSignal>
+  ) {
     console.log(
-      "%o Pattern Triggered - Time %o, event.rampTime: %o event.signal %o",
+      "%o %o Triggered - Time %o, event.rampTime: %o event.signal %o",
+      eventType,
       generatorName,
       Math.floor(time),
       event?.rampTime,
@@ -80,29 +91,51 @@ export function createBinauralBeatSpinOsc(
 
     if (isMatching(eventMatcherGain, event)) {
       const { rampTime, signal } = event;
-      gainNode.gain.rampTo(signal.gain, rampTime, "+0.1");
+      gainNode.gain.rampTo(signal.gain, rampTime, time);
     }
 
     if (isMatching(eventMatcherBinauralBeatFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, "+0.1");
+      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, time);
     }
 
     if (isMatching(eventMatcherOscFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, "+0.1");
+      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, time);
     }
 
     if (isMatching(eventMatcherSpinEffect, event)) {
       const { rampTime, signal } = event;
-      spinEffectNode.wet.rampTo(signal.spinEffect, rampTime, "+0.1");
+      spinEffectNode.wet.rampTo(signal.spinEffect, rampTime, time);
     }
 
     if (isMatching(eventMatcherSpinCycleFreq, event)) {
       const { rampTime, signal } = event;
       spinEffectNode.frequency.rampTo(signal.spinCycleFreq, rampTime, time);
     }
-  });
+  }
+
+  const disposePattern = setupLoopEventsHandlers(
+    eventHandler,
+    loopEvents,
+    (time, event) =>
+      eventCallback(
+        "Loop Event",
+        time,
+        event as EventValueType<BinauralBeatSpinEventSignal>
+      )
+  );
+
+  const disposePart = setupEventSequenceHandlers(
+    eventHandler,
+    eventSequence,
+    (time: number, event) =>
+      eventCallback(
+        "Event Sequence",
+        time,
+        event as EventValueType<BinauralBeatSpinEventSignal>
+      )
+  );
 
   /* === Dispay === */
 
@@ -118,6 +151,8 @@ export function createBinauralBeatSpinOsc(
 
   function dispose() {
     channel.dispose();
+    disposePart()
+    disposePattern()
   }
 
   return reactive({
