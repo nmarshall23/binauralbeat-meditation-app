@@ -58,3 +58,17 @@ export const eventMatcherFilterDetune = {
     },
   },
 };
+
+export const eventMatcherSpinEffect = {
+  rampTime: Pattern.number,
+  signal: {
+    spinEffect: Pattern.union(0,1)
+  },
+};
+
+export const eventMatcherSpinCycleFreq = {
+  rampTime: Pattern.number,
+  signal: {
+    spinCycleFreq: Pattern.number.between(0.1, 2)
+  },
+};

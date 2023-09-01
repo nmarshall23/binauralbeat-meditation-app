@@ -13,10 +13,7 @@ import {
   eventMatcherFilterQ,
   eventMatcherGain,
 } from "@/use/useLoopEventMatchers";
-import {
-  LoopEventValue,
-  NoiseFilteredGenEventSignal,
-} from "@/types/LoopPattern";
+
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 
 export function createNoiseFilteredGen(

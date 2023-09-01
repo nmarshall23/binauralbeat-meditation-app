@@ -58,7 +58,7 @@ const remandingDurationPercentage = getter(
         largestUnit: "second",
       }).seconds;
 
-      console.log("Duration Progress Bar %o %o", remandingSec, state.duration);
+     // console.log("Duration Progress Bar %o %o", remandingSec, state.duration);
 
       return remandingSec / state.duration;
     }

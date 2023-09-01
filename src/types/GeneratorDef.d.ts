@@ -64,8 +64,9 @@ export interface BinauralBeatwLoopOscOptions {
 export type BinauralBeatSpinOscOptions = {
   gain: Tone.Unit.GainFactor;
   beatFreq: Tone.Unit.Hertz;
-  spinCrossFade?: number;
-  spinCycle?: number;
+  spinEffect?: 0 | 1;
+  spinCycleFreq?: number;
+
   osc: {
     frequency: Tone.Unit.Hertz;
     phase?: Tone.Unit.Degrees;

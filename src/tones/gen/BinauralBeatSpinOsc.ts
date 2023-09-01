@@ -1,11 +1,21 @@
 import * as Tone from "tone";
 
-import { isMatching, P } from "ts-pattern";
+import { isMatching } from "ts-pattern";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { BinauralBeatSpinOscOptions } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
+import {
+  eventMatcherBinauralBeatFreq,
+  eventMatcherGain,
+  eventMatcherOscFreq,
+  eventMatcherSpinCycleFreq,
+  eventMatcherSpinEffect,
+} from "@/use/useLoopEventMatchers";
+import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
+import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
+import { SpinningPanner } from "../effect/spinningPanner";
 
 const defaultVolume = -18;
 
@@ -17,14 +27,14 @@ export function createBinauralBeatSpinOsc(
   const {
     gain,
     beatFreq,
-    spinCrossFade = 1,
-    spinCycle = 0.1,
+    spinEffect = 1,
+    spinCycleFreq = 0.25,
     osc: oscOptions,
     loopEvents,
   } = options;
 
   console.debug(
-    `createBinauralBeatwLoop ${generatorName} gain %o, opt %o`,
+    `createBinauralBeatSpinOsc ${generatorName} gain %o, opt %o`,
     gain,
     options
   );
@@ -33,146 +43,84 @@ export function createBinauralBeatSpinOsc(
 
   channel.send("main");
 
-  // const channelGainNode = new Tone.Gain(gain).connect(channel)
+  const gainNode = new Tone.Gain(gain).connect(channel);
 
-  const envNode = new Tone.AmplitudeEnvelope({
-    attack: 4,
-    decay: 0,
-    sustain: 0.5,
-    release: 4,
-    attackCurve: "sine",
-    releaseCurve: "sine",
-  }).connect(channel);
+  // const spinEffectNode = new Tone.CrossFade(spinEffect).connect(gainNode);
 
-  const spinCrossFadeNode = new Tone.CrossFade(spinCrossFade).connect(envNode);
+  // const panner3dNode = new Tone.Panner3D().connect(spinEffectNode.b)
 
-  const mergeSpinEffect = new Tone.Merge().connect(spinCrossFadeNode.b);
-  const mergeNorm = new Tone.Merge().connect(spinCrossFadeNode.a);
+  const spinEffectNode = new SpinningPanner({
+    wet: spinEffect,
+    frequency: spinCycleFreq
+  }).connect(gainNode)
 
-  const pannerRNode = new Tone.Panner(1).connect(mergeSpinEffect, 0, 0);
-  const pannerLNode = new Tone.Panner(-1).connect(mergeSpinEffect, 0, 1);
-
-  const oscGenR = new Tone.OmniOscillator({
-    type: "sine",
-    ...oscOptions,
+  const beatSynth = new BinauralBeatSynth({
+    baseFrequency: oscOptions.frequency,
+    beatFrequency: beatFreq,
   })
-    .connect(mergeNorm, 0, 0)
-    .connect(pannerRNode)
-    .sync();
+  .connect(spinEffectNode)
+   // .connect(spinEffectNode.a)
+   // .connect(panner3dNode)
 
-  const oscGenL = new Tone.OmniOscillator({
-    type: "sine",
-    ...oscOptions,
-  })
-    .connect(mergeNorm, 0, 1)
-    .connect(pannerLNode)
-    .sync();
-
-  // === Signals === //
-
-  const freqSignal = new Tone.Signal({
-    value: oscOptions.frequency,
-    units: "frequency",
-  }).connect(oscGenR.frequency);
-
-  const add = new Tone.Add(beatFreq).connect(oscGenL.frequency);
-
-  freqSignal.connect(add);
-
+  
   // === Panner input ===
 
-  const lfoNode = new Tone.LFO(spinCycle, -1, 1).start();
+  // const rad = Math.PI * 2
+  // const lfoNode = new Tone.LFO(spinCycleFreq, -rad, rad).start();
 
-  lfoNode.connect(pannerRNode.pan);
-
-  const negNode = new Tone.Negate().connect(pannerLNode.pan);
-
-  lfoNode.connect(negNode);
+  // lfoNode.connect(panner3dNode.orientationY)
 
   // === Playback === //
 
   eventHandler.onPlayBackStarted(() => {
-    if (oscGenR.state === "stopped") {
-      oscGenR.start("+0.1");
-      oscGenL.start("+0.1");
-    }
-
-    envNode.set({
-      release: 10,
-      attack: 5,
-    });
-
-    envNode.triggerAttack("+0.2");
+    beatSynth.triggerAttack('+0.1')
   });
 
   eventHandler.onPlayBackPaused(() => {
-    envNode.set({
-      release: 2,
-      attack: 2,
-    });
+    beatSynth.triggerRelease("+0.1")
 
-    envNode.triggerRelease("+0.1");
   });
 
   eventHandler.onPlayBackStopped(() => {
-    // oscGenR.start("+4");
-    // oscGenL.start("+4");
 
-    envNode.triggerRelease("+0.1");
+    beatSynth.triggerRelease("+0.1")
   });
 
-  if (isDefined(loopEvents)) {
-    const { values, humanize, probability, interval, pattern } = loopEvents;
+  setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
+    console.log(
+      "%o Pattern Triggered - Time %o, event.rampTime: %o event.signal %o",
+      generatorName,
+      Math.floor(time),
+      event?.rampTime,
+      toRaw(event?.signal)
+    );
 
-    const tonePattern = new Tone.Pattern({
-      pattern,
-      values,
-      humanize,
-      probability,
-      interval,
-      callback: (time, event) => {
-        console.log(
-          "%o Pattern Triggered - time %o event.rampTime %o event.signal %o",
-          generatorName,
-          time,
-          event?.rampTime,
-          event?.signal
-        );
+    if (isMatching(eventMatcherGain, event)) {
+      const { rampTime, signal } = event;
+      gainNode.gain.rampTo(signal.gain, rampTime, "+0.1");
+    }
 
-        if (isMatching(beatFreqEventPattern, event)) {
-          add.addend.rampTo(event.signal.beatFreq, event.rampTime, time);
-        }
+    if (isMatching(eventMatcherBinauralBeatFreq, event)) {
+      const { rampTime, signal } = event;
+      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, "+0.1");
+    }
 
-        if (isMatching(frequencyEventPattern, event)) {
-          freqSignal.rampTo(event.signal.frequency, event.rampTime, time);
-        }
+    if (isMatching(eventMatcherOscFreq, event)) {
+      const { rampTime, signal } = event;
+      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, "+0.1");
+    }
 
-        if (isMatching(spinCrossFadeEventPattern, event)) {
-          spinCrossFadeNode.fade.rampTo(
-            event.signal.spinCrossFade,
-            event.rampTime,
-            time
-          );
-        }
+    if (isMatching(eventMatcherSpinEffect, event)) {
+      const { rampTime, signal } = event;
+      spinEffectNode.wet.rampTo(signal.spinEffect, rampTime, "+0.1");
+    }
 
-        if (isMatching(spinCycleEventPattern, event)) {
-          lfoNode.frequency.rampTo(
-            event.signal.spinCycle,
-            event.rampTime,
-            time
-          );
-        }
-
-        // if (isMatching(gainEventPattern, event)) {
-        //   console.log("channelGainNode.gain %o", channelGainNode.gain.value);
-        //   channelGainNode.gain.rampTo(event.gain, event.rampTime, time);
-        // }
-      },
-    });
-
-    eventHandler.onPlayBackStarted(({ time }) => tonePattern.start(time));
-    eventHandler.onPlayBackPaused((time) => tonePattern.stop(time));
-  }
+    if (isMatching(eventMatcherSpinCycleFreq, event)) {
+      const { rampTime, signal } = event;
+      spinEffectNode.frequency.rampTo(signal.spinCycleFreq, rampTime, time);
+      // lfoNode.frequency.rampTo(signal.spinCycleFreq, rampTime, time);
+    }
+  });
 
   /* === Dispay === */
 
@@ -184,9 +132,7 @@ export function createBinauralBeatSpinOsc(
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
 
-  const { volumeRef } = useVolumeControl(channel.volume, {
-    defaultValue: gain,
-  });
+  const { volumeRef } = useVolumeControl(channel.volume);
 
   function dispose() {
     channel.dispose();
@@ -194,33 +140,11 @@ export function createBinauralBeatSpinOsc(
 
   return reactive({
     generatorName: displayName,
-    type: 'BinauralBeatSpinOsc',
+    type: "BinauralBeatSpinOsc",
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
   });
 }
 
-const beatFreqEventPattern = {
-  signal: {
-    beatFreq: P.number,
-  },
-};
 
-const frequencyEventPattern = {
-  signal: {
-    frequency: P.number,
-  },
-};
-
-const spinCrossFadeEventPattern = {
-  signal: {
-    spinCrossFade: P.number,
-  },
-};
-
-const spinCycleEventPattern = {
-  signal: {
-    spinCycle: P.number,
-  },
-};

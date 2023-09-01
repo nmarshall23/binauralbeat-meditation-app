@@ -45,8 +45,8 @@ export function createBasicBinauralBeatOsc(
     type: "sine",
     ...oscOptions,
   })
-    .connect(merge, 0, 1)
-    .sync();
+   .connect(merge, 0, 1)
+   .sync();
 
   // === Signals === //
 

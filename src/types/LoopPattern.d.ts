@@ -21,11 +21,13 @@ type BinauralBeatOscLoopEventSignal = {
 };
 
 type BinauralBeatSpinEventSignal = {
-  beatFreq: Tone.Unit.Hertz;
-  frequency: Tone.Unit.Hertz;
   gain: Tone.Unit.GainFactor;
-  spinCrossFade: number;
-  spinCycle: number;
+  beatFreq: Tone.Unit.Hertz;
+  osc: {
+    frequency?: Tone.Unit.Frequency;
+  }
+  spinEffect: 0 | 1;
+  spinCycleFreq: number;
 };
 
 type NoiseFilteredGenEventSignal = {
