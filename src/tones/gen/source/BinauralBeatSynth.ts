@@ -1,36 +1,56 @@
 import * as Tone from "tone";
-import { Frequency, NormalRange, Time } from "tone/build/esm/core/type/Units";
+import {
+  Cents,
+  Frequency,
+  NormalRange,
+  Time,
+} from "tone/build/esm/core/type/Units";
 import { omitFromObject } from "tone/build/esm/core/util/Defaults";
-import { RecursivePartial } from "tone/build/esm/core/util/Interface";
+import { RecursivePartial, readOnly } from "tone/build/esm/core/util/Interface";
 import {
   Instrument,
   InstrumentOptions,
 } from "tone/build/esm/instrument/Instrument";
 import { Source } from "tone/build/esm/source/Source";
+import { OmniOscillatorSynthOptions } from "tone/build/esm/source/oscillator/OscillatorInterface";
 
 export interface BinauralBeatSynthOptions extends InstrumentOptions {
-  synth: Tone.SynthOptions;
+  oscillator: OmniOscillatorSynthOptions;
+  envelope: Omit<Tone.EnvelopeOptions, keyof Tone.ToneAudioNodeOptions>;
   baseFrequency: Frequency;
   beatFrequency: number;
+  detune: Cents;
 }
 
 export class BinauralBeatSynth<
   Options extends BinauralBeatSynthOptions = BinauralBeatSynthOptions
 > extends Instrument<Options> {
-  readonly name: string = "BinauralBeatOscSynth";
+  readonly name: string = "BinauralBeatSynth";
 
   /**
-   * The oscillator.
+   * The output merge node
    */
-  private readonly synthL: Tone.Synth<any>;
-  private readonly synthR: Tone.Synth<any>;
-
-  // private readonly mergeNode: Tone.Merge;
-
-  private readonly addBeatNode: Tone.Add;
-
+  private _merge: Tone.Merge;
+  /**
+   * The oscillators.
+   */
+  readonly oscillatorL: Tone.OmniOscillator<any>;
+  readonly oscillatorR: Tone.OmniOscillator<any>;
+  /**
+   * The frequency signals
+   */
   readonly baseFrequency: Tone.Signal<"frequency">;
   readonly beatFrequency: Tone.Param<"number">;
+
+  /**
+   * The detune signal
+   */
+  readonly detune: Tone.Signal<"cents">;
+
+  /**
+   * The envelope
+   */
+  readonly envelope: Tone.AmplitudeEnvelope;
 
   /**
    * @param options the options available for the synth.
@@ -45,40 +65,103 @@ export class BinauralBeatSynth<
       arguments
     );
 
+    // === Instruments === //
 
-    const mergeNode = new Tone.Merge().connect(this.output);
-    this.synthL = new Tone.Synth(options.synth).connect(mergeNode, 0, 1);
-    this.synthR = new Tone.Synth(options.synth).connect(mergeNode, 0, 0);
+    this.envelope = new Tone.AmplitudeEnvelope(
+      Object.assign(
+        {
+          context: this.context,
+        },
+        options.envelope
+      )
+    );
 
-    this.addBeatNode = new Tone.Add(options.beatFrequency);
+    this._merge = new Tone.Merge();
+
+    this.oscillatorR = new Tone.OmniOscillator(
+      Object.assign(
+        {
+          context: this.context,
+          detune: options.detune,
+        },
+        options.oscillator
+      )
+    );
+
+    this.oscillatorL = new Tone.OmniOscillator(
+      Object.assign(
+        {
+          context: this.context,
+          detune: options.detune,
+        },
+        options.oscillator
+      )
+    );
+
+    // === Connections === //
+
+    this.envelope.connect(this.output);
+    this._merge.connect(this.envelope);
+    this.oscillatorR.connect(this._merge, 0, 0);
+    this.oscillatorL.connect(this._merge, 0, 1);
+
+    // === Signals === //
+
+    this.detune = new Tone.Signal({
+      value: options.detune,
+      units: "cents",
+    })
+      .connect(this.oscillatorL.detune)
+      .connect(this.oscillatorR.detune);
+
+    const beatAdderNode = new Tone.Add(options.beatFrequency).connect(
+      this.oscillatorL.frequency
+    );
+
+    this.beatFrequency = beatAdderNode.addend;
 
     this.baseFrequency = new Tone.Signal({
       value: options.baseFrequency,
       units: "frequency",
-    }).connect(this.addBeatNode)
+    })
+      .connect(beatAdderNode)
+      .connect(this.oscillatorR.frequency);
 
-    this.beatFrequency = this.addBeatNode.addend
+    readOnly(this, [
+      "oscillatorR",
+      "oscillatorL",
+      "baseFrequency",
+      "beatFrequency",
+      "detune",
+      "envelope",
+    ]);
   }
 
   static getDefaults(): BinauralBeatSynthOptions {
     return Object.assign(Instrument.getDefaults(), {
-      synth: Object.assign(Tone.Synth.getDefaults(), {
-        envelope: Object.assign(
-          omitFromObject(Tone.Envelope.getDefaults(), Object.keys(Tone.ToneAudioNode.getDefaults())),
-          {
-            attack: 10,
-            decay: 0,
-            release: 10,
-            sustain: 1,
-          },
+      envelope: Object.assign(
+        omitFromObject(
+          Tone.Envelope.getDefaults(),
+          Object.keys(Tone.ToneAudioNode.getDefaults())
         ),
-        oscillator: Object.assign(
-          omitFromObject(Tone.OmniOscillator.getDefaults(), [...Object.keys(Source.getDefaults()), "frequency", "detune"]),
-          {
-            type: "sine",
-          },
-        ) as Tone.OmniOscillatorOptions,
-      }),
+        {
+          attack: 10,
+          decay: 0,
+          release: 10,
+          sustain: 1,
+        }
+      ),
+      oscillator: Object.assign(
+        omitFromObject(Tone.OmniOscillator.getDefaults(), [
+          ...Object.keys(Source.getDefaults()),
+          "frequency",
+          "detune",
+        ]),
+        {
+          type: "sine",
+        }
+      ) as Tone.OmniOscillatorOptions,
+      detune: 0,
       baseFrequency: 180,
       beatFrequency: 6,
     });
@@ -97,16 +180,35 @@ export class BinauralBeatSynth<
   }
 
   triggerAttack(time?: Time, velocity: NormalRange = 1): this {
+    console.log("this info", this.channelCount);
     this.log("triggerAttack", time, velocity);
+    const seconds = this.toSeconds(time);
 
-    this.synthL.triggerAttack(this.baseFrequency.value, time, velocity);
-    this.synthR.triggerAttack(this.beatFrequency.value, time, velocity);
+    // the envelopes
+    this.envelope.triggerAttack(seconds, velocity);
+    this.oscillatorL.start(seconds);
+    this.oscillatorR.start(seconds);
+    // if there is no release portion, stop the oscillator
+    if (this.envelope.sustain === 0) {
+      const computedAttack = this.toSeconds(this.envelope.attack);
+      const computedDecay = this.toSeconds(this.envelope.decay);
+      const stopTime = seconds + computedAttack + computedDecay;
+
+      this.oscillatorL.stop(stopTime);
+      this.oscillatorR.stop(stopTime);
+    }
     return this;
   }
 
   triggerRelease(time?: Time): this {
-    this.synthL.triggerRelease(time);
-    this.synthR.triggerRelease(time);
+    this.log("triggerRelease", time);
+    const seconds = this.toSeconds(time);
+
+    this.envelope.triggerRelease(seconds);
+    const stopTime = seconds + this.toSeconds(this.envelope.release);
+
+    this.oscillatorL.stop(stopTime);
+    this.oscillatorR.stop(stopTime);
     return this;
   }
 
@@ -115,8 +217,10 @@ export class BinauralBeatSynth<
    */
   dispose(): this {
     super.dispose();
-    this.synthL.dispose();
-    this.synthR.dispose();
+    this.oscillatorL.dispose();
+    this.oscillatorR.dispose();
+    this.envelope.dispose();
+    this._merge.dispose();
 
     return this;
   }

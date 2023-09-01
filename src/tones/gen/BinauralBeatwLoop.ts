@@ -12,6 +12,7 @@ import {
   eventMatcherOscFreq,
 } from "@/use/useLoopEventMatchers";
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
+import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
 
 const defaultVolume = 0;
 
@@ -25,82 +26,41 @@ export function createBinauralBeatwLoop(
   console.debug(
     `createBinauralBeatwLoop ${generatorName} gain %o, opt %o`,
     gain,
-    options
+    toRaw(options)
   );
 
   const channel = new Tone.Channel(defaultVolume);
 
+  const gainNode = new Tone.Gain(gain);
+
+  const beatSynth = new BinauralBeatSynth({
+    baseFrequency: oscOptions.frequency,
+    beatFrequency: beatFreq,
+  })
+
+  // === Connections === //
   channel.send("main");
-
-  const gainNode = new Tone.Gain(gain).connect(channel);
-
-  const envNode = new Tone.AmplitudeEnvelope({
-    attack: 6,
-    decay: 0,
-    sustain: 1,
-    release: 4,
-    attackCurve: "cosine",
-    releaseCurve: "linear",
-  }).connect(gainNode);
-
-  const merge = new Tone.Merge().connect(envNode);
-
-  const oscGenR = new Tone.OmniOscillator({
-    type: "sine",
-    ...oscOptions,
-  })
-    .connect(merge, 0, 0)
-    .sync();
-
-  const oscGenL = new Tone.OmniOscillator({
-    type: "sine",
-    ...oscOptions,
-  })
-    .connect(merge, 0, 1)
-    .sync();
+  beatSynth.chain(gainNode, channel)
 
   // === Signals === //
 
-  const freqSignal = new Tone.Signal({
-    value: oscOptions.frequency,
-    units: "frequency",
-  }).connect(oscGenR.frequency);
 
-  const add = new Tone.Add(beatFreq).connect(oscGenL.frequency);
-
-  freqSignal.connect(add);
 
   // === Playback === //
 
-  eventHandler.onPlayBackStarted(() => {
-    if (oscGenR.state === "stopped") {
-      oscGenR.start("+0.1");
-      oscGenL.start("+0.1");
-    }
-
-    envNode.set({
-      release: 10,
-      attack: 5,
-    });
-
-    envNode.triggerAttack("+0.2");
+  eventHandler.onPlayBackStarted((event) => {
+    beatSynth.triggerAttack(event.time)
   });
 
-  eventHandler.onPlayBackPaused(() => {
-    envNode.set({
-      release: 2,
-      attack: 2,
-    });
+  eventHandler.onPlayBackPaused((time) => {
+    beatSynth.triggerRelease(time)
 
-    envNode.triggerRelease("+0.1");
   });
 
-  eventHandler.onPlayBackStopped(() => {
-    // oscGenR.start("+4");
-    // oscGenL.start("+4");
-
-    envNode.triggerRelease("+0.1");
+  eventHandler.onPlayBackStopped((time) => {
+    beatSynth.triggerRelease(time)
   });
+
 
   setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
     console.log(
@@ -118,12 +78,12 @@ export function createBinauralBeatwLoop(
 
     if (isMatching(eventMatcherBinauralBeatFreq, event)) {
       const { rampTime, signal } = event;
-      add.addend.rampTo(signal.beatFreq, rampTime, "+0.1");
+      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, "+0.1");
     }
 
     if (isMatching(eventMatcherOscFreq, event)) {
       const { rampTime, signal } = event;
-      freqSignal.rampTo(signal.osc.frequency, rampTime, "+0.1");
+      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, "+0.1");
     }
   });
 

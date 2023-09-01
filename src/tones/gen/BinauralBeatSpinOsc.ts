@@ -17,8 +17,6 @@ import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
 import { SpinningPanner } from "../effect/spinningPanner";
 
-const defaultVolume = 0;
-
 export function createBinauralBeatSpinOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
@@ -28,7 +26,7 @@ export function createBinauralBeatSpinOsc(
     gain,
     beatFreq,
     spinEffect = 1,
-    spinCycleFreq = 0.25,
+    spinCycleFreq = 0.5,
     osc: oscOptions,
     loopEvents,
   } = options;
@@ -36,54 +34,39 @@ export function createBinauralBeatSpinOsc(
   console.debug(
     `createBinauralBeatSpinOsc ${generatorName} gain %o, opt %o`,
     gain,
-    options
+    toRaw(options)
   );
 
-  const channel = new Tone.Channel(defaultVolume);
+  const channel = new Tone.Channel();
 
-  channel.send("main");
-
-  const gainNode = new Tone.Gain(gain).connect(channel);
-
-  // const spinEffectNode = new Tone.CrossFade(spinEffect).connect(gainNode);
-
-  // const panner3dNode = new Tone.Panner3D().connect(spinEffectNode.b)
+  const gainNode = new Tone.Gain(gain);
 
   const spinEffectNode = new SpinningPanner({
     wet: spinEffect,
-    frequency: spinCycleFreq
-  }).connect(gainNode)
+    frequency: spinCycleFreq,
+  });
 
   const beatSynth = new BinauralBeatSynth({
     baseFrequency: oscOptions.frequency,
     beatFrequency: beatFreq,
-  })
-  .connect(spinEffectNode)
-   // .connect(spinEffectNode.a)
-   // .connect(panner3dNode)
+  });
 
-  
-  // === Panner input ===
-
-  // const rad = Math.PI * 2
-  // const lfoNode = new Tone.LFO(spinCycleFreq, -rad, rad).start();
-
-  // lfoNode.connect(panner3dNode.orientationY)
+  // === Connections === //
+  channel.send("main");
+  beatSynth.chain(spinEffectNode, gainNode, channel);
 
   // === Playback === //
 
-  eventHandler.onPlayBackStarted(() => {
-    beatSynth.triggerAttack('+0.1')
+  eventHandler.onPlayBackStarted((event) => {
+    beatSynth.triggerAttack(event.time);
   });
 
-  eventHandler.onPlayBackPaused(() => {
-    beatSynth.triggerRelease("+0.1")
-
+  eventHandler.onPlayBackPaused((time) => {
+    beatSynth.triggerRelease(time);
   });
 
-  eventHandler.onPlayBackStopped(() => {
-
-    beatSynth.triggerRelease("+0.1")
+  eventHandler.onPlayBackStopped((time) => {
+    beatSynth.triggerRelease(time);
   });
 
   setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) => {
@@ -118,7 +101,6 @@ export function createBinauralBeatSpinOsc(
     if (isMatching(eventMatcherSpinCycleFreq, event)) {
       const { rampTime, signal } = event;
       spinEffectNode.frequency.rampTo(signal.spinCycleFreq, rampTime, time);
-      // lfoNode.frequency.rampTo(signal.spinCycleFreq, rampTime, time);
     }
   });
 
@@ -146,5 +128,3 @@ export function createBinauralBeatSpinOsc(
     dispose,
   });
 }
-
-

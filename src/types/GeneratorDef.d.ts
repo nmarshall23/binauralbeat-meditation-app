@@ -58,7 +58,8 @@ export interface BinauralBeatwLoopOscOptions {
     phase?: Tone.Unit.Degrees;
     detune?: number;
   };
-  loopEvents?: LooppingEventsOptions<BinauralBeatOscLoopEventSignal>;
+  loopEvents?: LooppingEventsOptions<BinauralBeatEventSignal>;
+  eventSequence?: EventSequence<BinauralBeatEventSignal>
 }
 
 export type BinauralBeatSpinOscOptions = {

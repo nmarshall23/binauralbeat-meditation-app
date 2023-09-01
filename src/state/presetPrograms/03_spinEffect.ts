@@ -35,8 +35,8 @@ export const simpleSpinEffectProgram: BinauralBeatProgram = {
 
 export const evolvingSpinEffectProgram: BinauralBeatProgram = {
   id: "EvoSpEffP01",
-  title: "Brown Noise & Spinning Binaural Beat Osc ",
-  description: "Spatialized audio spinning in place",
+  title: "Evolving Spinning Binaural Beat",
+  description: "Spin Cycle evolves from 2 to 4 cyc/sec",
   volumeLevel: 60,
   generators: [
     {
