@@ -12,7 +12,7 @@ import {
   eventMatcherOscFreq,
 } from "@/use/useLoopEventMatchers";
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
-import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
+import { BinauralBeatSynth } from "../Instrument/BinauralBeatSynth";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
 import { BinauralBeatEventSignal, EventValueType } from "@/types/LoopPattern";
 

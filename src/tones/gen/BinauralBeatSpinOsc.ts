@@ -14,7 +14,7 @@ import {
   eventMatcherSpinEffect,
 } from "@/use/useLoopEventMatchers";
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
-import { BinauralBeatSynth } from "./source/BinauralBeatSynth";
+import { BinauralBeatSynth } from "../Instrument/BinauralBeatSynth";
 import { SpinningPanner } from "../effect/spinningPanner";
 import {
   BinauralBeatSpinEventSignal,

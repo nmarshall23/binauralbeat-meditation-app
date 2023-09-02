@@ -3,8 +3,6 @@ import * as Tone from "tone";
 import { EventSequence, EventValueType } from "@/types/LoopPattern";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import { Pattern, match } from "ts-pattern";
-import { isStringObject } from "util/types";
-import { event } from "quasar";
 import { useProgramDurationStore } from "@/state/programDuration";
 import { noop } from "@vueuse/core";
 
