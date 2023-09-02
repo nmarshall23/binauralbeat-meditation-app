@@ -31,6 +31,8 @@ export class BinauralBeatSynth<
    * The output merge node
    */
   private _merge: Tone.Merge;
+  private _beatAdderNode: Tone.Add;
+
   /**
    * The oscillators.
    */
@@ -60,6 +62,7 @@ export class BinauralBeatSynth<
     super(
       Tone.optionsFromArguments(BinauralBeatSynth.getDefaults(), arguments)
     );
+
     const options = Tone.optionsFromArguments(
       BinauralBeatSynth.getDefaults(),
       arguments
@@ -98,6 +101,22 @@ export class BinauralBeatSynth<
       )
     );
 
+    // === Signals === //
+
+    this.detune = new Tone.Signal({
+      value: options.detune,
+      units: "cents",
+    });
+
+    this._beatAdderNode = new Tone.Add(options.beatFrequency);
+
+    this.beatFrequency = this._beatAdderNode.addend;
+
+    this.baseFrequency = new Tone.Signal({
+      value: options.baseFrequency,
+      units: "frequency",
+    });
+
     // === Connections === //
 
     this.envelope.connect(this.output);
@@ -105,26 +124,14 @@ export class BinauralBeatSynth<
     this.oscillatorR.connect(this._merge, 0, 0);
     this.oscillatorL.connect(this._merge, 0, 1);
 
-    // === Signals === //
-
-    this.detune = new Tone.Signal({
-      value: options.detune,
-      units: "cents",
-    })
+    this.detune
       .connect(this.oscillatorL.detune)
       .connect(this.oscillatorR.detune);
 
-    const beatAdderNode = new Tone.Add(options.beatFrequency).connect(
-      this.oscillatorL.frequency
-    );
+    this._beatAdderNode.connect(this.oscillatorL.frequency);
 
-    this.beatFrequency = beatAdderNode.addend;
-
-    this.baseFrequency = new Tone.Signal({
-      value: options.baseFrequency,
-      units: "frequency",
-    })
-      .connect(beatAdderNode)
+    this.baseFrequency
+      .connect(this._beatAdderNode)
       .connect(this.oscillatorR.frequency);
 
     readOnly(this, [
