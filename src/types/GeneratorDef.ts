@@ -1,12 +1,13 @@
 import * as Tone from "tone";
-import { PatternName } from "tone/build/esm/event/PatternGenerator";
 import {
   EventSequence,
   LooppingEventsOptions,
-  BinauralBeatOscLoopEventSignal,
   BinauralBeatSpinEventSignal,
   NoiseFilteredGenEventSignal,
-} from "./LoopPattern";
+  BinauralBeatEventSignal,
+} from "./GeneratorSignals";
+import { BinauralBeatSynthOptions } from "@/tones/Instrument/BinauralBeatSynth";
+import { SpinningPannerOptions } from "@/tones/effect/spinningPanner";
 
 // === Options === //
 
@@ -52,32 +53,20 @@ export type NoiseFilteredGenOptions = {
   eventSequence?: EventSequence<NoiseFilteredGenEventSignal>
 };
 
-export interface BinauralBeatwLoopOscOptions {
+export type BinauralBeatSynthGenerator = {
+  synth: Partial<BinauralBeatSynthOptions>
   gain: Tone.Unit.GainFactor;
-  beatFreq: Tone.Unit.Hertz;
-  osc: {
-    frequency: Tone.Unit.Hertz;
-    phase?: Tone.Unit.Degrees;
-    detune?: number;
-  };
   loopEvents?: LooppingEventsOptions<BinauralBeatEventSignal>;
   eventSequence?: EventSequence<BinauralBeatEventSignal>
 }
 
-export type BinauralBeatSpinOscOptions = {
+export type BinauralBeatSynthSpinGenerator = {
+  synth: Partial<BinauralBeatSynthOptions>
   gain: Tone.Unit.GainFactor;
-  beatFreq: Tone.Unit.Hertz;
-  spinEffect?: 0 | 1;
-  spinCycleFreq?: number;
-
-  osc: {
-    frequency: Tone.Unit.Hertz;
-    phase?: Tone.Unit.Degrees;
-    detune?: number;
-  };
+  spinPanner?: Partial<SpinningPannerOptions>
   loopEvents?: LooppingEventsOptions<BinauralBeatSpinEventSignal>;
   eventSequence?: EventSequence<BinauralBeatSpinEventSignal>
-};
+}
 
 // === Generator Def ===
 
@@ -103,12 +92,12 @@ export type GeneratorBasicBinauralBeatOsc = GeneratorDefBase<
 
 export type GeneratorBinauralBeatwLoopOsc = GeneratorDefBase<
   "BinauralBeatwLoop",
-  BinauralBeatwLoopOscOptions
+  BinauralBeatSynthGenerator
 >;
 
 export type GeneratorBinauralBeatSpinOsc = GeneratorDefBase<
   "BinauralBeatSpinOsc",
-  BinauralBeatSpinOscOptions
+  BinauralBeatSynthSpinGenerator
 >;
 
 export type SoundGenerators =

@@ -20,7 +20,7 @@ import { FilterEffect } from "../effect/filterEffect";
 import {
   EventValueType,
   NoiseFilteredGenEventSignal,
-} from "@/types/LoopPattern";
+} from "@/types/GeneratorSignals";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
 
 export function createNoiseFilteredGen(

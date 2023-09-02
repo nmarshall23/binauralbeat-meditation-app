@@ -1,6 +1,6 @@
 import * as Tone from "tone";
 
-import { BinauralBeatwLoopOscOptions } from "@/types/GeneratorDef";
+import { BinauralBeatSynthGenerator } from "@/types/GeneratorDef";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { isMatching } from "ts-pattern";
 import { useVolumeControl } from "@/use/useVolumeControl";
@@ -14,19 +14,18 @@ import {
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { BinauralBeatSynth } from "../Instrument/BinauralBeatSynth";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
-import { BinauralBeatEventSignal, EventValueType } from "@/types/LoopPattern";
+import { BinauralBeatEventSignal, EventValueType } from "@/types/GeneratorSignals";
 
 const defaultVolume = 0;
 
 export function createBinauralBeatwLoop(
   generatorName: string,
   eventHandler: PlaybackTriggers,
-  options: BinauralBeatwLoopOscOptions
+  options: BinauralBeatSynthGenerator
 ): GeneratorControls {
   const {
     gain,
-    beatFreq,
-    osc: oscOptions,
+    synth,
     loopEvents,
     eventSequence,
   } = options;
@@ -41,10 +40,7 @@ export function createBinauralBeatwLoop(
 
   const gainNode = new Tone.Gain(gain);
 
-  const beatSynth = new BinauralBeatSynth({
-    baseFrequency: oscOptions.frequency,
-    beatFrequency: beatFreq,
-  });
+  const beatSynth = new BinauralBeatSynth(synth);
 
   // === Connections === //
   channel.send("main");
@@ -87,12 +83,12 @@ export function createBinauralBeatwLoop(
 
     if (isMatching(eventMatcherBinauralBeatFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, time);
+      beatSynth.beatFrequency.rampTo(signal.synth.beatFreq, rampTime, time);
     }
 
     if (isMatching(eventMatcherOscFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, time);
+      beatSynth.baseFrequency.rampTo(signal.synth.baseFreq, rampTime, time);
     }
   }
 
@@ -118,7 +114,7 @@ export function createBinauralBeatwLoop(
   /* === Dispay === */
 
   const displayName = computed(() => {
-    return `${generatorName} - ${beatFreq}Hz`;
+    return `${generatorName} - ${beatSynth.beatFrequency}Hz`;
   });
 
   /* === Controls === */

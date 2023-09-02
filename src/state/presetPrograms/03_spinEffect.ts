@@ -23,11 +23,10 @@ export const simpleSpinEffectProgram: BinauralBeatProgram = {
       type: "BinauralBeatSpinOsc",
       options: {
         gain: 0.4,
-        beatFreq: 6,
-        osc: {
-          frequency: 90,
+        synth: {
+          baseFrequency: 90,
+          beatFrequency: 6,
         },
-        spinEffect: 1,
       },
     },
   ],
@@ -56,11 +55,10 @@ export const evolvingSpinEffectProgram: BinauralBeatProgram = {
       type: "BinauralBeatSpinOsc",
       options: {
         gain: 0.4,
-        beatFreq: 6,
-        osc: {
-          frequency: 90,
+        synth: {
+          baseFrequency: 180,
+          beatFrequency: 6,
         },
-        spinEffect: 1,
         loopEvents: {
           humanize: false,
           interval: 80,
@@ -70,24 +68,20 @@ export const evolvingSpinEffectProgram: BinauralBeatProgram = {
             {
               rampTime: 20,
               signal: {
-                // spinEffect: 1,
-                spinCycleFreq: 0.5,
                 gain: 0.5,
-                beatFreq: 6,
-                osc: {
-                  frequency: 180,
+                synth: {
+                  baseFreq: 180,
+                  beatFreq: 6,
                 },
               },
             },
             {
               rampTime: 20,
               signal: {
-                // spinEffect: 0,
-                spinCycleFreq: 0.25,
                 gain: 0.6,
-                beatFreq: 4,
-                osc: {
-                  frequency: 90,
+                synth: {
+                  beatFreq: 4,
+                  baseFreq: 90,
                 },
               },
             },

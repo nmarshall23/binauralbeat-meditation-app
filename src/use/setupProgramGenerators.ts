@@ -2,8 +2,6 @@ import { match } from "ts-pattern";
 import { createBasicNoiseGen } from "../tones/gen/BasicNoiseGen";
 import { createBasicBinauralBeatOsc } from "../tones/gen/BasicBinauralBeatOsc";
 import {
-  BinauralBeatwLoopOscOptions,
-  BinauralBeatSpinOscOptions,
   SoundGenerators,
 } from "../types/GeneratorDef";
 import { createNoiseFilteredGen } from "../tones/gen/NoiseFilteredGen";
@@ -70,7 +68,7 @@ export function setupProgramGenerators(
             return createBinauralBeatwLoop(
               `Binaural Osc #${binauralBeatOscCount}`,
               eventHandler,
-              options as BinauralBeatwLoopOscOptions
+              options
             );
           }
         )
@@ -83,7 +81,7 @@ export function setupProgramGenerators(
             return createBinauralBeatSpinOsc(
               `Binaural Spin Osc #${binauralBeatOscCount}`,
               eventHandler,
-              options as BinauralBeatSpinOscOptions
+              options
             );
           }
         )

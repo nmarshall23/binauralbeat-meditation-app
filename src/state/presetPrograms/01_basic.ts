@@ -46,10 +46,9 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
       type: "BinauralBeatwLoop",
       options: {
         gain: 0.6,
-        beatFreq: 4,
-        osc: {
-          frequency: 140,
-          phase: 0,
+        synth: {
+          baseFrequency: 140,
+          beatFrequency: 4,
         },
         loopEvents: {
           humanize: 10,
@@ -60,28 +59,28 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
             {
               rampTime: 10,
               signal: {
-                beatFreq: 4,
-                osc: {
-                  frequency: 140,
+                synth: {
+                  baseFreq: 140,
+                  beatFreq: 4,
                 },
               },
             },
             {
               rampTime: 30,
               signal: {
-                osc: {
-                  frequency: 180,
+                synth: {
+                  baseFreq: 180,
+                  beatFreq: 8,
                 },
-                beatFreq: 8,
               },
             },
             {
               rampTime: 30,
               signal: {
-                osc: {
-                  frequency: 220,
+                synth: {
+                  baseFreq: 220,
+                  beatFreq: 4,
                 },
-                beatFreq: 4,
               },
             },
           ],
@@ -92,10 +91,9 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
       type: "BinauralBeatwLoop",
       options: {
         gain: 0.6,
-        beatFreq: 6,
-        osc: {
-          frequency: 220,
-          phase: 45,
+        synth: {
+          baseFrequency: 220,
+          beatFrequency: 6,
         },
         loopEvents: {
           humanize: 10,
@@ -106,27 +104,27 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
             {
               rampTime: 30,
               signal: {
-                beatFreq: 6,
-                osc: {
-                  frequency: 220,
+                synth: {
+                  beatFreq: 6,
+                  baseFreq: 220,
                 },
               },
             },
             {
               rampTime: 60,
               signal: {
-                beatFreq: 3,
-                osc: {
-                  frequency: 160,
+                synth: {
+                  beatFreq: 3,
+                  baseFreq: 160,
                 },
               },
             },
             {
               rampTime: 30,
               signal: {
-                beatFreq: 6,
-                osc: {
-                  frequency: 220,
+                synth: {
+                  beatFreq: 6,
+                  baseFreq: 220,
                 },
               },
             },

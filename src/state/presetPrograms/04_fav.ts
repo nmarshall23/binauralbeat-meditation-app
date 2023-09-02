@@ -67,21 +67,20 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
       type: "BinauralBeatwLoop",
       options: {
         gain: 0.3,
-        beatFreq: 6,
-        osc: {
-          frequency: 180,
+        synth: {
+          baseFrequency: 180,
+          beatFrequency: 6,
         },
         eventSequence: {
           events: [
-          
             {
               time: "%50",
               rampTime: 10,
               signal: {
                 gain: 0.4,
-                beatFreq: 4,
-                osc: {
-                  frequency: 100,
+                synth: {
+                  baseFreq: 100,
+                  beatFreq: 4,
                 },
               },
             },
@@ -90,8 +89,8 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
               rampTime: 20,
               signal: {
                 gain: 0.1,
-                osc: {
-                  frequency: 200,
+                synth: {
+                  baseFreq: 200,
                 },
               },
             },
@@ -103,11 +102,13 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
       type: "BinauralBeatSpinOsc",
       options: {
         gain: 0.05,
-        beatFreq: 4,
-        osc: {
-          frequency: 140,
+        synth: {
+          baseFrequency: 140,
+          beatFrequency: 4,
         },
-        spinEffect: 0,
+        spinPanner: {
+          wet: 0,
+        },
         eventSequence: {
           events: [
             {
@@ -137,8 +138,8 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
               rampTime: 20,
               signal: {
                 gain: 0.1,
-                osc: {
-                  frequency: 180,
+                synth: {
+                  baseFreq: 180,
                 },
               },
             },

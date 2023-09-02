@@ -3,7 +3,7 @@ import * as Tone from "tone";
 import { isMatching } from "ts-pattern";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { useVolumeControl } from "@/use/useVolumeControl";
-import { BinauralBeatSpinOscOptions } from "@/types/GeneratorDef";
+import { BinauralBeatSynthSpinGenerator } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import {
@@ -12,6 +12,7 @@ import {
   eventMatcherOscFreq,
   eventMatcherSpinCycleFreq,
   eventMatcherSpinEffect,
+  eventMatcherSpinEffectWet,
 } from "@/use/useLoopEventMatchers";
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { BinauralBeatSynth } from "../Instrument/BinauralBeatSynth";
@@ -19,20 +20,18 @@ import { SpinningPanner } from "../effect/spinningPanner";
 import {
   BinauralBeatSpinEventSignal,
   EventValueType,
-} from "@/types/LoopPattern";
+} from "@/types/GeneratorSignals";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
 
 export function createBinauralBeatSpinOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
-  options: BinauralBeatSpinOscOptions
+  options: BinauralBeatSynthSpinGenerator
 ): GeneratorControls {
   const {
     gain,
-    beatFreq,
-    spinEffect = 1,
-    spinCycleFreq = 0.5,
-    osc: oscOptions,
+    synth,
+    spinPanner,
     loopEvents,
     eventSequence,
   } = options;
@@ -47,15 +46,9 @@ export function createBinauralBeatSpinOsc(
 
   const gainNode = new Tone.Gain(gain);
 
-  const spinEffectNode = new SpinningPanner({
-    wet: spinEffect,
-    frequency: spinCycleFreq,
-  });
+  const spinEffectNode = new SpinningPanner(spinPanner);
 
-  const beatSynth = new BinauralBeatSynth({
-    baseFrequency: oscOptions.frequency,
-    beatFrequency: beatFreq,
-  });
+  const beatSynth = new BinauralBeatSynth(synth);
 
   // === Connections === //
   channel.send("main");
@@ -96,12 +89,12 @@ export function createBinauralBeatSpinOsc(
 
     if (isMatching(eventMatcherBinauralBeatFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.beatFrequency.rampTo(signal.beatFreq, rampTime, time);
+      beatSynth.beatFrequency.rampTo(signal.synth.beatFreq, rampTime, time);
     }
 
     if (isMatching(eventMatcherOscFreq, event)) {
       const { rampTime, signal } = event;
-      beatSynth.baseFrequency.rampTo(signal.osc.frequency, rampTime, time);
+      beatSynth.baseFrequency.rampTo(signal.synth.baseFreq, rampTime, time);
     }
 
     if (isMatching(eventMatcherSpinEffect, event)) {
@@ -109,9 +102,14 @@ export function createBinauralBeatSpinOsc(
       spinEffectNode.wet.rampTo(signal.spinEffect, rampTime, time);
     }
 
+    if (isMatching(eventMatcherSpinEffectWet, event)) {
+      const { rampTime, signal } = event;
+      spinEffectNode.wet.rampTo(signal.spinEffect.wet, rampTime, time);
+    }
+
     if (isMatching(eventMatcherSpinCycleFreq, event)) {
       const { rampTime, signal } = event;
-      spinEffectNode.frequency.rampTo(signal.spinCycleFreq, rampTime, time);
+      spinEffectNode.frequency.rampTo(signal.spinEffect.frequency, rampTime, time);
     }
   }
 
@@ -140,7 +138,7 @@ export function createBinauralBeatSpinOsc(
   /* === Dispay === */
 
   const displayName = computed(() => {
-    return `${generatorName} - ${beatFreq}Hz`;
+    return `${generatorName} - ${beatSynth.beatFrequency}Hz`;
   });
 
   /* === Controls === */

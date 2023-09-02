@@ -10,15 +10,17 @@ export const eventMatcherGain = {
 export const eventMatcherBinauralBeatFreq = {
   rampTime: Pattern.number,
   signal: {
-    beatFreq: Pattern.number,
+    synth: {
+      beatFreq: Pattern.number,
+    },
   },
 };
 
 export const eventMatcherOscFreq = {
   rampTime: Pattern.number,
   signal: {
-    osc: {
-      frequency: Pattern.number,
+    synth: {
+      baseFreq: Pattern.number,
     },
   },
 };
@@ -63,22 +65,33 @@ export const eventMatcherFilterWet = {
   rampTime: Pattern.number,
   signal: {
     filter: {
-      wet: Pattern.number.between(0, 1)
-    }
+      wet: Pattern.number.between(0, 1),
+    },
+  },
+};
+
+export const eventMatcherSpinEffectWet = {
+  rampTime: Pattern.number,
+  signal: {
+    spinEffect: {
+      wet: Pattern.union(0, 1),
+    },
   },
 };
 
 export const eventMatcherSpinEffect = {
   rampTime: Pattern.number,
   signal: {
-    spinEffect: Pattern.union(0,1)
+    spinEffect: Pattern.union(0, 1),
   },
 };
 
 export const eventMatcherSpinCycleFreq = {
   rampTime: Pattern.number,
   signal: {
-    spinCycleFreq: Pattern.number.between(0.1, 2)
+    spinEffect: {
+      frequency: Pattern.number.between(0.1, 2),
+    },
   },
 };
 

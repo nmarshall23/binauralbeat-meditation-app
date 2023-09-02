@@ -1,4 +1,5 @@
 import * as Tone from "tone";
+import { PatternName } from "tone/build/esm/event/PatternGenerator";
 
 export type EventSequence<E> = {
   startOffsetSeconds?: number;
@@ -39,20 +40,25 @@ type FilterSignalOptions = {
   detune: number;
 };
 
-type OscillatorSignalOptions = {
-  frequency: Tone.Unit.Frequency;
+type SpinPannerEffectSignals = {
+  wet: 0 | 1;
+  frequency: number
+}
+
+type BinauralBeatSynthSignals = {
+  baseFreq: Tone.Unit.Frequency;
+  beatFreq: Tone.Unit.Frequency;
 }
 
 export type BinauralBeatEventSignal = {
-  beatFreq: Tone.Unit.Hertz;
-  osc: RequireAtLeastOne<OscillatorSignalOptions>;
+  synth: RequireAtLeastOne<BinauralBeatSynthSignals>;
 } & SignalBase;
 
 
 export type BinauralBeatSpinEventSignal = {
-  spinEffect: 0 | 1;
-  spinCycleFreq: number;
-} & BinauralBeatEventSignal
+  synth: RequireAtLeastOne<BinauralBeatSynthSignals>;
+  spinEffect: RequireAtLeastOne<SpinPannerEffectSignals> | 0 | 1;
+} & SignalBase;
 
 export type NoiseFilteredGenEventSignal = {
   filter: RequireAtLeastOne<FilterSignalOptions>;
