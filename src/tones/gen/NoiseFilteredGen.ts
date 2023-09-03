@@ -46,22 +46,9 @@ export function createNoiseFilteredGen(
 
   const gainNode = new Tone.Gain(gain);
 
-  // const filterNode = new Tone.Filter(filterOptions);
-
   const filterEffectNode = new FilterEffect({
     filter: filterOptions,
   });
-
-  // const envNode = new Tone.AmplitudeEnvelope({
-  //   attack: 5,
-  //   decay: 0,
-  //   sustain: 0.5,
-  //   release: 10,
-  //   attackCurve: "linear",
-  //   releaseCurve: "linear",
-  // }).connect(filterNode);
-
-  // const noiseNode = new Tone.Noise(noiseOptions).connect(envNode);
 
   const noiseSythNode = new Tone.NoiseSynth({
     envelope: {

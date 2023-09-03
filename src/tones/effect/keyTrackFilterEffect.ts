@@ -21,22 +21,21 @@ export class KeyTrackFilterEffect<
 
   constructor(options?: Partial<KeyTrackFilterEffectOptions>);
   constructor() {
-    super(Tone.optionsFromArguments(KeyTrackFilterEffect.getDefaults(), arguments));
+    super(
+      Tone.optionsFromArguments(KeyTrackFilterEffect.getDefaults(), arguments)
+    );
     const options = Tone.optionsFromArguments(
-        KeyTrackFilterEffect.getDefaults(),
+      KeyTrackFilterEffect.getDefaults(),
       arguments
     );
 
     this.filter = new Tone.Filter(options.filter);
+    this.keyFrequency = this.filter.frequency
 
-// === Signals === //
-
+    // === Signals === //
 
     // connections
     this.connectEffect(this.filter);
-
-
-    
 
     readOnly(this, ["filter"]);
   }

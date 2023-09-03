@@ -36,4 +36,10 @@ export class FilterEffect<
       filter: Object.assign(Tone.ToneAudioNode.getDefaults(),Tone.Filter.getDefaults()),
     });
   }
+
+  dispose(): this {
+    super.dispose();
+    this.filter.dispose();
+    return this;
+  }
 }

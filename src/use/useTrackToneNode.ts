@@ -1,3 +1,5 @@
+import * as Tone from "tone";
+
 type ToneNode = {
   set: (props: object) => ToneNode;
 };
@@ -18,6 +20,29 @@ export function useTrackToneNode<T extends ToneNode, K extends keyof T, V extend
           [prop]: newValue,
         });
         trigger();
+      },
+    };
+  });
+
+  return trackedProp;
+}
+
+
+export function useTrackToneNodeSignal<TypeName extends keyof Tone.Unit.UnitMap>(
+  signal: Tone.Signal<TypeName>,
+  rampTime: number = 0.1
+) {
+  const trackedProp = customRef((track, trigger) => {
+    return {
+      get() {
+        track();
+        return signal.value
+      },
+      set(newValue) {
+        console.log('set val %o', newValue)
+        signal.rampTo(newValue, rampTime)
+        setTimeout(() => trigger(), rampTime * 1000 + 50 )
+        
       },
     };
   });
