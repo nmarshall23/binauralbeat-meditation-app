@@ -150,35 +150,42 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
     {
       type: "SamplePlayer",
       options: {
-        gain: 0.8,
+        gain: 0.65,
         player: {
-          sample: "bell_mallett_1",
+          sample: 'cookieTin2'
         },
         eventSequence: {
           events: [
             {
-              time: 1,
+              time: "+4",
+              rampTime: 0,
+              signal: {
+                startPattern: true,
+              },
+            },
+            
+          ],
+        },
+        loopEvents: {
+          interval: 6,
+          pattern: 'up',
+          values: [
+            {
               rampTime: 0,
               signal: {
                 startSample: true,
-                panner3d: {
-                  positionZ: 2,
-                  positionX: 2,
+                pitchShift: {
+                  wet: 0,
                 },
               },
             },
             {
-              time: 6,
               rampTime: 0,
               signal: {
                 startSample: true,
                 pitchShift: {
                   wet: 1,
                   pitch: 2,
-                },
-                panner3d: {
-                  positionZ: -2,
-                  positionX: -2,
                 },
               },
             },

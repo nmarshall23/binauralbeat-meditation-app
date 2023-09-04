@@ -105,7 +105,7 @@ export const eventMatcherStartSample = {
 export const eventMatcherStartLoopBool = {
   rampTime: Pattern.number,
   signal: {
-    startLoop: true,
+    startPattern: true,
   },
 };
 
@@ -113,7 +113,17 @@ export const eventMatcherStartLoopPatten = {
   rampTime: Pattern.number,
   signal: {
     startLoop: {
-      pattern: Pattern.string,
+      pattern: Pattern.union(
+        "up",
+        "down",
+        "upDown",
+        "downUp",
+        "alternateUp",
+        "alternateDown",
+        "random",
+        "randomOnce",
+        "randomWalk"
+      ),
     },
   },
 };

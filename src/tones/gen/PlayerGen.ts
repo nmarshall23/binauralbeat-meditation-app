@@ -21,7 +21,7 @@ import {
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import * as Tone from "tone";
-import { isMatching } from "ts-pattern";
+import { isMatching, match, Pattern } from "ts-pattern";
 import { capitalCase } from "change-case";
 
 import bell_mallett_1 from "@/assets/berklee/bell_mallett_1.wav";
@@ -180,19 +180,35 @@ export function createPlayerGen(
       }
     }
 
-    if (isMatching(eventMatcherStartLoopBool, event)) {
-      // const { rampTime, signal } = event;
+    if (isMatching(eventMatcherStartLoopPatten, event)) {
+      const { signal } = event;
+      if (isDefined(tonePattern)) {
+        tonePattern.pattern = signal.startLoop.pattern;
+      }
     }
 
-    if (isMatching(eventMatcherStartLoopPatten, event)) {
-      // const { rampTime, signal } = event;
+    if (isMatching(eventMatcherStartLoopBool, event)) {
+      console.log("eventMatcherStartLoopBool ", isDefined(tonePattern));
+      if (isDefined(tonePattern)) {
+        tonePattern.start(time);
+      }
     }
   }
 
-  const disposePattern = setupLoopEventsHandlers(
+  // calc iterations
+
+  const iterationsMuli = match(loopEvents?.pattern)
+    .with(Pattern.union("upDown", "downUp"), () => 2)
+    .with(Pattern.union("alternateUp", "alternateDown"), () => 0.5)
+    .otherwise(() => 1);
+
+  const iterations = (loopEvents?.values.length ?? 0) * iterationsMuli;
+
+  const { disposePattern, tonePattern } = setupLoopEventsHandlers(
     eventHandler,
     loopEvents,
-    (time, event) => eventCallBack("Loop", time, event)
+    (time, event) => eventCallBack("Loop", time, event),
+    { iterations }
   );
 
   const disposePart = setupEventSequenceHandlers(

@@ -14,7 +14,10 @@ import {
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import { BinauralBeatSynth } from "../Instrument/BinauralBeatSynth";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
-import { BinauralBeatEventSignal, EventValueType } from "@/types/GeneratorSignals";
+import {
+  BinauralBeatEventSignal,
+  EventValueType,
+} from "@/types/GeneratorSignals";
 
 const defaultVolume = 0;
 
@@ -23,12 +26,7 @@ export function createBinauralBeatwLoop(
   eventHandler: PlaybackTriggers,
   options: BinauralBeatSynthGenerator
 ): GeneratorControls {
-  const {
-    gain,
-    synth,
-    loopEvents,
-    eventSequence,
-  } = options;
+  const { gain, synth, loopEvents, eventSequence } = options;
 
   console.debug(
     `createBinauralBeatwLoop ${generatorName} gain %o, opt %o`,
@@ -92,12 +90,15 @@ export function createBinauralBeatwLoop(
     }
   }
 
-  const disposePattern = setupLoopEventsHandlers(eventHandler, loopEvents, (time, event) =>
-    callback(
-      "Loop Event",
-      time,
-      event as EventValueType<BinauralBeatEventSignal>
-    )
+  const { disposePattern } = setupLoopEventsHandlers(
+    eventHandler,
+    loopEvents,
+    (time, event) =>
+      callback(
+        "Loop Event",
+        time,
+        event as EventValueType<BinauralBeatEventSignal>
+      )
   );
 
   const disposePart = setupEventSequenceHandlers(
@@ -125,8 +126,8 @@ export function createBinauralBeatwLoop(
 
   function dispose() {
     channel.dispose();
-    disposePart()
-    disposePattern()
+    disposePart();
+    disposePattern();
   }
 
   return reactive({

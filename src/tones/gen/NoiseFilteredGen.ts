@@ -133,7 +133,7 @@ export function createNoiseFilteredGen(
     }
   }
 
-  const disposePattern = setupLoopEventsHandlers(
+  const { disposePattern } = setupLoopEventsHandlers(
     eventHandler,
     loopEvents,
     (time, event) =>

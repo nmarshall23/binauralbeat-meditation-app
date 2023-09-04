@@ -2,11 +2,14 @@ import * as Tone from "tone";
 
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import { noop } from "@vueuse/core";
-import { LoopEventValue, LooppingEventsOptions } from "@/types/GeneratorSignals";
+import {
+  LoopEventValue,
+  LooppingEventsOptions,
+} from "@/types/GeneratorSignals";
 
 type LoopDefaultOptions = {
-  iterations: number
-}
+  iterations: number;
+};
 
 export function setupLoopEventsHandlers<E>(
   eventHandler: PlaybackTriggers,
@@ -16,7 +19,6 @@ export function setupLoopEventsHandlers<E>(
 ) {
   if (isDefined(loopEvents)) {
     const { values, humanize, probability, interval, pattern } = loopEvents;
-    
 
     const tonePattern = new Tone.Pattern({
       pattern,
@@ -25,18 +27,18 @@ export function setupLoopEventsHandlers<E>(
       probability,
       interval,
       callback,
-      iterations: loopDefaultOptions?.iterations ?? Infinity
+      iterations: loopDefaultOptions?.iterations ?? Infinity,
     });
 
-    eventHandler.onPlayBackStarted(({ initialize }) => {
-      if (initialize) {
-        tonePattern.start();
+    eventHandler.onPlayBackStarted(({ initialize, time }) => {
+      if (initialize && tonePattern.iterations  > Infinity ) {
+        tonePattern.start(time);
       }
     });
     eventHandler.onPlayBackStopped((time) => tonePattern.stop(time));
 
-    return () => tonePattern.dispose()
+    return { disposePattern: () => tonePattern.dispose(), tonePattern };
   }
 
-  return noop
+  return { disposePattern: noop };
 }

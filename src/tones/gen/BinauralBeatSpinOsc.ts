@@ -28,13 +28,7 @@ export function createBinauralBeatSpinOsc(
   eventHandler: PlaybackTriggers,
   options: BinauralBeatSynthSpinGenerator
 ): GeneratorControls {
-  const {
-    gain,
-    synth,
-    spinPanner,
-    loopEvents,
-    eventSequence,
-  } = options;
+  const { gain, synth, spinPanner, loopEvents, eventSequence } = options;
 
   console.debug(
     `createBinauralBeatSpinOsc ${generatorName} gain %o, opt %o`,
@@ -109,11 +103,15 @@ export function createBinauralBeatSpinOsc(
 
     if (isMatching(eventMatcherSpinCycleFreq, event)) {
       const { rampTime, signal } = event;
-      spinEffectNode.frequency.rampTo(signal.spinEffect.frequency, rampTime, time);
+      spinEffectNode.frequency.rampTo(
+        signal.spinEffect.frequency,
+        rampTime,
+        time
+      );
     }
   }
 
-  const disposePattern = setupLoopEventsHandlers(
+  const { disposePattern } = setupLoopEventsHandlers(
     eventHandler,
     loopEvents,
     (time, event) =>
@@ -149,8 +147,8 @@ export function createBinauralBeatSpinOsc(
 
   function dispose() {
     channel.dispose();
-    disposePart()
-    disposePattern()
+    disposePart();
+    disposePattern();
   }
 
   return reactive({
