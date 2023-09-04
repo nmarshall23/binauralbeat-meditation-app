@@ -9,6 +9,7 @@ import {
 } from "./GeneratorSignals";
 import { BinauralBeatSynthOptions } from "@/tones/Instrument/BinauralBeatSynth";
 import { SpinningPannerOptions } from "@/tones/effect/spinningPanner";
+import { SamplePlayerSampleKey } from "@/tones/gen/PlayerGen";
 
 // === Options === //
 
@@ -73,8 +74,11 @@ export type BinauralBeatSynthSpinGenerator = {
 export type SamplePlayerGenerator = {
   gain: Tone.Unit.GainFactor;
   player: {
-    sample: string;
+    sample: SamplePlayerSampleKey
   };
+  pichShift?: {
+    pich: number // Half-step note increments, i.e. 12 is an octave above the root.
+  }
   panner3d?: {
     positionX?: number; // horizontal axis
     positionY?: number; // vertical axis

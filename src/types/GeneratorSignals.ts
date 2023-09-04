@@ -25,8 +25,8 @@ export type LoopEventValue<S> = {
 };
 
 export type EventValueType<S> = {
-  time: Tone.Unit.Time
-} & LoopEventValue<S>
+  time: Tone.Unit.Time;
+} & LoopEventValue<S>;
 
 export type SignalBase = {
   gain: Tone.Unit.GainFactor;
@@ -42,25 +42,28 @@ type FilterSignalOptions = {
 
 type SpinPannerEffectSignals = {
   wet: 0 | 1;
-  frequency: number
-}
+  frequency: number;
+};
 
 type BinauralBeatSynthSignals = {
   baseFreq: Tone.Unit.Frequency;
   beatFreq: Tone.Unit.Frequency;
-}
+};
 
 type Panner3DPositionSignals = {
-    positionX: number; // horizontal axis
-    positionY: number; // vertical axis
-    positionZ: number; // depth axis
-}
+  positionX: number; // horizontal axis
+  positionY: number; // vertical axis
+  positionZ: number; // depth axis
+};
 
+type PitchShiftSignals = {
+  wet: 0 | 1;
+  pitch: number;
+};
 
 export type BinauralBeatEventSignal = {
   synth: RequireAtLeastOne<BinauralBeatSynthSignals>;
 } & SignalBase;
-
 
 export type BinauralBeatSpinEventSignal = {
   synth: RequireAtLeastOne<BinauralBeatSynthSignals>;
@@ -71,14 +74,13 @@ export type NoiseFilteredGenEventSignal = {
   filter: RequireAtLeastOne<FilterSignalOptions>;
 } & SignalBase;
 
-
-
-
 export type SamplePlayerEventSignal = {
-  startSample: true
-  startPattern: {
-    pattern: PatternName;
-  } | true
+  startSample: true;
+  startPattern:
+    | {
+        pattern: PatternName;
+      }
+    | true;
   panner3d: RequireAtLeastOne<Panner3DPositionSignals>;
-
+  pitchShift: RequireAtLeastOne<PitchShiftSignals>;
 } & SignalBase;

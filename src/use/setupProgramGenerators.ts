@@ -9,6 +9,7 @@ import { createBinauralBeatwLoop } from "../tones/gen/BinauralBeatwLoop";
 import { createBinauralBeatSpinOsc } from "../tones/gen/BinauralBeatSpinOsc";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
+import { createPlayerGen } from "@/tones/gen/PlayerGen";
 
 export function setupProgramGenerators(
   generators: Array<SoundGenerators>,
@@ -16,6 +17,7 @@ export function setupProgramGenerators(
 ): Array<GeneratorControls> {
   let noiseGenCount = 0;
   let binauralBeatOscCount = 0;
+  
 
   return generators
     .map((genDef) =>
@@ -66,7 +68,7 @@ export function setupProgramGenerators(
           ({ options }) => {
             binauralBeatOscCount++;
             return createBinauralBeatwLoop(
-              `Binaural Osc #${binauralBeatOscCount}`,
+              `Binaural Gen #${binauralBeatOscCount}`,
               eventHandler,
               options
             );
@@ -79,14 +81,26 @@ export function setupProgramGenerators(
           ({ options }) => {
             binauralBeatOscCount++;
             return createBinauralBeatSpinOsc(
-              `Binaural Spin Osc #${binauralBeatOscCount}`,
+              `Binaural Spin #${binauralBeatOscCount}`,
+              eventHandler,
+              options
+            );
+          }
+        )
+        .with(
+          {
+            type: 'SamplePlayer',
+          },
+          ({ options }) => {
+            return createPlayerGen(
+              `Player`,
               eventHandler,
               options
             );
           }
         )
         .otherwise((def) => {
-          console.log("Unknow Generator %o", def);
+          console.warn("Unknown Generator %o", def);
           return null;
         })
     )
