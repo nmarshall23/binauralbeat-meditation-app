@@ -14,11 +14,16 @@ export function createTesterGen(
 ) {
   console.debug(`createBellToneGen ${generatorName}`);
 
-  const channel = new Tone.Channel();
+  const channel = new Tone.Channel(1);
 
   const reverb = new Tone.Reverb();
 
-  const chorus = new Tone.Chorus({});
+  const chorus = new Tone.Chorus({
+    feedback: 0.5,
+    frequency: 4,
+    delayTime: 4,
+    // depth: 0.5
+  });
 
   const filterEffectNode = new FilterEffect({
     filter: {
@@ -27,27 +32,53 @@ export function createTesterGen(
     },
   });
 
-  const gainNode = new Tone.Gain(0);
+  const gainNode = new Tone.Gain(1);
+  const limiterNode = new Tone.Limiter(-20)
 
   const synthNode = new Tone.Synth({
     oscillator: {
-      type: "sine",
+      type: 'fatsawtooth6'
     },
-    envelope: {
-      attack: 0.01,
-      decay: 0.01,
-      sustain: 1,
-      release: 0.5,
-    },
+    detune: 0
   });
 
-  const bbEffect = new BinauralBeatEffect({ beatFrequency: 4 });
+ 
+
+  const modulator = new Tone.OmniOscillator({
+    type: 'sine'
+  })
+
+  const modulationScale = new Tone.AudioToGain()
+
+  // const modSynthNode = new Tone.Synth({
+  //   oscillator: {
+  //     type: 'square',
+  //   },
+  //   envelope: {
+  //     attack: 0.01,
+  //     decay: 0.01,
+
+  //     // release: 0.8,
+  //   },
+  // });
+  
+  // const modOsc = new Tone.Oscillator({
+  //   type: "square",
+    
+  // });
+
+
+
+  // const bbEffect = new BinauralBeatEffect({ beatFrequency: 4 });
 
   
   // const synthNode = new BellToneSynth({
   //   harmonicity: 4,
   //   oscillator: {
-  //     type: 'sine'
+  //     type: 'sawtooth'
+  //   },
+  //   envelope: {
+
   //   }
   // });
 
@@ -60,18 +91,33 @@ export function createTesterGen(
   // === Connections === //
 
   channel.send("main");
-  gainNode.connect(channel);
-  synthNode.chain(bbEffect,  gainNode);
-  // synthNode.chain(filterEffectNode, chorus, reverb, gainNode);
-  synthNode.chain(gainNode);
+  
+  //modulator.chain(modulationScale, gainNode.gain).start()
+  modulator.chain( gainNode.gain).start()
+  // synthNode.chain(gainNode, chorus, reverb, limiterNode, channel)
+  synthNode.chain(gainNode, limiterNode, channel)
+  synthNode.volume.value = 4
+  
+  // synthNode.chain(filterEffectNode, chorus, reverb,  gainNode);
+  //synthNode.chain(filterEffectNode, chorus, reverb, gainNode);
+  // synthNode.chain(filterEffectNode, gainNode);
+  // synthNode.connect(modMulti)
+  // // modSynthNode.chain(negate, modMulti.factor)
+  // modOsc.chain( modMulti.factor)
+  
+  // // add.chain(filterEffectNode, chorus, reverb,  gainNode)
+  // modMulti.chain(filterEffectNode, gainNode)
+  // // === Signals === //
+  // const multSig = new Tone.Multiply(1);
+  const harmonicity = new Tone.Multiply(0.8)
+  synthNode.frequency.chain(harmonicity, modulator.frequency)
 
-  // === Signals === //
-   const multSig = new Tone.Multiply(2);
-
-   synthNode.frequency.chain(multSig, filterEffectNode.filter.frequency);
+  //  synthNode.frequency.chain(multSig, filterEffectNode.filter.frequency);
   // filterEffectNode.filter.frequency =
   // filterEffectNode.wet.value = 1;
 
+  // synthNode.frequency.chain(multSig, freqShift)
+  
   // === Playback === //
 
   //   eventHandler.onPlayBackStarted((event) => {
@@ -95,13 +141,13 @@ export function createTesterGen(
   /* === Controls === */
 
   const muteCtrl = useTrackToneNode(channel, "mute", false);
-  const effectA_Ctrl = useTrackToneNodeSignal(bbEffect.wet)
-
+  // const effectA_Ctrl = useTrackToneNodeSignal(bbEffect.wet)
+  const effectA_Ctrl = useTrackToneNodeSignal(filterEffectNode.wet)
   const { volumeRef } = useVolumeControl(channel.volume);
 
   function dispose() {
     channel.dispose();
-    bbEffect.dispose()
+    // bbEffect.dispose()
     filterEffectNode.dispose();
     chorus.dispose();
     reverb.dispose();
@@ -115,8 +161,12 @@ export function createTesterGen(
     volumeCtrl: volumeRef,
     dispose,
     trigger: (note: Tone.Unit.Frequency, duration: Tone.Unit.Time) => {
-      gainNode.gain.value = 0.8;
+      // gainNode.gain.value = 0.8;
+      // const time = Tone.now()
+     // modSynthNode._triggerEnvelopeAttack(time)
       synthNode.triggerAttackRelease(note, duration);
+
+      //modSynthNode._triggerEnvelopeRelease(time + synthNode.toSeconds(duration) + synthNode.toSeconds(synthNode.envelope.release) )
     },
     effectA_Ctrl
     

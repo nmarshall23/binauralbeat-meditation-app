@@ -74,7 +74,7 @@ async function showVolumeDialog(
   }
 }
 
-const notes = ref(["F2", "G2", "A3", "B3", "C3", "D3", "F3", "C4", "D4", "C5"]);
+const notes = ref(["F2", "G2", "A3", "B3", "C3", "D3", "F3","A4", "B4", "C4", "D4", 'E4', 'F4', "A5", "B5", "C5"]);
 
 const bellTone = createTesterGen("Bell Tone");
 
@@ -89,6 +89,7 @@ function onPlay(note: string) {
     Tone.start();
     needsInit.value = false;
   }
-  bellTone.trigger(note, 4);
+
+  bellTone.trigger(note, 1);
 }
 </script>

@@ -95,3 +95,54 @@ export const eventMatcherSpinCycleFreq = {
   },
 };
 
+export const eventMatcherStartSample = {
+  rampTime: Pattern.number,
+  signal: {
+    startSample: true
+  },
+};
+
+export const eventMatcherStartLoopBool = {
+  rampTime: Pattern.number,
+  signal: {
+    startLoop: true
+  },
+};
+
+export const eventMatcherStartLoopPatten = {
+  rampTime: Pattern.number,
+  signal: {
+    startLoop: {
+      pattern: Pattern.string
+    }
+  },
+};
+
+export const eventMatcherPanner3dPositionX = {
+  rampTime: Pattern.number,
+  signal: {
+    panner3d: {
+      positionX: Pattern.number
+    }
+  },
+};
+
+export const eventMatcherPanner3dPositionY = {
+  rampTime: Pattern.number,
+  signal: {
+    panner3d: {
+      positionY: Pattern.number
+    }
+  },
+};
+
+export const eventMatcherPanner3dPositionZ = {
+  rampTime: Pattern.number,
+  signal: {
+    panner3d: {
+      positionZ: Pattern.number
+    }
+  },
+};
+
+

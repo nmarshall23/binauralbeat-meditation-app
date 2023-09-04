@@ -50,6 +50,13 @@ type BinauralBeatSynthSignals = {
   beatFreq: Tone.Unit.Frequency;
 }
 
+type Panner3DPositionSignals = {
+    positionX: number; // horizontal axis
+    positionY: number; // vertical axis
+    positionZ: number; // depth axis
+}
+
+
 export type BinauralBeatEventSignal = {
   synth: RequireAtLeastOne<BinauralBeatSynthSignals>;
 } & SignalBase;
@@ -62,4 +69,16 @@ export type BinauralBeatSpinEventSignal = {
 
 export type NoiseFilteredGenEventSignal = {
   filter: RequireAtLeastOne<FilterSignalOptions>;
+} & SignalBase;
+
+
+
+
+export type SamplePlayerEventSignal = {
+  startSample: true
+  startPattern: {
+    pattern: PatternName;
+  } | true
+  panner3d: RequireAtLeastOne<Panner3DPositionSignals>;
+
 } & SignalBase;

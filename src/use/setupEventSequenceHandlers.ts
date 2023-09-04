@@ -1,15 +1,15 @@
 import * as Tone from "tone";
 
-import { EventSequence, EventValueType } from "@/types/LoopPattern";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import { Pattern, match } from "ts-pattern";
 import { useProgramDurationStore } from "@/state/programDuration";
 import { noop } from "@vueuse/core";
+import { EventSequence, EventValueType } from "@/types/GeneratorSignals";
 
 export function setupEventSequenceHandlers<E>(
   eventHandler: PlaybackTriggers,
   eventSequence: EventSequence<E> | undefined,
-  callback: Tone.ToneEventCallback<EventValueType<E>>
+  callback: Tone.ToneEventCallback<EventValueType<E> | undefined>
 ) {
   if (isDefined(eventSequence)) {
     const {

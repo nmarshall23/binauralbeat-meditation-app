@@ -5,6 +5,7 @@ import {
   BinauralBeatSpinEventSignal,
   NoiseFilteredGenEventSignal,
   BinauralBeatEventSignal,
+  SamplePlayerEventSignal,
 } from "./GeneratorSignals";
 import { BinauralBeatSynthOptions } from "@/tones/Instrument/BinauralBeatSynth";
 import { SpinningPannerOptions } from "@/tones/effect/spinningPanner";
@@ -16,7 +17,8 @@ export type GeneratorDefType =
   | "NoiseFilteredGen"
   | "BasicBinauralBeatOsc"
   | "BinauralBeatwLoop"
-  | "BinauralBeatSpinOsc";
+  | "BinauralBeatSpinOsc"
+  | "SamplePlayer";
 
 // === Options ===
 
@@ -50,23 +52,37 @@ export type NoiseFilteredGenOptions = {
     detune?: number;
   };
   loopEvents?: LooppingEventsOptions<NoiseFilteredGenEventSignal>;
-  eventSequence?: EventSequence<NoiseFilteredGenEventSignal>
+  eventSequence?: EventSequence<NoiseFilteredGenEventSignal>;
 };
 
 export type BinauralBeatSynthGenerator = {
-  synth: Partial<BinauralBeatSynthOptions>
+  synth: Partial<BinauralBeatSynthOptions>;
   gain: Tone.Unit.GainFactor;
   loopEvents?: LooppingEventsOptions<BinauralBeatEventSignal>;
-  eventSequence?: EventSequence<BinauralBeatEventSignal>
-}
+  eventSequence?: EventSequence<BinauralBeatEventSignal>;
+};
 
 export type BinauralBeatSynthSpinGenerator = {
-  synth: Partial<BinauralBeatSynthOptions>
+  synth: Partial<BinauralBeatSynthOptions>;
   gain: Tone.Unit.GainFactor;
-  spinPanner?: Partial<SpinningPannerOptions>
+  spinPanner?: Partial<SpinningPannerOptions>;
   loopEvents?: LooppingEventsOptions<BinauralBeatSpinEventSignal>;
-  eventSequence?: EventSequence<BinauralBeatSpinEventSignal>
-}
+  eventSequence?: EventSequence<BinauralBeatSpinEventSignal>;
+};
+
+export type SamplePlayerGenerator = {
+  gain: Tone.Unit.GainFactor;
+  player: {
+    sample: string;
+  };
+  panner3d?: {
+    positionX?: number; // horizontal axis
+    positionY?: number; // vertical axis
+    positionZ?: number; // depth axis
+  };
+  loopEvents?: LooppingEventsOptions<SamplePlayerEventSignal>;
+  eventSequence?: EventSequence<SamplePlayerEventSignal>;
+};
 
 // === Generator Def ===
 
@@ -100,9 +116,15 @@ export type GeneratorBinauralBeatSpinOsc = GeneratorDefBase<
   BinauralBeatSynthSpinGenerator
 >;
 
+export type SamplePlayerGeneratorDef = GeneratorDefBase<
+  "SamplePlayer",
+  SamplePlayerGenerator
+>;
+
 export type SoundGenerators =
   | GeneratorBasicNoiseGen
   | GeneratorBasicBinauralBeatOsc
   | GeneratorNoiseFilteredGen
   | GeneratorBinauralBeatwLoopOsc
-  | GeneratorBinauralBeatSpinOsc;
+  | GeneratorBinauralBeatSpinOsc
+  | SamplePlayerGeneratorDef;

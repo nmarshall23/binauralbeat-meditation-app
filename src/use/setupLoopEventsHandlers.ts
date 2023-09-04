@@ -1,16 +1,22 @@
 import * as Tone from "tone";
 
 import { PlaybackTriggers } from "@/types/PlaybackState";
-import { LoopEventValue, LooppingEventsOptions } from "@/types/LoopPattern";
 import { noop } from "@vueuse/core";
+import { LoopEventValue, LooppingEventsOptions } from "@/types/GeneratorSignals";
+
+type LoopDefaultOptions = {
+  iterations: number
+}
 
 export function setupLoopEventsHandlers<E>(
   eventHandler: PlaybackTriggers,
   loopEvents: LooppingEventsOptions<E> | undefined,
-  callback: Tone.ToneEventCallback<LoopEventValue<E> | undefined>
+  callback: Tone.ToneEventCallback<LoopEventValue<E> | undefined>,
+  loopDefaultOptions?: LoopDefaultOptions
 ) {
   if (isDefined(loopEvents)) {
     const { values, humanize, probability, interval, pattern } = loopEvents;
+    
 
     const tonePattern = new Tone.Pattern({
       pattern,
@@ -19,6 +25,7 @@ export function setupLoopEventsHandlers<E>(
       probability,
       interval,
       callback,
+      iterations: loopDefaultOptions?.iterations ?? Infinity
     });
 
     eventHandler.onPlayBackStarted(({ initialize }) => {

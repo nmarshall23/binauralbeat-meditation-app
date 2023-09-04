@@ -147,5 +147,25 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
         },
       },
     },
+    {
+      type: 'SamplePlayer',
+      options: {
+        gain: 0.8,
+        player: {
+          sample: ''
+        },
+        eventSequence: {
+          events: [
+            {
+              time: "+1",
+              rampTime: 30,
+              signal: {
+                startSample: true
+              },
+            },
+          ]
+        }
+      }
+    }
   ],
 };
