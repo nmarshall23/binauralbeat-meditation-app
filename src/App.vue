@@ -1,11 +1,23 @@
 <template>
   <q-layout view="hHh lpr fff">
     <q-header elevated class="bg-primary text-white" height-hint="50">
-      <q-toolbar class="justify-between">
-        <q-toolbar-title class="text-left" > Binaural Beat Meditation App </q-toolbar-title>
-        
+      <q-toolbar class="app_toolbar">
+        <q-toolbar-title class="text-left">
+          Binaural Beat Meditation App
+        </q-toolbar-title>
 
         <q-btn
+          :disable="disableRestButton"
+          round
+          flat
+          icon="info"
+          :to="{ name: '/info' }"
+        >
+          <q-tooltip>About</q-tooltip>
+        </q-btn>
+
+        <q-btn
+          class="app_toolbar_lastBtn"
           v-if="showResetButton"
           :disable="disableRestButton"
           round
@@ -52,5 +64,17 @@ watchEffect(() => {
     showResetButton.value = true;
   }
 });
-
 </script>
+
+<style scoped lang="scss">
+.app_toolbar {
+  display: grid;
+  grid-template-columns: min-content min-content 1fr min-content;
+  grid-template-rows: 1fr;
+  column-gap: 8px;
+}
+
+.app_toolbar_lastBtn {
+  grid-column: 4 / 5;
+}
+</style>
