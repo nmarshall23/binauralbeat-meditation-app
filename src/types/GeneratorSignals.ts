@@ -37,7 +37,7 @@ export type FilterSignalOptions = {
   frequency: Tone.Unit.Frequency;
   Q: number;
   gain: number;
-  detune: number;
+  // detune: number;
 };
 
 export type SpinPannerEffectSignals = {

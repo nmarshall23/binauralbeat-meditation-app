@@ -117,6 +117,7 @@ function updateVolume(value: number) {
   volumeRef.value = value;
 }
 const volumeDialogRef = ref<InstanceType<typeof VolumeDialog> | null>(null);
+
 async function changeMainVolume() {
   showVolumeDialog("Main Volume", volumeRef.value, updateVolume);
 }
@@ -141,9 +142,14 @@ const noiseOptionsDialogRef = ref<InstanceType<
   typeof NoiseOptionsDialogVue
 > | null>();
 function showGenOptionsDialog(genCtrl: GeneratorControls) {
-  match(genCtrl.type).with("NoiseFilteredGen", async () => {
+  match(genCtrl).with({ type: 'NoiseFilteredGen'}, async (genCtrl) => {
     if (isDefined(noiseOptionsDialogRef)) {
-      await noiseOptionsDialogRef.value.reveal({ title: "Update Options" });
+      await noiseOptionsDialogRef.value.reveal({
+        title: "Update Options",
+        toggleSolo: genCtrl.toggleSolo,
+        updateOptions: genCtrl.updateOptions,
+        getOptionValues: genCtrl.getOptionValues,
+      });
     }
   });
 }

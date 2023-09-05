@@ -18,6 +18,8 @@ export type GeneratorControlsBase<T extends GeneratorDefType, UpdateOptions> = {
   dispose: () => void;
   hasOptions: boolean;
   updateOptions: (options: UpdateOptions) => void;
+  toggleSolo: (value?: boolean) => void
+  getOptionValues: () => Required<GeneratorCtrlNoiseWithFilterOptions>
 };
 
 export type GeneratorCtrlBasicBinauralBeat = GeneratorControlsBase<

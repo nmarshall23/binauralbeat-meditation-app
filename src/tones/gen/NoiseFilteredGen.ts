@@ -177,30 +177,65 @@ export function createNoiseFilteredGen(
   }
 
   function updateOptions(options: GeneratorCtrlNoiseWithFilterOptions) {
-    if(isDefined(options.noise)){
-      noiseSythNode.noise.type = options.noise.type
+    console.log("updateOptions options: %o", options);
+
+    if (isDefined(options.noise)) {
+      noiseSythNode.noise.type = options.noise.type;
     }
 
-    if(isDefined(options.filter) && isDefined(options.filter.wet)){
-      filterEffectNode.wet.value = options.filter.wet
+    if (isDefined(options.filter) && isDefined(options.filter.wet)) {
+      filterEffectNode.wet.value = options.filter.wet;
     }
 
-    if(isDefined(options.filter) && isDefined(options.filter.frequency)){
-      filterEffectNode.filter.frequency.value = options.filter.frequency
+    if (isDefined(options.filter) && isDefined(options.filter.frequency)) {
+      filterEffectNode.filter.frequency.value = options.filter.frequency;
     }
 
-    if(isDefined(options.filter) && isDefined(options.filter.type)){
-      filterEffectNode.filter.type = options.filter.type
+    if (isDefined(options.filter) && isDefined(options.filter.type)) {
+      filterEffectNode.filter.type = options.filter.type;
     }
 
-    if(isDefined(options.filter) && isDefined(options.filter.Q)){
-      filterEffectNode.filter.Q.value = options.filter.Q
+    if (isDefined(options.filter) && isDefined(options.filter.Q)) {
+      filterEffectNode.filter.Q.value = options.filter.Q;
     }
 
-    if(isDefined(options.filter) && isDefined(options.filter.gain)){
-      filterEffectNode.filter.gain.value = options.filter.gain
+    if (isDefined(options.filter) && isDefined(options.filter.gain)) {
+      filterEffectNode.filter.gain.value = options.filter.gain;
     }
-      
+
+    console.log(
+      "updateOptions - noiseSythNode.noise.type %o filterEffectNode.wet %o",
+      noiseSythNode.noise.type,
+      filterEffectNode.wet.value
+    );
+  }
+
+  function getOptionValues() {
+    return {
+      noise: {
+        type: noiseSythNode.noise.type,
+      },
+      filter: {
+        wet: filterEffectNode.wet.value,
+        frequency: filterEffectNode.filter.frequency.value,
+        type: filterEffectNode.filter.type,
+        Q: filterEffectNode.filter.Q.value,
+        gain: filterEffectNode.filter.gain.value,
+      },
+    };
+  }
+
+  const isSolo = ref(false);
+  function toggleSolo(value?: boolean) {
+    isSolo.value = value ?? !isSolo.value;
+    // channel.solo = value ?? !channel.solo
+    // console.info('%o, %o', channel.muted, channel.solo)
+
+    if (isSolo.value) {
+      noiseSythNode.triggerAttack();
+    } else {
+      noiseSythNode.triggerRelease();
+    }
   }
 
   return reactive({
@@ -211,5 +246,7 @@ export function createNoiseFilteredGen(
     dispose,
     hasOptions: true,
     updateOptions,
+    getOptionValues,
+    toggleSolo,
   });
 }
