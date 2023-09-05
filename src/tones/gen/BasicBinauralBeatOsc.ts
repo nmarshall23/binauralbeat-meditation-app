@@ -4,6 +4,7 @@ import { BasicBinauralBeatOscOptions } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import { useVolumeControl } from "@/use/useVolumeControl";
+import { noop } from "@vueuse/core";
 
 export function createBasicBinauralBeatOsc(
   generatorName: string,
@@ -102,5 +103,7 @@ export function createBasicBinauralBeatOsc(
 
     volumeCtrl: volumeRef,
     dispose,
+    hasOptions: false,
+    updateOptions: noop,
   });
 }

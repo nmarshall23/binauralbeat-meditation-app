@@ -22,6 +22,7 @@ import {
   EventValueType,
 } from "@/types/GeneratorSignals";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
+import { noop } from "@vueuse/core";
 
 export function createBinauralBeatSpinOsc(
   generatorName: string,
@@ -157,5 +158,7 @@ export function createBinauralBeatSpinOsc(
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
+    hasOptions: false,
+    updateOptions: noop,
   });
 }

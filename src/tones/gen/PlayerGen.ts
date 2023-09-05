@@ -29,6 +29,7 @@ import gong1 from "@/assets/berklee/cakelid_gong1.wav";
 import cookieTin2 from "@/assets/berklee/CookieTin2.wav";
 import iron_bell1 from "@/assets/berklee/iron_bell1.wav";
 import tinybell5 from "@/assets/berklee/tinybell5.wav";
+import { noop } from "@vueuse/core";
 
 const sampleLookup = {
   bell_mallett_1: bell_mallett_1,
@@ -243,5 +244,7 @@ export function createPlayerGen(
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
+    hasOptions: false,
+    updateOptions: noop,
   });
 }

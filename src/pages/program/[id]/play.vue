@@ -56,11 +56,14 @@
               (n) => (g.volumeCtrl = n)
             )
           "
+          :has-options="g.hasOptions"
+          @show-options-dialog="showGenOptionsDialog(g)"
         />
       </template>
     </q-card-section>
 
     <volume-dialog ref="volumeDialogRef" />
+    <noise-options-dialog ref="noiseOptionsDialogRef" />
   </nm-card>
 
   <!-- <nm-card color="bg-purple">
@@ -83,13 +86,15 @@ import { usePlaybackState } from "@/state/playbackState";
 import { useProgramDurationStore } from "@/state/programDuration";
 import { SoundGenerators } from "@/types/GeneratorDef";
 import { setupProgramGenerators } from "@/use/setupProgramGenerators";
+import NoiseOptionsDialogVue from "@/components/dialogs/noiseOptionsDialog.vue";
+import { GeneratorControls } from "@/types/GeneratorControls";
+import { match } from "ts-pattern";
 
 const { currentProgram, initializeProgram } = useBinauralBeatPrograms();
 
-initializeProgram()
+initializeProgram();
 
-const { isPlaying, toggleIsPlaying, eventHandler } =
-  usePlaybackState();
+const { isPlaying, toggleIsPlaying, eventHandler } = usePlaybackState();
 
 const { remandingDuration, remandingDurationPercentage } =
   useProgramDurationStore();
@@ -97,11 +102,12 @@ const { remandingDuration, remandingDurationPercentage } =
 const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
 const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
 
-
 // Add a Second so label doesn't go negtive
 const progressLabel = computed(
   () =>
-    `${remandingDuration.value.hours}:${remandingDuration.value.minutes}:${remandingDuration.value.seconds + 1}`
+    `${remandingDuration.value.hours}:${remandingDuration.value.minutes}:${
+      remandingDuration.value.seconds + 1
+    }`
 );
 
 const { volumeRef } = useMainChannel();
@@ -131,6 +137,16 @@ async function showVolumeDialog(
   }
 }
 
+const noiseOptionsDialogRef = ref<InstanceType<
+  typeof NoiseOptionsDialogVue
+> | null>();
+function showGenOptionsDialog(genCtrl: GeneratorControls) {
+  match(genCtrl.type).with("NoiseFilteredGen", async () => {
+    if (isDefined(noiseOptionsDialogRef)) {
+      await noiseOptionsDialogRef.value.reveal({ title: "Update Options" });
+    }
+  });
+}
 
 const generators = computed(() => {
   const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;
@@ -139,7 +155,7 @@ const generators = computed(() => {
 
 onBeforeUnmount(() => {
   generators.value.forEach((i) => i.dispose());
-  Tone.Transport.stop("+0.1")
+  Tone.Transport.stop("+0.1");
 });
 </script>
 

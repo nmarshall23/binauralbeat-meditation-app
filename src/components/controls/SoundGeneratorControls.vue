@@ -19,16 +19,21 @@
       />
       <q-btn flat @click="showVolumeDialog">Volume</q-btn>
     </q-card-actions>
+    <q-separator v-if="hasOptions" />
+    <q-card-actions v-if="hasOptions" align="center" class="bg-primary">
+      <q-btn outline padding="xs 3rem" @click="emit('showOptionsDialog')">Options</q-btn>
+    </q-card-actions>
   </q-card>
 </template>
 
 <script setup lang="ts">
-import { GeneratorDefType } from '@/types/GeneratorDef';
+import { GeneratorDefType } from "@/types/GeneratorDef";
 
 const props = defineProps<{
   name: string;
   muteCtrl: boolean;
-  type: GeneratorDefType
+  type: GeneratorDefType;
+  hasOptions: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -39,6 +44,7 @@ const emit = defineEmits<{
       title: string;
     }
   ): void;
+  (e: "showOptionsDialog"): void;
 }>();
 
 const muteCtrl = useVModel(props, "muteCtrl", emit);
@@ -48,6 +54,4 @@ function showVolumeDialog() {
     title: "Foo",
   });
 }
-
-
 </script>

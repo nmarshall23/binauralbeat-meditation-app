@@ -4,6 +4,7 @@ import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { BasicNoiseGenOptions } from "@/types/GeneratorDef";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
+import { noop } from "@vueuse/core";
 
 export function createBasicNoiseGen(
   generatorName: string,
@@ -95,5 +96,7 @@ export function createBasicNoiseGen(
     gainCtrl,
     volumeCtrl,
     dispose,
+    hasOptions: false,
+    updateOptions: noop,
   });
 }

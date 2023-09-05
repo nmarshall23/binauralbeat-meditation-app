@@ -147,51 +147,51 @@ export const mixedEffectsPragram: BinauralBeatProgram = {
         },
       },
     },
-    {
-      type: "SamplePlayer",
-      options: {
-        gain: 0.65,
-        player: {
-          sample: 'cookieTin2'
-        },
-        eventSequence: {
-          events: [
-            {
-              time: "+4",
-              rampTime: 0,
-              signal: {
-                startPattern: true,
-              },
-            },
+    // {
+    //   type: "SamplePlayer",
+    //   options: {
+    //     gain: 0.65,
+    //     player: {
+    //       sample: 'cookieTin2'
+    //     },
+    //     eventSequence: {
+    //       events: [
+    //         {
+    //           time: "+4",
+    //           rampTime: 0,
+    //           signal: {
+    //             startPattern: true,
+    //           },
+    //         },
             
-          ],
-        },
-        loopEvents: {
-          interval: 6,
-          pattern: 'up',
-          values: [
-            {
-              rampTime: 0,
-              signal: {
-                startSample: true,
-                pitchShift: {
-                  wet: 0,
-                },
-              },
-            },
-            {
-              rampTime: 0,
-              signal: {
-                startSample: true,
-                pitchShift: {
-                  wet: 1,
-                  pitch: 2,
-                },
-              },
-            },
-          ],
-        },
-      },
-    },
+    //       ],
+    //     },
+    //     loopEvents: {
+    //       interval: 6,
+    //       pattern: 'up',
+    //       values: [
+    //         {
+    //           rampTime: 0,
+    //           signal: {
+    //             startSample: true,
+    //             pitchShift: {
+    //               wet: 0,
+    //             },
+    //           },
+    //         },
+    //         {
+    //           rampTime: 0,
+    //           signal: {
+    //             startSample: true,
+    //             pitchShift: {
+    //               wet: 1,
+    //               pitch: 2,
+    //             },
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   },
+    // },
   ],
 };

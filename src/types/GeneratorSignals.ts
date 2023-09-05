@@ -32,7 +32,7 @@ export type SignalBase = {
   gain: Tone.Unit.GainFactor;
 };
 
-type FilterSignalOptions = {
+export type FilterSignalOptions = {
   wet: number;
   frequency: Tone.Unit.Frequency;
   Q: number;
@@ -40,12 +40,12 @@ type FilterSignalOptions = {
   detune: number;
 };
 
-type SpinPannerEffectSignals = {
+export type SpinPannerEffectSignals = {
   wet: 0 | 1;
   frequency: number;
 };
 
-type BinauralBeatSynthSignals = {
+export type BinauralBeatSynthSignals = {
   baseFreq: Tone.Unit.Frequency;
   beatFreq: Tone.Unit.Frequency;
 };

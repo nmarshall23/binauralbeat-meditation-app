@@ -18,6 +18,7 @@ import {
   BinauralBeatEventSignal,
   EventValueType,
 } from "@/types/GeneratorSignals";
+import { noop } from "@vueuse/core";
 
 const defaultVolume = 0;
 
@@ -136,5 +137,7 @@ export function createBinauralBeatwLoop(
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
+    hasOptions: false,
+    updateOptions: noop,
   });
 }

@@ -3,7 +3,10 @@ import { NoiseFilteredGenOptions } from "@/types/GeneratorDef";
 import { capitalCase } from "change-case";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
-import { GeneratorControls } from "@/types/GeneratorControls";
+import {
+  GeneratorControls,
+  GeneratorCtrlNoiseWithFilterOptions,
+} from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import { isMatching } from "ts-pattern";
 import {
@@ -173,11 +176,40 @@ export function createNoiseFilteredGen(
     disposePattern();
   }
 
+  function updateOptions(options: GeneratorCtrlNoiseWithFilterOptions) {
+    if(isDefined(options.noise)){
+      noiseSythNode.noise.type = options.noise.type
+    }
+
+    if(isDefined(options.filter) && isDefined(options.filter.wet)){
+      filterEffectNode.wet.value = options.filter.wet
+    }
+
+    if(isDefined(options.filter) && isDefined(options.filter.frequency)){
+      filterEffectNode.filter.frequency.value = options.filter.frequency
+    }
+
+    if(isDefined(options.filter) && isDefined(options.filter.type)){
+      filterEffectNode.filter.type = options.filter.type
+    }
+
+    if(isDefined(options.filter) && isDefined(options.filter.Q)){
+      filterEffectNode.filter.Q.value = options.filter.Q
+    }
+
+    if(isDefined(options.filter) && isDefined(options.filter.gain)){
+      filterEffectNode.filter.gain.value = options.filter.gain
+    }
+      
+  }
+
   return reactive({
     generatorName: displayName,
     type: "NoiseFilteredGen",
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
+    hasOptions: true,
+    updateOptions,
   });
 }
