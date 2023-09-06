@@ -25,6 +25,7 @@ import {
   NoiseFilteredGenEventSignal,
 } from "@/types/GeneratorSignals";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
+import { logicNot } from "@vueuse/math";
 
 export function createNoiseFilteredGen(
   generatorName: string,
@@ -225,18 +226,17 @@ export function createNoiseFilteredGen(
     };
   }
 
-  const isSolo = ref(false);
-  function toggleSolo(value?: boolean) {
-    isSolo.value = value ?? !isSolo.value;
-    // channel.solo = value ?? !channel.solo
-    // console.info('%o, %o', channel.muted, channel.solo)
+ 
 
-    if (isSolo.value) {
-      noiseSythNode.triggerAttack();
-    } else {
-      noiseSythNode.triggerRelease();
-    }
-  }
+  const [isGenTestEnabled, toggleGenSoundTest] = useToggle()
+
+  whenever(isGenTestEnabled, () => {
+    noiseSythNode.triggerAttack();
+  })
+
+  whenever(logicNot(isGenTestEnabled), () => {
+    noiseSythNode.triggerRelease()
+  })
 
   return reactive({
     generatorName: displayName,
@@ -247,6 +247,8 @@ export function createNoiseFilteredGen(
     hasOptions: true,
     updateOptions,
     getOptionValues,
-    toggleSolo,
+    toggleGenSoundTest,
+    loopEvents,
+    eventSequence,
   });
 }

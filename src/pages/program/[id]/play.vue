@@ -47,7 +47,7 @@
       <template v-for="g in generators">
         <sound-generator-controls
           :name="g.generatorName"
-          :type="g.type"
+          :gen-type="g.type"
           v-model:mute-ctrl="g.muteCtrl"
           @show-volume-dialog="
             showVolumeDialog(
@@ -57,6 +57,8 @@
             )
           "
           :has-options="g.hasOptions"
+          :event-sequence="g.eventSequence"
+          :event-loop="g.loopEvents"
           @show-options-dialog="showGenOptionsDialog(g)"
         />
       </template>
@@ -64,6 +66,7 @@
 
     <volume-dialog ref="volumeDialogRef" />
     <noise-options-dialog ref="noiseOptionsDialogRef" />
+    <binaural-beat-synth-ops-dialog ref="binauralBeatSynthOpsDialogRef" />
   </nm-card>
 
   <!-- <nm-card color="bg-purple">
@@ -89,6 +92,8 @@ import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 import NoiseOptionsDialogVue from "@/components/dialogs/noiseOptionsDialog.vue";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { match } from "ts-pattern";
+import BinauralBeatSynthOpsDialog from "@/components/dialogs/binauralBeatSynthOpsDialog.vue";
+import { setupSoundsSettingsDialogs } from "@/use/setupSoundsSettingsDialogs";
 
 const { currentProgram, initializeProgram } = useBinauralBeatPrograms();
 
@@ -138,21 +143,11 @@ async function showVolumeDialog(
   }
 }
 
-const noiseOptionsDialogRef = ref<InstanceType<
-  typeof NoiseOptionsDialogVue
-> | null>();
-function showGenOptionsDialog(genCtrl: GeneratorControls) {
-  match(genCtrl).with({ type: 'NoiseFilteredGen'}, async (genCtrl) => {
-    if (isDefined(noiseOptionsDialogRef)) {
-      await noiseOptionsDialogRef.value.reveal({
-        title: "Update Options",
-        toggleSolo: genCtrl.toggleSolo,
-        updateOptions: genCtrl.updateOptions,
-        getOptionValues: genCtrl.getOptionValues,
-      });
-    }
-  });
-}
+const {
+  showGenOptionsDialog,
+  noiseOptionsDialogRef,
+  binauralBeatSynthOpsDialogRef,
+} = setupSoundsSettingsDialogs();
 
 const generators = computed(() => {
   const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;

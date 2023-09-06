@@ -137,7 +137,7 @@ export function createBinauralBeatSpinOsc(
   /* === Dispay === */
 
   const displayName = computed(() => {
-    return `${generatorName} - ${beatSynth.beatFrequency}Hz`;
+    return `${generatorName} - ${beatSynth.beatFrequency.value}Hz`;
   });
 
   /* === Controls === */

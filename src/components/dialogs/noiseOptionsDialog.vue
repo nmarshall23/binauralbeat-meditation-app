@@ -168,7 +168,7 @@ type DialogRevealData = {
   title: string;
   updateOptions: (options: GeneratorCtrlNoiseWithFilterOptions) => void;
   getOptionValues: () => Required<GeneratorCtrlNoiseWithFilterOptions>;
-  toggleSolo: (value?: boolean) => void;
+    toggleGenSoundTest: (value?: boolean) => void;
 };
 
 const { isRevealed, reveal, onReveal, onConfirm, confirm } =
@@ -183,8 +183,8 @@ const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
 const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
 
 const title = ref("");
-const toggleSolo = ref<(value?: boolean) => void>(noop);
-watch(isPlaying, (v) => toggleSolo.value(v));
+const toggleGenSoundTest = ref<(value?: boolean) => void>(noop);
+watch(isPlaying, (v) => toggleGenSoundTest.value(v));
 // const volume = ref(10);
 // const updateVolume = ref((_v: number) => {});
 
@@ -331,7 +331,7 @@ watch(model, () => updateOptions.value(model.value), {
 
 onReveal((data) => {
   title.value = data.title;
-  toggleSolo.value = data.toggleSolo;
+  toggleGenSoundTest.value = data.toggleGenSoundTest;
   model.value = data.getOptionValues();
   updateOptions.value = data.updateOptions;
 });
