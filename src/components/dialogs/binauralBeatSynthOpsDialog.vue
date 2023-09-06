@@ -71,85 +71,42 @@
 
         <q-item-label header>Binaural Beat Settings</q-item-label>
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-input
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model.number="model.synth.baseFrequency"
-              label="Base Frequency"
-              type="number"
-            >
-            </q-input>
-          </q-item-section>
-        </q-item>
+        <list-item-number-input
+          v-model="model.synth.baseFrequency"
+          label="Base Frequency"
+          class="q-ml-md"
+        />
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-input
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model.number="model.synth.beatFrequency"
-              label="Beat Frequency"
-              type="number"
-            >
-            </q-input>
-          </q-item-section>
-        </q-item>
+        <list-item-number-input
+          v-model="model.synth.beatFrequency"
+          label="Beat Frequency"
+          class="q-ml-md"
+        />
 
         <q-separator spaced dark />
         <q-item-label header>Synthesizer Settings</q-item-label>
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-select
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model="model.synth.oscillator.baseType"
-              :options="oscillatorBaseTypesOptions"
-              emit-value
-              label="Base Wave Type"
-            />
-          </q-item-section>
-        </q-item>
+        <list-item-selection-input
+          v-model="model.synth.oscillator.baseType"
+          :options="oscillatorBaseTypesOptions"
+          label="Base Wave Type"
+          class="q-ml-md"
+        />
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-input
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model.number="model.synth.oscillator.partialCount"
-              label="Partials Count"
-              type="number"
-              hint="The number of Harmonic Partials"
-            >
-            </q-input>
-          </q-item-section>
-        </q-item>
+        <list-item-number-input
+          v-model="model.synth.oscillator.partialCount"
+          label="Partials Count"
+          hint="The number of Harmonic Partials"
+          class="q-ml-md"
+        />
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-select
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model="model.synth.oscillator.sourceType"
-              :options="oscillatorSourceTypesOptions"
-              label="Source Type"
-              emit-value
-              :hint="oscSourceTypeSetting.sourceTypeHint"
-            />
-          </q-item-section>
-        </q-item>
+        <list-item-selection-input
+          v-model="model.synth.oscillator.sourceType"
+          :options="oscillatorSourceTypesOptions"
+          label="Source Type"
+          :hint="oscSourceTypeSetting.sourceTypeHint"
+          class="q-ml-md"
+        />
 
         <q-expansion-item
           v-model="oscSourceTypeSetting.showFatSection"

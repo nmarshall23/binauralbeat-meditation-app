@@ -1,5 +1,5 @@
 <template>
-  <q-item  >
+  <q-item>
     <q-item-section>
       <q-input
         label-color="grey-12"
@@ -18,9 +18,9 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-    modelValue: number;
-  label: string
-  hint: string
+  modelValue: number;
+  label: string;
+  hint?: string | undefined;
 }>();
 
 const emit = defineEmits<{
@@ -28,5 +28,4 @@ const emit = defineEmits<{
 }>();
 
 const model = useVModel(props, "modelValue", emit);
-
 </script>

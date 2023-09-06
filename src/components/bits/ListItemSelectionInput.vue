@@ -20,7 +20,7 @@
 const props = defineProps<{
   modelValue: string;
   label: string;
-  hint: string;
+  hint?: string;
   options: { label: string; value: string };
 }>();
 
