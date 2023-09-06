@@ -25,28 +25,14 @@
         <div class="text-h6">Meditation Programs</div>
         <div class="text-subtitle2">Select one to begin your session</div>
       </template>
-      <q-list dark bordered separator>
-        <q-item
-          clickable
-          v-ripple
-          v-for="program in programs"
-          :to="{
-            name: '/program/[id]/select-duration',
-            params: { id: program.id },
-          }"
-        >
-          <q-item-section>
-            <q-item-label>{{ program.title }}</q-item-label>
-            <q-item-label caption>{{ program.description }}</q-item-label>
-          </q-item-section>
-        </q-item>
-      </q-list>
+      <menu-list :menu="presetProgramsMenu" />
+      
     </nm-card>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { useBinauralBeatPrograms } from "@/state/bbPrograms";
+import { presetProgramsMenu } from "@/state/presetPrograms";
 
-const { programs } = useBinauralBeatPrograms();
+
 </script>

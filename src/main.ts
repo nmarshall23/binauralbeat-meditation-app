@@ -27,7 +27,7 @@ createApp(App)
       BottomSheet,
     }, // import Quasar plugins and add here
     config: {
-      dark: 'auto'
+      dark: true,
     }
   })
   .mount("#app");
