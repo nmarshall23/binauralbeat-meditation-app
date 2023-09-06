@@ -11,6 +11,7 @@
         emit-value
         :label="label"
         :hint="hint"
+        :disable="disable"
       />
     </q-item-section>
   </q-item>
@@ -19,9 +20,10 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: string;
+  options: { label: string; value: string };
   label: string;
   hint?: string;
-  options: { label: string; value: string };
+  disable?: boolean
 }>();
 
 const emit = defineEmits<{

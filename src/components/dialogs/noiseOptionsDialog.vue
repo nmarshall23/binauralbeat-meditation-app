@@ -13,9 +13,7 @@
           <q-tooltip class="bg-white text-primary">Close</q-tooltip>
         </q-btn>
 
-        <q-toolbar-title>
-          {{ title }}
-        </q-toolbar-title>
+        <q-toolbar-title> Update Options </q-toolbar-title>
 
         <q-icon name="equalizer" />
       </q-toolbar>
@@ -28,12 +26,24 @@
             >
           </q-item-section>
           <q-item-section side top>
-            <q-btn color="primary" push no-caps icon-right="redo" :disabled="!canRedo" @click="redo"
+            <q-btn
+              color="primary"
+              push
+              no-caps
+              icon-right="redo"
+              :disabled="!canRedo"
+              @click="redo"
               >Redo</q-btn
             >
           </q-item-section>
           <q-item-section side top>
-            <q-btn color="primary" push no-caps icon-right="undo" :disabled="!canUndo" @click="undo"
+            <q-btn
+              color="primary"
+              push
+              no-caps
+              icon-right="undo"
+              :disabled="!canUndo"
+              @click="undo"
               >Undo</q-btn
             >
           </q-item-section>
@@ -57,19 +67,12 @@
 
         <q-item-label header>Noise Source Settings</q-item-label>
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-select
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model="model.noise.type"
-              :options="noiseTypeOptions"
-              label="Noise Type"
-            />
-          </q-item-section>
-        </q-item>
+        <list-item-selection-input
+          class="q-ml-md"
+          v-model="model.noise.type"
+          :options="noiseTypeOptions"
+          label="Noise Type"
+        />
 
         <q-separator spaced dark />
 
@@ -88,72 +91,38 @@
           </q-item-section>
         </q-item>
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-select
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model="model.filter.type"
-              :options="filterTypeOtions"
-              label="Filter Type"
-              :hint="fitlerInputsInfo.typeHint"
-              :disable="!model.filter.wet"
-            />
-          </q-item-section>
-        </q-item>
+        <list-item-selection-input
+          class="q-ml-md"
+          v-model="model.filter.type"
+          :options="filterTypeOtions"
+          label="Filter Type"
+          :hint="fitlerInputsInfo.typeHint"
+          :disable="!model.filter.wet"
+        />
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-input
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model="model.filter.frequency"
-              label="Filter Frequency"
-              type="number"
-              :hint="fitlerInputsInfo.freqHint"
-              :disable="!model.filter.wet"
-            >
-            </q-input>
-          </q-item-section>
-        </q-item>
+        <list-item-number-input
+          class="q-ml-md"
+          v-model="model.filter.frequency"
+          label="Filter Frequency"
+          :hint="fitlerInputsInfo.freqHint"
+          :disable="!model.filter.wet"
+        />
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-input
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model="model.filter.Q"
-              label="Filter Q"
-              type="number"
-              :hint="fitlerInputsInfo.qHint"
-              :disable="fitlerInputsInfo.q || !model.filter.wet"
-            >
-            </q-input>
-          </q-item-section>
-        </q-item>
+        <list-item-number-input
+          class="q-ml-md"
+          v-model="model.filter.Q"
+          label="Filter Q"
+          :hint="fitlerInputsInfo.qHint"
+          :disable="fitlerInputsInfo.q || !model.filter.wet"
+        />
 
-        <q-item class="q-ml-md">
-          <q-item-section>
-            <q-input
-              label-color="grey-12"
-              outlined
-              standout="bg-blue-grey-9 text-grey-12"
-              dark
-              v-model="model.filter.gain"
-              label="Filter Gain"
-              type="number"
-              :hint="fitlerInputsInfo.gainHint"
-              :disable="fitlerInputsInfo.gain || !model.filter.wet"
-            >
-            </q-input>
-          </q-item-section>
-        </q-item>
+        <list-item-number-input
+          class="q-ml-md"
+          v-model="model.filter.gain"
+          label="Filter Gain"
+          :hint="fitlerInputsInfo.gainHint"
+          :disable="fitlerInputsInfo.gain || !model.filter.wet"
+        />
       </q-list>
     </q-card>
   </q-dialog>
@@ -161,32 +130,42 @@
 
 <script setup lang="ts">
 import { GeneratorCtrlNoiseWithFilterOptions } from "@/types/GeneratorControls";
-import { noop } from "@vueuse/core";
+import { setupGenOpsDialog } from "@/use/setupGenOpsDialog";
 import { match } from "ts-pattern";
 
-type DialogRevealData = {
-  title: string;
-  updateOptions: (options: GeneratorCtrlNoiseWithFilterOptions) => void;
-  getOptionValues: () => Required<GeneratorCtrlNoiseWithFilterOptions>;
-    toggleGenSoundTest: (value?: boolean) => void;
-};
+const model = ref<Required<GeneratorCtrlNoiseWithFilterOptions>>({
+  noise: {
+    type: "white",
+  },
+  filter: {
+    wet: 1,
+    type: "lowpass",
+    frequency: 200,
+    Q: 1,
+    gain: 1,
+    // detune: 0
+  },
+});
 
-const { isRevealed, reveal, onReveal, onConfirm, confirm } =
-  useConfirmDialog<DialogRevealData>();
+const {
+  // Dialog
+  isRevealed,
+  confirm,
+  reveal,
+  // Playback Btn
+  toggleIsPlaying,
+  playBtnIcon,
+  playBtnLabel,
+  // History Tracking
+  undo,
+  redo,
+  canUndo,
+  canRedo,
+} = setupGenOpsDialog<GeneratorCtrlNoiseWithFilterOptions>(model);
 
 defineExpose({
   reveal,
 });
-
-const [isPlaying, toggleIsPlaying] = useToggle();
-const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
-const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
-
-const title = ref("");
-const toggleGenSoundTest = ref<(value?: boolean) => void>(noop);
-watch(isPlaying, (v) => toggleGenSoundTest.value(v));
-// const volume = ref(10);
-// const updateVolume = ref((_v: number) => {});
 
 const noiseTypeOptions = ref(["white", "brown", "pink"]);
 
@@ -304,40 +283,4 @@ const fitlerInputsInfo = computed(() =>
     })
     .run()
 );
-
-const model = ref<Required<GeneratorCtrlNoiseWithFilterOptions>>({
-  noise: {
-    type: "white",
-  },
-  filter: {
-    wet: 1,
-    type: "lowpass",
-    frequency: 200,
-    Q: 1,
-    gain: 1,
-    // detune: 0
-  },
-});
-const { undo, redo, canUndo, canRedo } = useRefHistory(model, {
-  capacity: 10,
-  deep: true,
-});
-
-const updateOptions = ref((_op: GeneratorCtrlNoiseWithFilterOptions) => {});
-
-watch(model, () => updateOptions.value(model.value), {
-  deep: true,
-});
-
-onReveal((data) => {
-  title.value = data.title;
-  toggleGenSoundTest.value = data.toggleGenSoundTest;
-  model.value = data.getOptionValues();
-  updateOptions.value = data.updateOptions;
-});
-
-onConfirm(() => {
-  title.value = "";
-  toggleIsPlaying(false);
-});
 </script>

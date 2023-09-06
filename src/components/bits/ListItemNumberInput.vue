@@ -10,6 +10,7 @@
         :label="label"
         type="number"
         :hint="hint"
+        :disable="disable"
       >
       </q-input>
     </q-item-section>
@@ -21,6 +22,7 @@ const props = defineProps<{
   modelValue: number;
   label: string;
   hint?: string | undefined;
+  disable?: boolean
 }>();
 
 const emit = defineEmits<{
