@@ -27,15 +27,12 @@
     <q-slide-transition>
       <div v-show="isPlaying">
         <q-separator dark />
-        <q-linear-progress
-          size="25px"
-          :value="remandingDurationPercentage"
-          color="accent"
-        >
-          <div class="absolute-full flex flex-center">
-            <q-badge color="white" text-color="accent" :label="progressLabel" />
-          </div>
-        </q-linear-progress>
+        <play-back-progress
+          :remanding-duration="remandingDuration"
+          :remanding-duration-percentage="remandingDurationPercentage"
+        />
+        <q-separator dark />
+        <meter-plot :is-playing="isPlaying" />
       </div>
     </q-slide-transition>
 
@@ -89,9 +86,6 @@ import { usePlaybackState } from "@/state/playbackState";
 import { useProgramDurationStore } from "@/state/programDuration";
 import { SoundGenerators } from "@/types/GeneratorDef";
 import { setupProgramGenerators } from "@/use/setupProgramGenerators";
-import NoiseOptionsDialogVue from "@/components/dialogs/noiseOptionsDialog.vue";
-import { GeneratorControls } from "@/types/GeneratorControls";
-import { match } from "ts-pattern";
 import BinauralBeatSynthOpsDialog from "@/components/dialogs/binauralBeatSynthOpsDialog.vue";
 import { setupSoundsSettingsDialogs } from "@/use/setupSoundsSettingsDialogs";
 
@@ -106,14 +100,6 @@ const { remandingDuration, remandingDurationPercentage } =
 
 const playBtnIcon = computed(() => (isPlaying.value ? "pause" : "play_arrow"));
 const playBtnLabel = computed(() => (isPlaying.value ? "pause" : "play"));
-
-// Add a Second so label doesn't go negtive
-const progressLabel = computed(
-  () =>
-    `${remandingDuration.value.hours}:${remandingDuration.value.minutes}:${
-      remandingDuration.value.seconds + 1
-    }`
-);
 
 const { volumeRef } = useMainChannel();
 

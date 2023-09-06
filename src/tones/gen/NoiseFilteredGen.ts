@@ -26,6 +26,7 @@ import {
 } from "@/types/GeneratorSignals";
 import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
 import { logicNot } from "@vueuse/math";
+import { RecursivePartial } from "tone/build/esm/core/util/Interface";
 
 export function createNoiseFilteredGen(
   generatorName: string,
@@ -52,6 +53,7 @@ export function createNoiseFilteredGen(
 
   const filterEffectNode = new FilterEffect({
     filter: filterOptions,
+    //wet: filterOptions?.wet ?? 1,
   });
 
   const noiseSythNode = new Tone.NoiseSynth({
@@ -105,7 +107,7 @@ export function createNoiseFilteredGen(
 
     if (isMatching(eventMatcherFilterFrequency, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.frequency.rampTo(
+      filterEffectNode.frequency.rampTo(
         signal.filter.frequency,
         rampTime,
         time
@@ -114,17 +116,17 @@ export function createNoiseFilteredGen(
 
     if (isMatching(eventMatcherFilterQ, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.Q.rampTo(signal.filter.Q, rampTime, time);
+      filterEffectNode.Q.rampTo(signal.filter.Q, rampTime, time);
     }
 
     if (isMatching(eventMatcherFilterGain, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.gain.rampTo(signal.filter.gain, rampTime, time);
+      filterEffectNode.gain.rampTo(signal.filter.gain, rampTime, time);
     }
 
     if (isMatching(eventMatcherFilterDetune, event)) {
       const { rampTime, signal } = event;
-      filterEffectNode.filter.detune.rampTo(
+      filterEffectNode.detune.rampTo(
         signal.filter.detune,
         rampTime,
         time
@@ -177,32 +179,39 @@ export function createNoiseFilteredGen(
     disposePattern();
   }
 
-  function updateOptions(options: GeneratorCtrlNoiseWithFilterOptions) {
+  function updateOptions(options: RecursivePartial<GeneratorCtrlNoiseWithFilterOptions>) {
     console.log("updateOptions options: %o", options);
+    noiseSythNode.noise.type = options.noise?.type ?? 'white';
+    filterEffectNode.wet.value = options?.filter?.wet ?? 0;
+    filterEffectNode.frequency.value = options?.filter?.frequency ?? 200
+    filterEffectNode.type = options?.filter?.type ?? 'lowpass'
+    filterEffectNode.Q.value = options?.filter?.Q ?? 1
+    filterEffectNode.gain.value = options?.filter?.gain ?? 0
+    
 
-    if (isDefined(options.noise)) {
-      noiseSythNode.noise.type = options.noise.type;
-    }
+    // if (isDefined(options.noise)) {
+    //   noiseSythNode.noise.type = options.noise.type ?? 'white';
+    // }
 
-    if (isDefined(options.filter) && isDefined(options.filter.wet)) {
-      filterEffectNode.wet.value = options.filter.wet;
-    }
+    // if (isDefined(options.filter) && isDefined(options.filter.wet)) {
+    //   filterEffectNode.wet.value = options.filter.wet;
+    // }
 
-    if (isDefined(options.filter) && isDefined(options.filter.frequency)) {
-      filterEffectNode.filter.frequency.value = options.filter.frequency;
-    }
+    // if (isDefined(options.filter) && isDefined(options.filter.frequency)) {
+    //   filterEffectNode.filter.frequency.value = options.filter.frequency;
+    // }
 
-    if (isDefined(options.filter) && isDefined(options.filter.type)) {
-      filterEffectNode.filter.type = options.filter.type;
-    }
+    // if (isDefined(options.filter) && isDefined(options.filter.type)) {
+    //   filterEffectNode.filter.type = options.filter.type;
+    // }
 
-    if (isDefined(options.filter) && isDefined(options.filter.Q)) {
-      filterEffectNode.filter.Q.value = options.filter.Q;
-    }
+    // if (isDefined(options.filter) && isDefined(options.filter.Q)) {
+    //   filterEffectNode.filter.Q.value = options.filter.Q;
+    // }
 
-    if (isDefined(options.filter) && isDefined(options.filter.gain)) {
-      filterEffectNode.filter.gain.value = options.filter.gain;
-    }
+    // if (isDefined(options.filter) && isDefined(options.filter.gain)) {
+    //   filterEffectNode.filter.gain.value = options.filter.gain;
+    // }
 
     console.log(
       "updateOptions - noiseSythNode.noise.type %o filterEffectNode.wet %o",
@@ -218,10 +227,10 @@ export function createNoiseFilteredGen(
       },
       filter: {
         wet: filterEffectNode.wet.value,
-        frequency: filterEffectNode.filter.frequency.value,
-        type: filterEffectNode.filter.type,
-        Q: filterEffectNode.filter.Q.value,
-        gain: filterEffectNode.filter.gain.value,
+        frequency: filterEffectNode.frequency.value,
+        type: filterEffectNode.type,
+        Q: filterEffectNode.Q.value,
+        gain: filterEffectNode.gain.value,
       },
     };
   }
@@ -232,6 +241,7 @@ export function createNoiseFilteredGen(
 
   whenever(isGenTestEnabled, () => {
     noiseSythNode.triggerAttack();
+    console.log('getOptionValues %o', getOptionValues())
   })
 
   whenever(logicNot(isGenTestEnabled), () => {

@@ -7,8 +7,8 @@ const volumeSliderOptions = {
   step: 10,
   innerMin: 1,
   innerMax: 99,
-  projectionMax: 5,
-  projectionMin: -16,
+  projectionMax: 10,
+  projectionMin: -14,
 };
 
 const mainChannel = new Tone.Channel(volumeSliderOptions.projectionMax).receive("main").toDestination();

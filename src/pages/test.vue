@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="column q-gutter-sm items-start">
+  <q-page padding class="column items-start">
     <nm-card color="bg-secondary">
       <template #header>
         <div class="text-h6">Test Sounds</div>

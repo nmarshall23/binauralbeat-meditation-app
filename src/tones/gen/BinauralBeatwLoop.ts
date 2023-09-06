@@ -2,7 +2,7 @@ import * as Tone from "tone";
 
 import { BinauralBeatSynthGenerator } from "@/types/GeneratorDef";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
-import { Pattern, isMatching } from "ts-pattern";
+import { isMatching } from "ts-pattern";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import {
   GeneratorCtrlBinauralBeatSynth,
@@ -24,6 +24,7 @@ import {
 } from "@/types/GeneratorSignals";
 import { logicNot } from "@vueuse/math";
 import { RecursivePartial } from "tone/build/esm/core/util/Interface";
+// import { FilterEffect } from "../effect/filterEffect";
 
 const defaultVolume = 0;
 
@@ -44,6 +45,17 @@ export function createBinauralBeatwLoop(
 
   const gainNode = new Tone.Gain(gain);
 
+  // const distortionNode = new Tone.Distortion()
+  // const chebyNode = new Tone.Chebyshev(20)
+
+  // const filterEffectNode = new FilterEffect({
+  //   filter,
+  //   wet: filter?.wet ?? 0,
+  //   filterFrequencyIndex: filter?.filterFrequencyIndex
+  // });
+
+  // filterEffectNode.filter.frequency.value = 120
+
   const beatSynth = new BinauralBeatSynth(synth);
 
   // === Connections === //
@@ -51,6 +63,8 @@ export function createBinauralBeatwLoop(
   beatSynth.chain(gainNode, channel);
 
   // === Signals === //
+
+  // beatSynth.baseFrequency.connect(filterEffectNode.filterFrequencyIndex)
 
   // === Playback === //
 
@@ -158,77 +172,96 @@ export function createBinauralBeatwLoop(
     options: RecursivePartial<GeneratorCtrlBinauralBeatSynthOptions>
   ) {
     console.info("updateOptions %o", toRaw(options));
-    if (
-      isMatching(
-        {
-          synth: {
-            oscillator: {
-              baseType: Pattern.union("sine", "sawtooth", "square", "triangle"),
-            },
-          },
-        },
-        options
-      )
-    ) {
-      beatSynth.oscillatorBaseType = options.synth.oscillator.baseType;
-    }
+    beatSynth.oscillatorBaseType =
+      options.synth?.oscillator?.baseType ?? "sine";
+    beatSynth.oscillatorSourceType =
+      options.synth?.oscillator?.sourceType ?? "oscillator";
+    beatSynth.oscillatorPartialCount =
+      options.synth?.oscillator?.partialCount ?? 0;
+    beatSynth.baseFrequency.rampTo(options.synth?.baseFrequency ?? 180, 1);
+    beatSynth.beatFrequency.rampTo(options.synth?.beatFrequency ?? 4, 1);
+    beatSynth.oscillatorHarmonicity =
+      options.synth?.oscillator?.sourceOptions?.harmonicity ?? 1;
+    beatSynth.oscillatorCount =
+      options.synth?.oscillator?.sourceOptions?.count ?? 3;
 
-    if (
-      isMatching(
-        {
-          synth: {
-            oscillator: {
-              sourceType: Pattern.union("oscillator", "fat", "am", "fm"),
-            },
-          },
-        },
-        options
-      )
-    ) {
-      beatSynth.oscillatorSourceType = options.synth.oscillator.sourceType;
-    }
+    beatSynth.oscillatorSpread =
+      options.synth?.oscillator?.sourceOptions?.spread ?? 20;
+    beatSynth.oscillatorModulationType =
+      options.synth?.oscillator?.sourceOptions?.modulationType ?? "square";
+    beatSynth.oscillatorModulationIndex =
+      options.synth?.oscillator?.sourceOptions?.modulationIndex ?? 1;
 
-    if (
-      isMatching(
-        {
-          synth: {
-            oscillator: {
-              partialCount: Pattern.number,
-            },
-          },
-        },
-        options
-      )
-    ) {
-      beatSynth.oscillatorPartialCount = options.synth.oscillator.partialCount;
-    }
+    // if (
+    //   isMatching(
+    //     {
+    //       synth: {
+    //         oscillator: {
+    //           baseType: Pattern.union("sine", "sawtooth", "square", "triangle"),
+    //         },
+    //       },
+    //     },
+    //     options
+    //   )
+    // ) {
+    //   beatSynth.oscillatorBaseType = options.synth.oscillator.baseType;
+    // }
 
-    if (
-      isMatching(
-        {
-          synth: {
-            baseFrequency: Pattern.number,
-          },
-        },
-        options
-      )
-    ) {
-      beatSynth.baseFrequency.rampTo(options.synth.baseFrequency, 1);
-      console.log("log");
-    }
+    // if (
+    //   isMatching(
+    //     {
+    //       synth: {
+    //         oscillator: {
+    //           sourceType: Pattern.union("oscillator", "fat", "am", "fm"),
+    //         },
+    //       },
+    //     },
+    //     options
+    //   )
+    // ) {
+    //   beatSynth.oscillatorSourceType = options.synth.oscillator.sourceType;
+    // }
 
-    if (
-      isMatching(
-        {
-          synth: {
-            beatFrequency: Pattern.number,
-          },
-        },
-        options
-      )
-    ) {
-      beatSynth.beatFrequency.rampTo(options.synth.beatFrequency, 1);
-    }
+    // if (
+    //   isMatching(
+    //     {
+    //       synth: {
+    //         oscillator: {
+    //           partialCount: Pattern.number,
+    //         },
+    //       },
+    //     },
+    //     options
+    //   )
+    // ) {
+    //   beatSynth.oscillatorPartialCount = options.synth.oscillator.partialCount;
+    // }
+
+    // if (
+    //   isMatching(
+    //     {
+    //       synth: {
+    //         baseFrequency: Pattern.number,
+    //       },
+    //     },
+    //     options
+    //   )
+    // ) {
+    //   beatSynth.baseFrequency.rampTo(options.synth.baseFrequency, 1);
+    // }
+
+    // if (
+    //   isMatching(
+    //     {
+    //       synth: {
+    //         beatFrequency: Pattern.number,
+    //       },
+    //     },
+    //     options
+    //   )
+    // ) {
+    //   beatSynth.beatFrequency.rampTo(options.synth.beatFrequency, 1);
+    // }
   }
 
   const [isGenTestEnabled, toggleGenSoundTest] = useToggle();
@@ -236,6 +269,7 @@ export function createBinauralBeatwLoop(
   whenever(isGenTestEnabled, () => {
     console.debug("synth %o", getOptionValues());
     beatSynth.triggerAttack();
+    // console.debug('fwet %o, ff %o bf %o',filterEffectNode.wet.value, filterEffectNode.filter.frequency.value, beatSynth.baseFrequency.value)
   });
 
   whenever(logicNot(isGenTestEnabled), () => {

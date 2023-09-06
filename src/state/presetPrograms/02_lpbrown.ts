@@ -3,7 +3,7 @@ import { BinauralBeatProgram } from "../bbPrograms";
 
 export const lpBrownProgram: BinauralBeatProgram = {
   id: "BrNBB_03",
-  title: "Low Pass Brown Noise",
+  title: "Noise w/ LP filter | Binaural Beat @ 8hz & 6hz",
   description: "",
   generators: [
     {

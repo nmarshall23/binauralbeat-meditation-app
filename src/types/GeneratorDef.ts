@@ -45,20 +45,21 @@ export type NoiseFilteredGenOptions = {
   noise: {
     type: Tone.NoiseType;
   };
-  filter: {
+  filter?: {
     type: BiquadFilterType;
-    frequency?: Tone.Unit.Frequency;
+    frequency: Tone.Unit.Frequency;
     Q?: number;
     gain?: number;
     detune?: number;
+    wet?: 0 | 1;
   };
   loopEvents?: LooppingEventsOptions<NoiseFilteredGenEventSignal>;
   eventSequence?: EventSequence<NoiseFilteredGenEventSignal>;
 };
 
 export type BinauralBeatSynthGenerator = {
-  synth: Partial<BinauralBeatSynthOptions>;
   gain: Tone.Unit.GainFactor;
+  synth: Partial<BinauralBeatSynthOptions>;
   loopEvents?: LooppingEventsOptions<BinauralBeatEventSignal>;
   eventSequence?: EventSequence<BinauralBeatEventSignal>;
 };
@@ -74,11 +75,11 @@ export type BinauralBeatSynthSpinGenerator = {
 export type SamplePlayerGenerator = {
   gain: Tone.Unit.GainFactor;
   player: {
-    sample: SamplePlayerSampleKey
+    sample: SamplePlayerSampleKey;
   };
   pichShift?: {
-    pich: number // Half-step note increments, i.e. 12 is an octave above the root.
-  }
+    pich: number; // Half-step note increments, i.e. 12 is an octave above the root.
+  };
   panner3d?: {
     positionX?: number; // horizontal axis
     positionY?: number; // vertical axis

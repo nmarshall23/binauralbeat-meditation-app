@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpr fff">
+  <q-layout view="hHh lpr fff"  >
     <q-header elevated class="bg-primary text-white" height-hint="50">
       <q-toolbar class="app_toolbar">
         <q-toolbar-title class="text-left">
@@ -30,7 +30,7 @@
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="app_page_container">
       <router-view />
     </q-page-container>
   </q-layout>
@@ -76,5 +76,10 @@ watchEffect(() => {
 
 .app_toolbar_lastBtn {
   grid-column: 4 / 5;
+}
+
+.app_page_container {
+  // height: 100svh;
+  position: static;
 }
 </style>

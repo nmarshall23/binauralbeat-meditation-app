@@ -63,6 +63,13 @@
           </q-item-section>
         </q-item>
 
+        <q-separator spaced dark v-if="isPlaying" />
+        <q-slide-transition>
+          <div v-show="isPlaying">
+            <meter-plot :is-playing="isPlaying" />
+          </div>
+        </q-slide-transition>
+
         <q-separator spaced dark />
 
         <q-item-label header>Noise Source Settings</q-item-label>
@@ -156,6 +163,7 @@ const {
   toggleIsPlaying,
   playBtnIcon,
   playBtnLabel,
+  isPlaying,
   // History Tracking
   undo,
   redo,

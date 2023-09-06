@@ -1,36 +1,6 @@
 import { BinauralBeatProgram } from "../bbPrograms";
 
-export const simpleSpinEffectProgram: BinauralBeatProgram = {
-  id: "BrNBB_04",
-  title: "Brown Noise & Spinning Binaural Beat Osc ",
-  description: "Spatialized audio spinning in place",
-  volumeLevel: 60,
-  generators: [
-    {
-      type: "NoiseFilteredGen",
-      options: {
-        gain: 1,
-        noise: {
-          type: "brown",
-        },
-        filter: {
-          frequency: 300,
-          type: "lowpass",
-        },
-      },
-    },
-    {
-      type: "BinauralBeatSpinOsc",
-      options: {
-        gain: 0.4,
-        synth: {
-          baseFrequency: 90,
-          beatFrequency: 6,
-        },
-      },
-    },
-  ],
-};
+
 
 export const evolvingSpinEffectProgram: BinauralBeatProgram = {
   id: "EvoSpEffP01",

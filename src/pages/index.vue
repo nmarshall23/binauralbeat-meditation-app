@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="column q-gutter-sm items-start">
+  <q-page padding class="column items-start" :style-fn="tweek">
     <nm-card color="bg-secondary">
       <template #header>
         <div class="text-h6">What Are Binaural Beats?</div>
@@ -26,7 +26,6 @@
         <div class="text-subtitle2">Select one to begin your session</div>
       </template>
       <menu-list :menu="presetProgramsMenu" />
-      
     </nm-card>
   </q-page>
 </template>
@@ -34,5 +33,7 @@
 <script setup lang="ts">
 import { presetProgramsMenu } from "@/state/presetPrograms";
 
-
+function tweek(offset) {
+  return {}; // minHeight: offset ? `calc(100svh - ${offset}px)` : "100svh" };
+}
 </script>

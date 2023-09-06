@@ -2,13 +2,17 @@ import binauralBeatSynthOpsDialogVue from "@/components/dialogs/binauralBeatSynt
 import noiseOptionsDialogVue from "@/components/dialogs/noiseOptionsDialog.vue";
 import { GeneratorControls } from "@/types/GeneratorControls";
 import { match } from "ts-pattern";
+import * as Tone from "tone";
 
-function showGenOptionsDialog(genCtrl: GeneratorControls) {
+async function showGenOptionsDialog(genCtrl: GeneratorControls) {
+  if (Tone.getContext().state === "suspended") {
+    await Tone.start();
+  }
+
   match(genCtrl)
     .with({ type: "NoiseFilteredGen" }, async (genCtrl) => {
       if (isDefined(noiseOptionsDialogRef)) {
         await noiseOptionsDialogRef.value.reveal({
-          title: "Update Options",
           toggleGenSoundTest: genCtrl.toggleGenSoundTest,
           updateOptions: genCtrl.updateOptions,
           getOptionValues: genCtrl.getOptionValues,
@@ -35,5 +39,9 @@ const binauralBeatSynthOpsDialogRef = ref<InstanceType<
 > | null>();
 
 export function setupSoundsSettingsDialogs() {
-  return { showGenOptionsDialog, noiseOptionsDialogRef, binauralBeatSynthOpsDialogRef };
+  return {
+    showGenOptionsDialog,
+    noiseOptionsDialogRef,
+    binauralBeatSynthOpsDialogRef,
+  };
 }

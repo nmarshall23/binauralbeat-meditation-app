@@ -62,6 +62,7 @@ export function setupGenOpsDialog<T>(model: Ref<T>) {
     toggleIsPlaying,
     playBtnIcon,
     playBtnLabel,
+    isPlaying,
     // History Tracking
     undo,
     redo,
