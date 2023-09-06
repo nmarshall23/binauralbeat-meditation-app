@@ -12,6 +12,7 @@ declare module 'vue' {
     CountDown: typeof import('./src/components/playbackVis/CountDown.vue')['default']
     ListItemNumberInput: typeof import('./src/components/bits/ListItemNumberInput.vue')['default']
     ListItemSelectionInput: typeof import('./src/components/bits/ListItemSelectionInput.vue')['default']
+    MenuList: typeof import('./src/components/containment/MenuList.vue')['default']
     MeterVis: typeof import('./src/components/playbackVis/MeterVis.vue')['default']
     NmCard: typeof import('./src/components/containment/nmCard.vue')['default']
     NoiseOptionsDialog: typeof import('./src/components/dialogs/noiseOptionsDialog.vue')['default']
