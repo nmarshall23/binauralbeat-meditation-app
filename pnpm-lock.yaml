@@ -47,9 +47,6 @@ dependencies:
   vue-router:
     specifier: ^4.2.4
     version: 4.2.4(vue@3.3.4)
-  vue3-plotly:
-    specifier: ^0.0.7
-    version: 0.0.7(vue@3.3.4)
 
 devDependencies:
   '@quasar/vite-plugin':
@@ -1308,10 +1305,6 @@ packages:
       pathe: 1.1.1
     dev: true
 
-  /plotly.js-dist@2.26.0:
-    resolution: {integrity: sha512-CgVJfqKtxNA6nCVN4E/x7xFDLXjL8/tK55pA25XJrgwypnQN7S+/sF3yTVRk0OCimRPJ/cHlcffz6nIPK8J8MQ==}
-    dev: false
-
   /postcss@8.4.28:
     resolution: {integrity: sha512-Z7V5j0cq8oEKyejIKfpD8b4eBy9cwW2JWPk0+fB1HOAMsfHbnAXLLS+PfVWlzMSLQaWttKDt607I0XHmpE67Vw==}
     engines: {node: ^10 || ^12 || >=14}
@@ -1682,15 +1675,6 @@ packages:
       semver: 7.5.4
       typescript: 5.1.6
     dev: true
-
-  /vue3-plotly@0.0.7(vue@3.3.4):
-    resolution: {integrity: sha512-ydNOgbQlmg4Zp1etfUVsCKO4ejp/18oZ1pYr0b+pnhwYyx2BNZ+UyuK2PKKRwNdPSpohUBTDml3mhHiF54zVgQ==}
-    peerDependencies:
-      vue: ^3.2.21
-    dependencies:
-      plotly.js-dist: 2.26.0
-      vue: 3.3.4
-    dev: false
 
   /vue@3.3.4:
     resolution: {integrity: sha512-VTyEYn3yvIeY1Py0WaYGZsXnz3y5UnGi62GjVEqvEGPl6nxbOrCXbVOTQWBEJUqAyTUk2uJ5JLVnYJ6ZzGbrSw==}

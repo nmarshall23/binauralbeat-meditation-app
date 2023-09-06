@@ -10,6 +10,7 @@ declare module 'vue' {
     BinauralBeatSynthOpsDialog: typeof import('./src/components/dialogs/binauralBeatSynthOpsDialog.vue')['default']
     ChipOption: typeof import('./src/components/controls/ChipOption.vue')['default']
     CountDown: typeof import('./src/components/playbackVis/CountDown.vue')['default']
+    FftVis: typeof import('./src/components/playbackVis/fftVis.vue')['default']
     ListItemNumberInput: typeof import('./src/components/bits/ListItemNumberInput.vue')['default']
     ListItemSelectionInput: typeof import('./src/components/bits/ListItemSelectionInput.vue')['default']
     MenuList: typeof import('./src/components/containment/MenuList.vue')['default']
@@ -22,5 +23,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     SoundGeneratorControls: typeof import('./src/components/controls/SoundGeneratorControls.vue')['default']
     VolumeDialog: typeof import('./src/components/dialogs/volumeDialog.vue')['default']
+    WaveFormPlot: typeof import('./src/components/playbackVis/WaveFormPlot.vue')['default']
+    WaveFormVis: typeof import('./src/components/playbackVis/WaveFormVis.vue')['default']
   }
 }

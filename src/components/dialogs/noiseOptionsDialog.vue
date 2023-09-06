@@ -67,6 +67,10 @@
         <q-slide-transition>
           <div v-show="isPlaying">
             <meter-plot :is-playing="isPlaying" />
+            <div class="row">
+              <wave-form-vis :is-playing="isPlaying" />
+              <FftVis :is-playing="isPlaying" />
+            </div>
           </div>
         </q-slide-transition>
 

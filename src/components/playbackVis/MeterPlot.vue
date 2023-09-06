@@ -1,11 +1,6 @@
 <template>
   <q-card flat class="q-ma-md q-pa-md bg-brown-10 track">
     <q-card-section class="bg-orange sled"> </q-card-section>
-    <!-- <q-card-section class="flex flex-center">
-      <q-chip color="orange" text-color="white"
-        >{{ output.toFixed(4) }}
-      </q-chip>
-    </q-card-section> -->
   </q-card>
 </template>
 
