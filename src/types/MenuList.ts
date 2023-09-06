@@ -4,6 +4,7 @@ export type MenuListLinkItem = {
   title: string;
   subtitle: string;
   icon?: string;
+  iconProps?: Record<string, string>
   to: {
     name: string;
     params: Record<string, string>;

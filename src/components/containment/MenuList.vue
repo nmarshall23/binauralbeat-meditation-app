@@ -30,7 +30,7 @@
               <q-item-label caption>{{ subItem.subtitle }}</q-item-label>
             </q-item-section>
             <q-item-section side v-if="subItem.icon">
-              <q-icon :name="subItem.icon" />
+              <q-icon :name="subItem.icon" v-bind="subItem.iconProps" />
             </q-item-section>
           </q-item>
         </template>
