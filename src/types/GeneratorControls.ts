@@ -9,6 +9,31 @@ import {
 } from "./GeneratorSignals";
 import { Frequency } from "tone/build/esm/core/type/Units";
 import { RecursivePartial } from "tone/build/esm/core/util/Interface";
+import {
+  BinauralBeatSynth,
+  BinauralBeatSynthOptions,
+} from "@/tones/Instrument/BinauralBeatSynth";
+
+export type GeneratorControlsBase<
+  T extends GeneratorDefType,
+  GenSettings,
+  SignalType,
+  R
+> = {
+  type: T;
+  generatorName: string;
+
+  muteCtrl: boolean;
+  volumeCtrl: number;
+  dispose: () => void;
+  hasOptions: boolean;
+  updateOptions: (options: RecursivePartial<GenSettings>) => void;
+  getOptionValues: () => GenSettings;
+  toggleGenSoundTest: (value?: boolean) => void;
+  loopEvents?: LooppingEventsOptions<SignalType>;
+  eventSequence?: EventSequence<SignalType>;
+  additionalRecords: R;
+};
 
 export type GeneratorCtrlNoiseWithFilterOptions = {
   noise: {
@@ -38,53 +63,45 @@ export type GeneratorCtrlBinauralBeatSynthOptions = {
   };
 };
 
-export type GeneratorControlsBase<
-  T extends GeneratorDefType,
-  GenSettings,
-  SignalType
-> = {
-  type: T;
-  generatorName: string;
-
-  muteCtrl: boolean;
-  volumeCtrl: number;
-  dispose: () => void;
-  hasOptions: boolean;
-  updateOptions: (options: RecursivePartial<GenSettings>) => void;
-  toggleGenSoundTest: (value?: boolean) => void;
-  getOptionValues: () => GenSettings;
-  loopEvents?: LooppingEventsOptions<SignalType>;
-  eventSequence?: EventSequence<SignalType>;
+export type BinauralBeatSynthAdditionalRecords = {
+  // source: BinauralBeatSynth<BinauralBeatSynthOptions>;
+  sourceGetAsArray: () => Promise<Float32Array>
 };
 
 export type GeneratorCtrlBasicBinauralBeat = GeneratorControlsBase<
   "BasicBinauralBeatOsc",
   void,
+  null,
   null
 >;
 export type GeneratorCtrlBasicNoise = GeneratorControlsBase<
   "BasicNoiseGen",
   void,
+  null,
   null
 >;
 export type GeneratorCtrlBinauralBeatSynth = GeneratorControlsBase<
   "BinauralBeatwLoop",
   GeneratorCtrlBinauralBeatSynthOptions,
-  BinauralBeatEventSignal
+  BinauralBeatEventSignal,
+  BinauralBeatSynthAdditionalRecords
 >;
 export type GeneratorCtrlBinauralBeatSpin = GeneratorControlsBase<
   "BinauralBeatSpinOsc",
   void,
+  null,
   null
 >;
 export type GeneratorCtrlNoiseWithFilter = GeneratorControlsBase<
   "NoiseFilteredGen",
   GeneratorCtrlNoiseWithFilterOptions,
-  NoiseFilteredGenEventSignal
+  NoiseFilteredGenEventSignal,
+  null
 >;
 export type GeneratorCtrlSamplePlayer = GeneratorControlsBase<
   "SamplePlayer",
   void,
+  null,
   null
 >;
 

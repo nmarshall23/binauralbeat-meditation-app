@@ -16,6 +16,7 @@ async function showGenOptionsDialog(genCtrl: GeneratorControls) {
           toggleGenSoundTest: genCtrl.toggleGenSoundTest,
           updateOptions: genCtrl.updateOptions,
           getOptionValues: genCtrl.getOptionValues,
+          additionalRecords: genCtrl.additionalRecords,
         });
       }
     })
@@ -25,6 +26,7 @@ async function showGenOptionsDialog(genCtrl: GeneratorControls) {
           toggleGenSoundTest: genCtrl.toggleGenSoundTest,
           updateOptions: genCtrl.updateOptions,
           getOptionValues: genCtrl.getOptionValues,
+          additionalRecords: genCtrl.additionalRecords,
         });
       }
     })

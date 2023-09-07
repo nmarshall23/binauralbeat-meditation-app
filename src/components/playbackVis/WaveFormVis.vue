@@ -1,7 +1,7 @@
 <template>
   <q-card flat class="q-ma-md column items-center">
     <div class="text-subtitle2 q-pa-xs">Waveform</div>
-    <canvas ref="canvasWFRef" ></canvas>
+    <canvas ref="canvasWFRef"></canvas>
   </q-card>
 </template>
 
@@ -15,7 +15,7 @@ const props = defineProps<{
   isPlaying: boolean;
 }>();
 
-const isPlaying = useVModel(props, "isPlaying");
+const { isPlaying } = useVModels(props);
 
 // === Canvas  === //
 const canvasWFRef = ref<HTMLCanvasElement>();
@@ -30,7 +30,9 @@ mainChannel.connect(analysisNode);
 
 // === Setup Canvas === //
 
-useToneVis(canvasWFRef, analysisNode, isPlaying)
+useToneVis(canvasWFRef, isPlaying, async () => analysisNode.getValue());
+
+onUnmounted(() => {
+  analysisNode.dispose();
+});
 </script>
-
-

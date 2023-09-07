@@ -45,7 +45,7 @@ export class BinauralBeatSynth<
   readonly baseFrequency: Tone.Signal<"frequency">;
   readonly beatFrequency: Tone.Param<"number">;
 
- //  oscillatorType: OmniOscillatorType
+  //  oscillatorType: OmniOscillatorType
   /**
    * The detune signal
    */
@@ -119,8 +119,6 @@ export class BinauralBeatSynth<
       units: "frequency",
     });
 
-    
-
     // === Connections === //
 
     this.envelope.connect(this.output);
@@ -143,8 +141,8 @@ export class BinauralBeatSynth<
     //this.oscillator.harmonicity?.fan(this.oscillatorL, this.oscillatorR)
 
     readOnly(this, [
-      "oscillatorR",
-      "oscillatorL",
+      // "oscillatorR",
+      // "oscillatorL",
       "baseFrequency",
       "beatFrequency",
       "detune",
@@ -227,82 +225,91 @@ export class BinauralBeatSynth<
     return this;
   }
 
+  asArray() {
+    return this.oscillatorR.asArray();
+  }
+
   get oscillatorBaseType() {
-    return this.oscillatorL.baseType
+    return this.oscillatorL.baseType;
   }
 
   set oscillatorBaseType(type) {
-    this.oscillatorL.baseType = type
-    this.oscillatorR.baseType = type
+    this.oscillatorL.baseType = type;
+    this.oscillatorR.baseType = type;
   }
 
   get oscillatorSourceType() {
-    return this.oscillatorL.sourceType
+    return this.oscillatorL.sourceType;
   }
 
-  set oscillatorSourceType(sType){
-    this.oscillatorL.sourceType = sType
-    this.oscillatorR.sourceType = sType
+  set oscillatorSourceType(sType) {
+    this.oscillatorL.sourceType = sType;
+    this.oscillatorR.sourceType = sType;
   }
 
   get oscillatorPartialCount(): number {
-		return this.oscillatorL.partialCount;
-	}
+    return this.oscillatorL.partialCount;
+  }
 
-	set oscillatorPartialCount(p) {
-    this.oscillatorL.partialCount = p
-    this.oscillatorR.partialCount = p
+  set oscillatorPartialCount(p) {
+    this.oscillatorL.partialCount = p;
+    this.oscillatorR.partialCount = p;
   }
 
   get oscillatorCount() {
-    return this.oscillatorL.count
+    return this.oscillatorL.count;
   }
 
   set oscillatorCount(c) {
-    this.oscillatorL.count = c
-    this.oscillatorR.count = c
+    this.oscillatorL.count = c;
+    this.oscillatorR.count = c;
   }
 
   get oscillatorSpread() {
-    return this.oscillatorL.spread
+    return this.oscillatorL.spread;
   }
 
   set oscillatorSpread(c) {
-    this.oscillatorL.spread = c
-    this.oscillatorR.spread = c
+    this.oscillatorL.spread = c;
+    this.oscillatorR.spread = c;
   }
 
   get oscillatorModulationType() {
-    return this.oscillatorL.modulationType
+    return this.oscillatorL.modulationType;
   }
 
   set oscillatorModulationType(c) {
-    this.oscillatorL.modulationType = c
-    this.oscillatorR.modulationType = c
+    this.oscillatorL.modulationType = c;
+    this.oscillatorR.modulationType = c;
   }
 
   get oscillatorModulationIndex() {
-    return this.oscillatorL.modulationIndex?.value ?? 2
+    return this.oscillatorL.modulationIndex?.value ?? 2;
   }
 
   set oscillatorModulationIndex(c: number) {
-    if(isDefined(this.oscillatorL.modulationIndex) && this.oscillatorR.modulationIndex) {
-      this.oscillatorL.modulationIndex.value = c
-      this.oscillatorR.modulationIndex.value = c
+    if (
+      isDefined(this.oscillatorL.modulationIndex) &&
+      this.oscillatorR.modulationIndex
+    ) {
+      this.oscillatorL.modulationIndex.value = c;
+      this.oscillatorR.modulationIndex.value = c;
     }
   }
 
   get oscillatorHarmonicity() {
-    return this.oscillatorL.harmonicity?.value ?? 1
+    return this.oscillatorL.harmonicity?.value ?? 1;
   }
 
   set oscillatorHarmonicity(c: number) {
-    if(isDefined(this.oscillatorL.harmonicity) && this.oscillatorR.harmonicity) {
-      this.oscillatorL.harmonicity.value = c
-      this.oscillatorR.harmonicity.value = c
+    if (
+      isDefined(this.oscillatorL.harmonicity) &&
+      this.oscillatorR.harmonicity
+    ) {
+      this.oscillatorL.harmonicity.value = c;
+      this.oscillatorR.harmonicity.value = c;
     }
   }
-
 
   /**
    * clean up

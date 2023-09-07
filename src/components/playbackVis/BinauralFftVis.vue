@@ -24,16 +24,24 @@ const canvasFFTRef = ref<HTMLCanvasElement>();
 
 const { mainChannel } = useMainChannel();
 
-const analysisNode = new Tone.FFT(512);
+const splitNode = new Tone.Split();
+const analysisNodeL = new Tone.Waveform();
+const analysisNodeR = new Tone.Waveform()
 
-mainChannel.connect(analysisNode);
-
+mainChannel.connect(splitNode);
+splitNode.connect(analysisNodeL, 0);
+splitNode.connect(analysisNodeR, 1);
 // === Setup Canvas === //
 
-useToneVis(canvasFFTRef, isPlaying, async () => analysisNode.getValue());
+useToneVis(canvasFFTRef, isPlaying, async () => {
+  const l = analysisNodeL.getValue();
+  const r = analysisNodeR.getValue();
+
+  return l.map((entry, i) => entry - r[i]);
+});
 
 onUnmounted(() => {
   // analysisNode.disconnect(mainChannel)
-  analysisNode.dispose();
+  analysisNodeL.dispose();
 });
 </script>

@@ -63,9 +63,9 @@
           </q-item-section>
         </q-item>
 
-        <q-separator spaced dark v-if="isPlaying" />
         <q-slide-transition>
           <div v-show="isPlaying">
+            <q-separator spaced dark  />
             <meter-plot :is-playing="isPlaying" />
             <div class="row">
               <wave-form-vis :is-playing="isPlaying" />

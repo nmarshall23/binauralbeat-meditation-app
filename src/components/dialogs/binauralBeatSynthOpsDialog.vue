@@ -67,6 +67,16 @@
           </q-item-section>
         </q-item>
 
+        <q-slide-transition>
+          <div v-show="isPlaying">
+            <q-separator spaced dark />
+            <meter-plot :is-playing="isPlaying" />
+            <div class="row">
+              <FftVis :is-playing="isPlaying" />
+            </div>
+          </div>
+        </q-slide-transition>
+
         <q-separator spaced dark />
 
         <q-item-label header>Binaural Beat Settings</q-item-label>
@@ -84,7 +94,17 @@
         />
 
         <q-separator spaced dark />
-        <q-item-label header>Synthesizer Settings</q-item-label>
+        <q-item-label header class="q-pb-xs">Synthesizer Settings</q-item-label>
+
+        <q-item>
+          <q-item-section class="q-ml-md row"  >
+            <oscillator-vis
+              :get-as-array="getOscAsArray"
+              :watch="isUpdateFinished"
+              class="self-start bg-blue-grey-10"
+            />
+          </q-item-section>
+        </q-item>
 
         <list-item-selection-input
           v-model="model.synth.oscillator.baseType"
@@ -187,7 +207,10 @@
 </template>
 
 <script setup lang="ts">
-import { GeneratorCtrlBinauralBeatSynthOptions } from "@/types/GeneratorControls";
+import {
+  BinauralBeatSynthAdditionalRecords,
+  GeneratorCtrlBinauralBeatSynthOptions,
+} from "@/types/GeneratorControls";
 import { setupGenOpsDialog } from "@/use/setupGenOpsDialog";
 import { useFormatOptionsList } from "@/use/useFormatOptionsList";
 import { match } from "ts-pattern";
@@ -220,15 +243,29 @@ const {
   toggleIsPlaying,
   playBtnIcon,
   playBtnLabel,
+  isPlaying,
   // History Tracking
   undo,
   redo,
   canUndo,
   canRedo,
-} = setupGenOpsDialog<GeneratorCtrlBinauralBeatSynthOptions>(model);
+  // additionalRecords
+  additionalRecords,
+  isUpdateFinished,
+} = setupGenOpsDialog<
+  GeneratorCtrlBinauralBeatSynthOptions,
+  BinauralBeatSynthAdditionalRecords
+>(model);
 
 defineExpose({
   reveal,
+});
+
+const getOscAsArray = computed(() => {
+  if (isDefined(additionalRecords)) {
+    return () => additionalRecords.value.sourceGetAsArray();
+  }
+  return () => Promise.resolve<Float32Array>(new Float32Array());
 });
 
 const oscillatorBaseTypesOptions = useFormatOptionsList([

@@ -1,18 +1,17 @@
 import { noop } from "@vueuse/core";
 
-export type GenOpsDialogRevealData<T> = {
+export type GenOpsDialogRevealData<T, R> = {
   updateOptions: (options: T) => void;
   getOptionValues: () => Required<T>;
   toggleGenSoundTest: (value?: boolean) => void;
+  additionalRecords: R;
 };
 
-export function setupGenOpsDialog<T>(model: Ref<T>) {
+export function setupGenOpsDialog<T, R>(model: Ref<T>) {
   // === Dialog === //
 
   const { isRevealed, reveal, onReveal, onConfirm, confirm } =
-    useConfirmDialog<GenOpsDialogRevealData<T>>();
-
-  
+    useConfirmDialog<GenOpsDialogRevealData<T, R>>();
 
   // === Playback btn === //
 
@@ -35,15 +34,23 @@ export function setupGenOpsDialog<T>(model: Ref<T>) {
     });
 
   const updateOptions = ref((_op: T) => {});
+  const isUpdateFinished = ref(false);
 
-  watch(last, () => updateOptions.value(model.value));
+  watch(last, async () => {
+    isUpdateFinished.value = false;
+    await nextTick();
+    updateOptions.value(model.value);
+    await nextTick();
+    isUpdateFinished.value = true;
+  });
 
+  const additionalRecords = ref<R>();
   // === Event Setup === //
 
   onReveal(async (data) => {
+    additionalRecords.value = data.additionalRecords;
     toggleGenSoundTest.value = data.toggleGenSoundTest;
     updateOptions.value = data.updateOptions;
-
     model.value = data.getOptionValues();
     commit();
     clear();
@@ -68,5 +75,8 @@ export function setupGenOpsDialog<T>(model: Ref<T>) {
     redo,
     canUndo,
     canRedo,
+    // additionalRecords
+    additionalRecords,
+    isUpdateFinished,
   };
 }

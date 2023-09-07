@@ -14,6 +14,8 @@ function draw(
   canvasRef: Ref<HTMLCanvasElement | undefined>,
   values: Float32Array
 ) {
+  console.debug("values %o", values[2]);
+
   if (isDefined(canvasRef)) {
     const context = canvasRef.value.getContext("2d");
     if (isDefined(context)) {
@@ -44,18 +46,14 @@ function draw(
   }
 }
 
-type ToneGetValue = {
-  getValue: () => Float32Array;
-};
-
 type UseToneVisOptions = {
   height: number;
 };
 
 export function useToneVis(
   canvasRef: Ref<HTMLCanvasElement | undefined>,
-  toneNode: ToneGetValue,
   isPlaying: Ref<boolean>,
+  getValue: () => Promise<Float32Array>,
   options?: UseToneVisOptions
 ) {
   if (isDefined(canvasRef)) {
@@ -64,8 +62,8 @@ export function useToneVis(
 
   // Setup AnimationFrame Loop
   const { pause, resume } = useRafFn(
-    () => {
-      draw(canvasRef, toneNode.getValue());
+    async () => {
+      draw(canvasRef, await getValue());
     },
     { immediate: false }
   );
@@ -76,4 +74,25 @@ export function useToneVis(
   whenever(logicNot(isPlaying), () => {
     pause();
   });
+}
+
+export function useSimpleToneVis(
+  canvasRef: Ref<HTMLCanvasElement | undefined>,
+  isUpdateFinished: Ref<boolean>,
+  getValue: () => Promise<Float32Array>,
+  options?: UseToneVisOptions
+) {
+  if (isDefined(canvasRef)) {
+    canvasRef.value.height = options?.height ?? 40;
+  }
+
+  whenever(isUpdateFinished, async () => draw(canvasRef, await getValue()))
+  // watch(
+  //   watchRef,
+  //   async () => draw(canvasRef, await getValue()),
+  //   {
+  //     deep: true,
+  //     immediate: true,
+  //   }
+  // );
 }

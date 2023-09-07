@@ -5,6 +5,7 @@ import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { isMatching } from "ts-pattern";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import {
+  BinauralBeatSynthAdditionalRecords,
   GeneratorCtrlBinauralBeatSynth,
   GeneratorCtrlBinauralBeatSynthOptions,
   OscillatorSourceType,
@@ -192,76 +193,7 @@ export function createBinauralBeatwLoop(
     beatSynth.oscillatorModulationIndex =
       options.synth?.oscillator?.sourceOptions?.modulationIndex ?? 1;
 
-    // if (
-    //   isMatching(
-    //     {
-    //       synth: {
-    //         oscillator: {
-    //           baseType: Pattern.union("sine", "sawtooth", "square", "triangle"),
-    //         },
-    //       },
-    //     },
-    //     options
-    //   )
-    // ) {
-    //   beatSynth.oscillatorBaseType = options.synth.oscillator.baseType;
-    // }
-
-    // if (
-    //   isMatching(
-    //     {
-    //       synth: {
-    //         oscillator: {
-    //           sourceType: Pattern.union("oscillator", "fat", "am", "fm"),
-    //         },
-    //       },
-    //     },
-    //     options
-    //   )
-    // ) {
-    //   beatSynth.oscillatorSourceType = options.synth.oscillator.sourceType;
-    // }
-
-    // if (
-    //   isMatching(
-    //     {
-    //       synth: {
-    //         oscillator: {
-    //           partialCount: Pattern.number,
-    //         },
-    //       },
-    //     },
-    //     options
-    //   )
-    // ) {
-    //   beatSynth.oscillatorPartialCount = options.synth.oscillator.partialCount;
-    // }
-
-    // if (
-    //   isMatching(
-    //     {
-    //       synth: {
-    //         baseFrequency: Pattern.number,
-    //       },
-    //     },
-    //     options
-    //   )
-    // ) {
-    //   beatSynth.baseFrequency.rampTo(options.synth.baseFrequency, 1);
-    // }
-
-    // if (
-    //   isMatching(
-    //     {
-    //       synth: {
-    //         beatFrequency: Pattern.number,
-    //       },
-    //     },
-    //     options
-    //   )
-    // ) {
-    //   beatSynth.beatFrequency.rampTo(options.synth.beatFrequency, 1);
-    // }
+    // console.log('sourceGetAsArray %o', beatSynth.asArray().then((value) => value[2]))
   }
 
   const [isGenTestEnabled, toggleGenSoundTest] = useToggle();
@@ -275,6 +207,10 @@ export function createBinauralBeatwLoop(
   whenever(logicNot(isGenTestEnabled), () => {
     beatSynth.triggerRelease();
   });
+
+  const additionalRecords: BinauralBeatSynthAdditionalRecords = {
+    sourceGetAsArray: () => beatSynth.asArray(),
+  }
 
   function dispose() {
     channel.dispose();
@@ -292,7 +228,7 @@ export function createBinauralBeatwLoop(
     updateOptions,
     getOptionValues,
     toggleGenSoundTest,
-
+    additionalRecords,
     loopEvents,
     eventSequence,
   });
