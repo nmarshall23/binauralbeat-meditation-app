@@ -1,4 +1,9 @@
-import { Pattern } from "ts-pattern";
+
+import { Pattern, isMatching } from "ts-pattern";
+
+export const isTimeEvent = isMatching({
+  time: Pattern.union(Pattern.string, Pattern.number)
+});
 
 export const eventMatcherGain = {
   rampTime: Pattern.number,
@@ -6,6 +11,20 @@ export const eventMatcherGain = {
     gain: Pattern.number.between(0.0, 2.0),
   },
 };
+
+export const isGainEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    gain: Pattern.number.between(0.0, 2.0),
+  },
+});
+
+export const isSynthEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    synth: Pattern.not(Pattern.nullish)
+  },
+});
 
 export const eventMatcherBinauralBeatFreq = {
   rampTime: Pattern.number,
@@ -16,6 +35,15 @@ export const eventMatcherBinauralBeatFreq = {
   },
 };
 
+export const isSynthBeatFreqEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    synth: {
+      beatFreq: Pattern.number,
+    },
+  },
+});
+
 export const eventMatcherOscFreq = {
   rampTime: Pattern.number,
   signal: {
@@ -24,6 +52,15 @@ export const eventMatcherOscFreq = {
     },
   },
 };
+
+export const isSynthBaseFreqEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    synth: {
+      baseFreq: Pattern.number,
+    },
+  },
+});
 
 export const eventMatcherFilterFrequency = {
   rampTime: Pattern.number,
@@ -34,14 +71,48 @@ export const eventMatcherFilterFrequency = {
   },
 };
 
+export const isFilterEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    filter: Pattern.not(Pattern.nullish)
+  },
+});
+
+export const isFilterFreqEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    filter: {
+      frequency: Pattern.number,
+    },
+  },
+});
+
+export const isFilterQEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    filter: {
+      Q: Pattern.number,
+    },
+  },
+});
+
 export const eventMatcherFilterQ = {
   rampTime: Pattern.number,
   signal: {
     filter: {
-      Q: Pattern.number.positive,
+      Q: Pattern.number,
     },
   },
 };
+
+export const isFilterGainEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    filter: {
+      gain: Pattern.number,
+    },
+  },
+});
 
 export const eventMatcherFilterGain = {
   rampTime: Pattern.number,
@@ -70,6 +141,15 @@ export const eventMatcherFilterWet = {
   },
 };
 
+export const isFilterWetEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    filter: {
+      wet: Pattern.number.between(0, 1),
+    },
+  },
+});
+
 export const eventMatcherSpinEffectWet = {
   rampTime: Pattern.number,
   signal: {
@@ -86,6 +166,29 @@ export const eventMatcherSpinEffect = {
   },
 };
 
+export const isSpinEffectEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    spinEffect: Pattern.not(Pattern.nullish),
+  },
+});
+
+export const isSpinEffectWetEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    spinEffect: {
+      wet: Pattern.union(0, 1),
+    },
+  },
+});
+
+export const isSpinEffectEnableEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    spinEffect: Pattern.union(0, 1),
+  },
+});
+
 export const eventMatcherSpinCycleFreq = {
   rampTime: Pattern.number,
   signal: {
@@ -94,6 +197,15 @@ export const eventMatcherSpinCycleFreq = {
     },
   },
 };
+
+export const isSpinEffectCycleFreqEvent = isMatching({
+  rampTime: Pattern.number,
+  signal: {
+    spinEffect: {
+      frequency: Pattern.number.between(0.1, 2),
+    },
+  },
+});
 
 export const eventMatcherStartSample = {
   rampTime: Pattern.number,

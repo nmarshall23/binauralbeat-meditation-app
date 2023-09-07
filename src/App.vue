@@ -7,7 +7,7 @@
         </q-toolbar-title>
 
         <q-btn
-          :disable="disableRestButton"
+        v-if="!showResetButton"
           round
           flat
           icon="info"
@@ -15,6 +15,8 @@
         >
           <q-tooltip>About</q-tooltip>
         </q-btn>
+
+       <!--  <save-program-btn-group /> -->
 
         <q-btn
           class="app_toolbar_lastBtn"

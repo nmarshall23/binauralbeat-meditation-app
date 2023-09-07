@@ -160,5 +160,7 @@ export function createBinauralBeatSpinOsc(
     dispose,
     hasOptions: false,
     updateOptions: noop,
+    loopEvents,
+    eventSequence,
   });
 }

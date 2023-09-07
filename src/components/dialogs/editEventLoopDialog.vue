@@ -1,0 +1,87 @@
+<template>
+  <q-dialog
+    v-model="isRevealed"
+    ref="dialogRef"
+    persistent
+    maximized
+    transition-show="slide-up"
+    transition-hide="slide-down"
+  >
+    <q-card dark class="q-dialog-plugin bg-blue-grey text-whit">
+      <q-toolbar elevated class="bg-primary text-white justify-between">
+        <q-btn @click="confirm()" dense flat icon="close" class="item-start">
+          <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+        </q-btn>
+
+        <q-toolbar-title> Edit Event Loop</q-toolbar-title>
+
+        <q-icon name="equalizer" />
+      </q-toolbar>
+
+      <q-item>
+        <q-item-section>
+          <q-item-label class="text-body1"> Event Loop for: </q-item-label>
+        </q-item-section>
+      </q-item>
+
+      <list-item-selection-input
+        v-model="model.pattern"
+        :options="patternOptions"
+        label="Pattern Type"
+        hint=""
+      />
+      <list-item-number-input
+        v-model="model.interval"
+        label="interval "
+        hint=""
+      />
+
+      <q-item>
+        <q-item-section> Events N / 4 </q-item-section>
+        <q-item-section avatar>
+          <q-btn-dropdown
+            auto-close
+            color="primary"
+            icon="add"
+            label="Add Event"
+            split
+          >
+          </q-btn-dropdown>
+        </q-item-section>
+      </q-item>
+      <q-item>
+        <q-item-section>
+          <q-card>
+            <q-card-section>
+              
+              <BaseEventLoopCard />
+            </q-card-section>
+          </q-card>
+        </q-item-section>
+      </q-item>
+    </q-card>
+  </q-dialog>
+</template>
+
+<script setup lang="ts">
+import { useFormatOptionsList } from "@/use/useFormatOptionsList";
+
+const { isRevealed, reveal, onReveal, onConfirm, confirm } = useConfirmDialog();
+
+defineExpose({
+  reveal,
+});
+
+const model = ref({
+  pattern: "upDown",
+  interval: 1,
+});
+
+const patternOptions = useFormatOptionsList([
+  "up",
+  "down",
+  "upDown",
+  "random",
+  "randomWalk",
+]);
+</script>

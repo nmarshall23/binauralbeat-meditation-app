@@ -2,6 +2,7 @@
   <nm-card color="bg-purple">
     <template #header>
       <div class="text-h6">{{ currentProgram?.title }}</div>
+      <div class="text-subtitle2">{{ currentProgram?.description }}</div>
     </template>
 
     <q-card-actions align="center" class="q-pt-md playToggle_section">
@@ -57,6 +58,7 @@
           :event-sequence="g.eventSequence"
           :event-loop="g.loopEvents"
           @show-options-dialog="showGenOptionsDialog(g)"
+          @show-edit-event-loop-dialog="showEditGenEventsDialog(g, 'loop')"
         />
       </template>
     </q-card-section>
@@ -64,6 +66,7 @@
     <volume-dialog ref="volumeDialogRef" />
     <noise-options-dialog ref="noiseOptionsDialogRef" />
     <binaural-beat-synth-ops-dialog ref="binauralBeatSynthOpsDialogRef" />
+    <edit-event-loop-dialog ref="editEventLoopDialogRef" />
   </nm-card>
 
   <!-- <nm-card color="bg-purple">
@@ -88,6 +91,7 @@ import { SoundGenerators } from "@/types/GeneratorDef";
 import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 import BinauralBeatSynthOpsDialog from "@/components/dialogs/binauralBeatSynthOpsDialog.vue";
 import { setupSoundsSettingsDialogs } from "@/use/setupSoundsSettingsDialogs";
+import { useShowEditGenEventsDialog } from "@/use/useShowEditGenEventsDialog";
 
 const { currentProgram, initializeProgram } = useBinauralBeatPrograms();
 
@@ -134,6 +138,9 @@ const {
   noiseOptionsDialogRef,
   binauralBeatSynthOpsDialogRef,
 } = setupSoundsSettingsDialogs();
+
+const { showEditGenEventsDialog, editEventLoopDialogRef } =
+  useShowEditGenEventsDialog();
 
 const generators = computed(() => {
   const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;

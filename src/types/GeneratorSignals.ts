@@ -84,3 +84,5 @@ export type SamplePlayerEventSignal = {
   panner3d: RequireAtLeastOne<Panner3DPositionSignals>;
   pitchShift: RequireAtLeastOne<PitchShiftSignals>;
 } & SignalBase;
+
+export type AnyEventSignal = BinauralBeatEventSignal | BinauralBeatSpinEventSignal | NoiseFilteredGenEventSignal | SamplePlayerEventSignal

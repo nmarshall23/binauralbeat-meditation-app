@@ -20,7 +20,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   modelValue: string;
-  options: { label: string; value: string };
+  options: { label: string; value: string }[];
   label: string;
   hint?: string;
   disable?: boolean

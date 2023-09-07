@@ -9,10 +9,6 @@ import {
 } from "./GeneratorSignals";
 import { Frequency } from "tone/build/esm/core/type/Units";
 import { RecursivePartial } from "tone/build/esm/core/util/Interface";
-import {
-  BinauralBeatSynth,
-  BinauralBeatSynthOptions,
-} from "@/tones/Instrument/BinauralBeatSynth";
 
 export type GeneratorControlsBase<
   T extends GeneratorDefType,
@@ -71,14 +67,14 @@ export type BinauralBeatSynthAdditionalRecords = {
 export type GeneratorCtrlBasicBinauralBeat = GeneratorControlsBase<
   "BasicBinauralBeatOsc",
   void,
-  null,
-  null
+  unknown,
+  unknown
 >;
 export type GeneratorCtrlBasicNoise = GeneratorControlsBase<
   "BasicNoiseGen",
   void,
-  null,
-  null
+  unknown,
+  unknown
 >;
 export type GeneratorCtrlBinauralBeatSynth = GeneratorControlsBase<
   "BinauralBeatwLoop",
@@ -89,20 +85,20 @@ export type GeneratorCtrlBinauralBeatSynth = GeneratorControlsBase<
 export type GeneratorCtrlBinauralBeatSpin = GeneratorControlsBase<
   "BinauralBeatSpinOsc",
   void,
-  null,
-  null
+  unknown,
+  unknown
 >;
 export type GeneratorCtrlNoiseWithFilter = GeneratorControlsBase<
   "NoiseFilteredGen",
   GeneratorCtrlNoiseWithFilterOptions,
   NoiseFilteredGenEventSignal,
-  null
+  unknown
 >;
 export type GeneratorCtrlSamplePlayer = GeneratorControlsBase<
   "SamplePlayer",
   void,
-  null,
-  null
+  unknown,
+  unknown
 >;
 
 export type GeneratorControls =

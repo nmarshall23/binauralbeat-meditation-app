@@ -19,56 +19,55 @@
       />
       <q-btn flat @click="showVolumeDialog">Volume</q-btn>
     </q-card-actions>
+
     <q-separator v-if="hasOptions" />
-    <q-card-actions v-if="hasOptions" align="center" class="bg-blue-grey">
+
+    <q-card-actions
+      v-if="hasOptions"
+      align="center"
+      class="q-pt-md bg-blue-grey"
+    >
       <q-btn outline padding="xs 3rem" @click="emit('showOptionsDialog')"
         >Options</q-btn
       >
     </q-card-actions>
 
-    <q-separator v-if="hasEvents" class="bg-grey-5" />
-    <q-card-actions v-if="hasEvents" class="bg-blue-grey">
-      <q-btn
-        flat
-        dense
-        :icon="expandEventSection ? 'keyboard_arrow_up' : 'keyboard_arrow_down'"
-        label="Show Events"
-        @click="toggleExpand()"
+    <q-expansion-item
+      v-if="hasEvents || hasLoopEvents"
+      class="bg-blue-grey"
+      label="Events"
+      header-class="text-subtitle1 text-weight-medium"
+      dense
+    >
+      <event-sequence-info
+        v-if="isDefined(eventSequence)"
+        :event-sequence="eventSequence"
+        @show-dialog="() => emit('showEditEventSequenceDialog')"
       />
-    </q-card-actions>
 
-    <q-slide-transition>
-      <div v-show="expandEventSection">
-        <q-card-section class="bg-blue-grey" dark>
-          <q-list dark>
-            <q-item-label overline>Event Sequence</q-item-label>
-            <q-item v-for="item in eventSequence?.events" dense>
-              <q-item-section >
-                <q-item-label caption>Time: {{ item.time }}</q-item-label>
-              </q-item-section>
-              <q-item-section >
-                <q-item-label caption>{{ item.signal }}</q-item-label>
-              </q-item-section>
-            </q-item>
+      <q-separator
+        v-if="hasEvents && hasLoopEvents"
+        dark
+        inset
+        class="q-mb-md q-mt-sm"
+      />
 
-            <q-separator dark  inset class="q-mb-md q-mt-sm" />
-            <q-item-label overline>Event Loop</q-item-label>
-            <q-item v-for="item in eventLoop?.values" dense>
-             
-              <q-item-section >
-                <q-item-label caption>{{ item.signal }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card-section>
-      </div>
-    </q-slide-transition>
+      <event-loop-info
+        v-if="hasLoopEvents"
+        :event-loop="eventLoopFmt"
+        @show-dialog="() => emit('showEditEventLoopDialog')"
+      />
+    </q-expansion-item>
   </q-card>
 </template>
 
 <script setup lang="ts">
 import { GeneratorDefType } from "@/types/GeneratorDef";
 import { EventSequence, LooppingEventsOptions } from "@/types/GeneratorSignals";
+import { capitalCase } from "change-case";
+
+import { isDefined } from "@vueuse/core";
+// type E = SignalBase & Record<string, any>;
 
 const props = defineProps<{
   name: string;
@@ -88,10 +87,12 @@ const emit = defineEmits<{
     }
   ): void;
   (e: "showOptionsDialog"): void;
+  (e: "showEditEventSequenceDialog"): void;
+  (e: "showEditEventLoopDialog"): void;
 }>();
 
 const muteCtrl = useVModel(props, "muteCtrl", emit);
-const { genType, loopEvents, eventSequence } = useVModels(props);
+const { genType, eventLoop, eventSequence } = useVModels(props);
 
 function showVolumeDialog() {
   emit("showVolumeDialog", {
@@ -99,8 +100,15 @@ function showVolumeDialog() {
   });
 }
 
-const hasEvents = computed(
-  () => isDefined(loopEvents) || isDefined(eventSequence)
-);
-const [expandEventSection, toggleExpand] = useToggle();
+const hasEvents = computed(() => isDefined(eventSequence));
+const hasLoopEvents = computed(() => isDefined(eventLoop));
+
+const eventLoopFmt = computed(() => {
+  return {
+    pattern: capitalCase(eventLoop?.value?.pattern ?? "upDown"),
+    interval: `${eventLoop?.value?.interval ?? 60} seconds`,
+    probability: `${(eventLoop?.value?.probability ?? 1) * 100}%`,
+    values: eventLoop?.value?.values ?? [],
+  };
+});
 </script>
