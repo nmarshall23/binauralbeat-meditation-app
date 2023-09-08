@@ -30,7 +30,7 @@
           color="warning"
           icon="delete_outline"
           @click="() => emit('removeItem', index)"
-          class="q-ml-xl"
+          class="q-ml-lg"
         />
       </div>
     </q-item>
@@ -42,7 +42,7 @@
       outlined
       standout="bg-blue-grey-9 text-grey-12"
       dark
-      v-model.number="model.gain"
+      v-model.number="gain"
       label="Gain"
       type="number"
     >
@@ -58,8 +58,17 @@
 
     <card-edit-synth-event
       v-if="fields.synth"
-      v-model:base-freq="model.synth.baseFreq"
-      v-model:beat-freq="model.synth.beatFreq"
+      v-model:base-freq="synth.baseFreq"
+      v-model:beat-freq="synth.beatFreq"
+      @remove-field="removeField"
+    />
+
+    <card-edit-filter-event
+      v-if="fields.filter"
+      v-model:wet="filter.wet"
+      v-model:frequency="filter.frequency"
+      v-model:q="filter.Q"
+      v-model:gain="filter.gain"
       @remove-field="removeField"
     />
   </q-card>
@@ -68,27 +77,33 @@
 <script setup lang="ts">
 import { MenuValueItem } from "@/types/MenuList";
 
-defineProps<{
+const props = defineProps<{
   index: number;
-  isMoveUpDisabled: boolean
-  isMoveDownDisabled: boolean
+  isMoveUpDisabled: boolean;
+  isMoveDownDisabled: boolean;
+  gain: number;
+  synth: {
+    baseFreq: number;
+    beatFreq: number;
+  };
+  filter: {
+    wet: 0 | 1;
+    frequency: number;
+    Q: number;
+    gain: number;
+  };
 }>();
 
 const emit = defineEmits<{
-  (e: "moveUp", i: number): void
-  (e: "moveDown", i: number): void
-  (e: "removeItem", i: number): void
+  (e: "moveUp", i: number): void;
+  (e: "moveDown", i: number): void;
+  (e: "removeItem", i: number): void;
+  (e: "update:gain", v: number): void;
+  (e: "update:synth", v: number): void;
+  (e: "update:filter", v: number): void;
 }>();
 
-
-
-const model = ref({
-  gain: 1,
-  synth: {
-    baseFreq: 190,
-    beatFreq: 6,
-  },
-});
+const { gain, synth, filter } = useVModels(props, emit);
 
 const fields = ref({
   gain: true,
@@ -133,7 +148,7 @@ function addField(f: string) {
 <style scoped>
 .header_container {
   display: grid;
-  grid-template-columns: min-content 2fr 1fr;
+  grid-template-columns: min-content 1fr 166px;
 }
 
 .header_container .actionbtn {

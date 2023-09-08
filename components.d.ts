@@ -10,6 +10,7 @@ declare module 'vue' {
     BaseEventLoopCard: typeof import('./src/components/bits/BaseEventLoopCard.vue')['default']
     BinauralBeatSynthOpsDialog: typeof import('./src/components/dialogs/binauralBeatSynthOpsDialog.vue')['default']
     BinauralFftVis: typeof import('./src/components/playbackVis/BinauralFftVis.vue')['default']
+    CardEditFilterEvent: typeof import('./src/components/bits/CardEditFilterEvent.vue')['default']
     CardEditSynthEvent: typeof import('./src/components/bits/CardEditSynthEvent.vue')['default']
     ChipOption: typeof import('./src/components/controls/ChipOption.vue')['default']
     CountDown: typeof import('./src/components/playbackVis/CountDown.vue')['default']

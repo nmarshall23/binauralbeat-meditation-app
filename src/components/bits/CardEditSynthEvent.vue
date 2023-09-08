@@ -1,7 +1,7 @@
 <template>
   <q-item>
     <q-item-section>
-      <q-card class="bg-brown-10" flat bordered>
+      <q-card class="bg-brown-10" >
         <q-item>
           <q-item-section avatar>
             <q-btn
@@ -92,6 +92,7 @@ watch(fields, () => {
 });
 
 type FieldKeys = keyof typeof fields;
+
 function removeField(f: FieldKeys) {
   fields[f] = false;
 }

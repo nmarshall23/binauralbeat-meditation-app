@@ -58,6 +58,9 @@
                 v-for="i in model.values"
                 :key="i.index"
                 v-bind="i"
+                v-model:gain="i.gain"
+                v-model:synth="i.synth"
+                v-model:filter="i.filter"
                 @remove-item="removeEvent"
                 @move-up="moveEventUp"
                 @move-down="moveEventDown"
@@ -88,6 +91,17 @@ const model = ref({
       index: 0,
       isMoveUpDisabled: false,
       isMoveDownDisabled: false,
+      gain: 1,
+      synth: {
+        baseFreq: 190,
+        beatFreq: 6,
+      },
+      filter: {
+        wet: 1 as const,
+        frequency: 200,
+        Q: 1,
+        gain: 0,
+      },
     },
   ],
 });
@@ -100,8 +114,12 @@ watch(
   [firstEvent, eventLen, lastEvent],
   () => {
     model.value.values.forEach((item, i) => {
-      if (i === 0) {
+      if (eventLen.value === 1) {
         item.isMoveUpDisabled = true;
+        item.isMoveDownDisabled = true;
+      } else if (i === 0) {
+        item.isMoveUpDisabled = true;
+        item.isMoveDownDisabled = false;
       } else if (i === eventLen.value - 1) {
         item.isMoveDownDisabled = true;
       } else {
@@ -131,6 +149,17 @@ function addEvent() {
     index,
     isMoveUpDisabled: false,
     isMoveDownDisabled: false,
+    gain: 1,
+    synth: {
+      baseFreq: 190,
+      beatFreq: 6,
+    },
+    filter: {
+      wet: 1 as const,
+      frequency: 200,
+      Q: 1,
+      gain: 0,
+    },
   });
 }
 
