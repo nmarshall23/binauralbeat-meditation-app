@@ -37,24 +37,24 @@
       />
 
       <q-item>
-        <q-item-section> Events N / 4 </q-item-section>
+        <q-item-section> Event Count: {{ model.values.length }} </q-item-section>
         <q-item-section avatar>
-          <q-btn-dropdown
-            auto-close
+          <q-btn
             color="primary"
             icon="add"
             label="Add Event"
-            split
+            @click="addEvent()"
           >
-          </q-btn-dropdown>
+          </q-btn>
         </q-item-section>
       </q-item>
       <q-item>
         <q-item-section>
           <q-card>
-            <q-card-section>
-              
-              <BaseEventLoopCard />
+            <q-card-section class="q-gutter-md">
+              <template v-for="i in model.values">
+                <component :is="i.is" v-bind="i" @remove-item="removeEvent" />
+              </template>
             </q-card-section>
           </q-card>
         </q-item-section>
@@ -65,6 +65,7 @@
 
 <script setup lang="ts">
 import { useFormatOptionsList } from "@/use/useFormatOptionsList";
+import BaseEventLoopCard from "../bits/BaseEventLoopCard.vue";
 
 const { isRevealed, reveal, onReveal, onConfirm, confirm } = useConfirmDialog();
 
@@ -75,6 +76,12 @@ defineExpose({
 const model = ref({
   pattern: "upDown",
   interval: 1,
+  values: [
+    {
+      is: markRaw(BaseEventLoopCard),
+      index: 0,
+    },
+  ],
 });
 
 const patternOptions = useFormatOptionsList([
@@ -84,4 +91,19 @@ const patternOptions = useFormatOptionsList([
   "random",
   "randomWalk",
 ]);
+
+function addEvent() {
+  const index =
+    model.value.values.reduce((acc, i) => (acc < i.index ? i.index : acc), 0) +
+    1;
+  model.value.values.push({
+    is: markRaw(BaseEventLoopCard),
+    index,
+  });
+}
+
+function removeEvent(i: number) {
+  const index = model.value.values.findIndex(item => i === item.index)
+  model.value.values.splice(index, 1)
+}
 </script>
