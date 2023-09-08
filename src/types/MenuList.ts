@@ -1,5 +1,13 @@
 import { Pattern, isMatching } from "ts-pattern";
 
+export type MenuValueItem = {
+  title: string;
+  icon?: string;
+  iconProps?: Record<string, string>
+  value: string 
+  disable?: boolean
+}
+
 export type MenuListLinkItem = {
   title: string;
   subtitle: string;
