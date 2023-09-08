@@ -4,7 +4,7 @@
       <q-item-section side top>
         <dropdown-btn
           label="Add Field"
-          :menu="items"
+          :menu="signalTypesMenu"
           @item-clicked="addField"
         />
       </q-item-section>
@@ -37,12 +37,12 @@
 
     <q-input
       v-if="fields.gain"
-      class="q-px-md"
+      class="q-pa-md"
       label-color="grey-12"
       outlined
       standout="bg-blue-grey-9 text-grey-12"
       dark
-      v-model.number="gain"
+      v-model.number="signal.gain"
       label="Gain"
       type="number"
     >
@@ -58,90 +58,101 @@
 
     <card-edit-synth-event
       v-if="fields.synth"
-      v-model:base-freq="synth.baseFreq"
-      v-model:beat-freq="synth.beatFreq"
+      v-model:signal="signal"
       @remove-field="removeField"
     />
 
-    <card-edit-filter-event
+    <!-- <card-edit-filter-event
       v-if="fields.filter"
       v-model:wet="filter.wet"
       v-model:frequency="filter.frequency"
       v-model:q="filter.Q"
       v-model:gain="filter.gain"
       @remove-field="removeField"
-    />
+    /> -->
   </q-card>
 </template>
 
 <script setup lang="ts">
+import { ExtendedSignal } from "@/types/GeneratorSignals";
 import { MenuValueItem } from "@/types/MenuList";
+import { match } from "ts-pattern";
 
 const props = defineProps<{
   index: number;
   isMoveUpDisabled: boolean;
   isMoveDownDisabled: boolean;
-  gain: number;
-  synth: {
-    baseFreq: number;
-    beatFreq: number;
-  };
-  filter: {
-    wet: 0 | 1;
-    frequency: number;
-    Q: number;
-    gain: number;
-  };
+  signalTypes: Array<keyof ExtendedSignal>;
+  signal: ExtendedSignal;
 }>();
 
 const emit = defineEmits<{
   (e: "moveUp", i: number): void;
   (e: "moveDown", i: number): void;
   (e: "removeItem", i: number): void;
-  (e: "update:gain", v: number): void;
-  (e: "update:synth", v: number): void;
-  (e: "update:filter", v: number): void;
+  (e: "update:signal", v: number): void;
 }>();
 
-const { gain, synth, filter } = useVModels(props, emit);
+const { signal, signalTypes } = useVModels(props, emit);
 
-const fields = ref({
-  gain: true,
-  filter: false,
-  synth: false,
+const fields = computed(() => ({
+  gain: isDefined(signal.value.gain),
+  filter: isDefined(signal.value.filter),
+  synth: isDefined(signal.value.synth),
   spinEffect: false,
-});
+}));
 
-const items: MenuValueItem[] = reactive([
+const signalTypesMenu: MenuValueItem[] = reactive([
   {
     title: "Gain",
     value: "gain",
     disable: computed(() => fields.value.gain),
+    hidden: computed(() => !signalTypes.value.includes("gain")),
   },
   {
     title: "Filter",
     value: "filter",
     disable: computed(() => fields.value.filter),
+    hidden: computed(() => !signalTypes.value.includes("filter")),
   },
   {
     title: "Synth",
     value: "synth",
     disable: computed(() => fields.value.synth),
+    hidden: computed(() => !signalTypes.value.includes("synth")),
   },
   {
     title: "SpinEffect",
     value: "spinEffect",
     disable: computed(() => fields.value.spinEffect),
+    hidden: true,
   },
 ]);
 
-type FieldKeys = keyof typeof fields.value;
-function removeField(f: FieldKeys) {
-  fields.value[f] = false;
+function removeField(f: keyof ExtendedSignal) {
+  signal.value[f] = undefined;
 }
 
 function addField(f: string) {
-  fields.value[f as FieldKeys] = true;
+  match(f)
+    .with("gain", () => {
+      signal.value.gain = 1;
+    })
+    .with("filter", () => {
+      signal.value.filter = {
+        wet: 1,
+        frequency: 200,
+        Q: 1,
+        gain: 0,
+      };
+    })
+    .with("synth", () => {
+      signal.value.synth = {
+        baseFreq: 190,
+        beatFreq: 6,
+      };
+    })
+    .otherwise(() => {});
 }
 </script>
 

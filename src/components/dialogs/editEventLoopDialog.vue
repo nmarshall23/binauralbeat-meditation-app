@@ -20,7 +20,9 @@
 
       <q-item>
         <q-item-section>
-          <q-item-label class="text-body1"> Event Loop for: </q-item-label>
+          <q-item-label class="text-body1">
+            Event Loop for: <span> {{ generatorInfo.name }}</span></q-item-label
+          >
         </q-item-section>
       </q-item>
 
@@ -37,9 +39,7 @@
       />
 
       <q-item>
-        <q-item-section>
-          Event Count: {{ model.values.length }}
-        </q-item-section>
+        <q-item-section> Event Count: {{ eventList.length }} </q-item-section>
         <q-item-section avatar>
           <q-btn
             color="primary"
@@ -55,12 +55,11 @@
           <q-card>
             <q-card-section class="q-gutter-md">
               <BaseEventLoopCard
-                v-for="i in model.values"
+                v-for="i in eventList"
                 :key="i.index"
                 v-bind="i"
-                v-model:gain="i.gain"
-                v-model:synth="i.synth"
-                v-model:filter="i.filter"
+                v-model:signal="i.signal"
+                :signal-types="generatorInfo.signalTypes"
                 @remove-item="removeEvent"
                 @move-up="moveEventUp"
                 @move-down="moveEventDown"
@@ -76,8 +75,22 @@
 <script setup lang="ts">
 import { useFormatOptionsList } from "@/use/useFormatOptionsList";
 import BaseEventLoopCard from "../bits/BaseEventLoopCard.vue";
+import {
+  ExtendedSignal,
+  LoopEventValue,
+  LooppingEventsOptions,
+} from "@/types/GeneratorSignals";
+import { GeneratorDefType } from "@/types/GeneratorDef";
 
-const { isRevealed, reveal, onReveal, onConfirm, confirm } = useConfirmDialog();
+type RevealData = {
+  generatorType: GeneratorDefType;
+  generatorName: string;
+  eventLoop: LooppingEventsOptions<ExtendedSignal>;
+  signalTypes: Array<keyof ExtendedSignal>;
+};
+
+const { isRevealed, reveal, onReveal, onConfirm, confirm } =
+  useConfirmDialog<RevealData>();
 
 defineExpose({
   reveal,
@@ -86,6 +99,7 @@ defineExpose({
 const model = ref({
   pattern: "upDown",
   interval: 1,
+  probability: 1,
   values: [
     {
       index: 0,
@@ -106,14 +120,47 @@ const model = ref({
   ],
 });
 
-const eventLen = computed(() => model.value.values.length);
-const firstEvent = computed(() => model.value.values[0]);
-const lastEvent = computed(() => model.value.values[eventLen.value - 1]);
+const generatorInfo = ref({
+  name: "",
+  signalTypes: [] as Array<keyof ExtendedSignal>,
+});
+
+type IndexedItem = {
+  index: number;
+  isMoveUpDisabled: boolean;
+  isMoveDownDisabled: boolean;
+};
+
+const eventList = ref<Array<LoopEventValue<any> & IndexedItem>>([]);
+
+onReveal((data) => {
+  generatorInfo.value.name = data.generatorName;
+  generatorInfo.value.signalTypes = data.signalTypes;
+
+  model.value.pattern = data.eventLoop.pattern;
+  model.value.interval = data.eventLoop.interval;
+  model.value.probability = data.eventLoop.probability ?? 1;
+
+  eventList.value = data.eventLoop.values.map((item, index) => {
+    const newItem = Object.assign(toRaw(item), {
+      index,
+      isMoveUpDisabled: false,
+      isMoveDownDisabled: false,
+    });
+    return newItem;
+  });
+});
+
+onConfirm(() => {});
+
+const eventLen = computed(() => eventList.value.length);
+const firstEvent = computed(() => eventList.value[0]);
+const lastEvent = computed(() => eventList.value[eventLen.value - 1]);
 
 watch(
   [firstEvent, eventLen, lastEvent],
   () => {
-    model.value.values.forEach((item, i) => {
+    eventList.value.forEach((item, i) => {
       if (eventLen.value === 1) {
         item.isMoveUpDisabled = true;
         item.isMoveDownDisabled = true;
@@ -143,29 +190,32 @@ const patternOptions = useFormatOptionsList([
 
 function addEvent() {
   const index =
-    model.value.values.reduce((acc, i) => (acc < i.index ? i.index : acc), 0) +
-    1;
-  model.value.values.push({
+    eventList.value.reduce((acc, i) => (acc < i.index ? i.index : acc), 0) + 1;
+
+  eventList.value.push({
     index,
     isMoveUpDisabled: false,
     isMoveDownDisabled: false,
-    gain: 1,
-    synth: {
-      baseFreq: 190,
-      beatFreq: 6,
-    },
-    filter: {
-      wet: 1 as const,
-      frequency: 200,
-      Q: 1,
-      gain: 0,
+    rampTime: 10,
+    signal: {
+      gain: 1,
+      synth: {
+        baseFreq: 190,
+        beatFreq: 6,
+      },
+      filter: {
+        wet: 1 as const,
+        frequency: 200,
+        Q: 1,
+        gain: 0,
+      },
     },
   });
 }
 
 function removeEvent(i: number) {
   const index = findEventIndex(i);
-  model.value.values.splice(index, 1);
+  eventList.value.splice(index, 1);
 }
 
 function moveEventUp(i: number) {
@@ -179,14 +229,14 @@ function moveEventDown(i: number) {
 }
 
 function swapElements(index1: number, index2: number) {
-  model.value.values[index1] = model.value.values.splice(
+  eventList.value[index1] = eventList.value.splice(
     index2,
     1,
-    model.value.values[index1]
+    eventList.value[index1]
   )[0];
 }
 
 function findEventIndex(i: number) {
-  return model.value.values.findIndex((item) => i === item.index);
+  return eventList.value.findIndex((item) => i === item.index);
 }
 </script>

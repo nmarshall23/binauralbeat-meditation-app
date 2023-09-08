@@ -6,6 +6,7 @@ export type MenuValueItem = {
   iconProps?: Record<string, string>
   value: string 
   disable?: boolean
+  hidden?: boolean
 }
 
 export type MenuListLinkItem = {

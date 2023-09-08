@@ -61,6 +61,16 @@ type PitchShiftSignals = {
   pitch: number;
 };
 
+type SignalBbSynthType = {
+  synth: Partial<BinauralBeatSynthSignals>;
+}
+
+type SignalFilterType = {
+  filter: Partial<FilterSignalOptions>;
+}
+export type ExtendedSignal = Partial<SignalBase & SignalBbSynthType & SignalFilterType>
+export type SignalTypeNames = keyof ExtendedSignal
+
 export type BinauralBeatEventSignal = {
   synth: RequireAtLeastOne<BinauralBeatSynthSignals>;
 } & SignalBase;
@@ -85,4 +95,4 @@ export type SamplePlayerEventSignal = {
   pitchShift: RequireAtLeastOne<PitchShiftSignals>;
 } & SignalBase;
 
-export type AnyEventSignal = BinauralBeatEventSignal | BinauralBeatSpinEventSignal | NoiseFilteredGenEventSignal | SamplePlayerEventSignal
+

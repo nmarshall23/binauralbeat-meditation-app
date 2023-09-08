@@ -104,11 +104,11 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  wet: 0 | 1;
-  frequency: number;
-  q: number;
-  gain: number;
-}>();
+  wet?: 0 | 1;
+  frequency?: number;
+  q?: number;
+  gain?: number;
+}>()
 
 const emit = defineEmits<{
   (e: "removeField", i: "filter"): void;

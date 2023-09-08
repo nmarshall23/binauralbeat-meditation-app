@@ -2,7 +2,7 @@
   <q-btn-dropdown color="primary" :label="label">
     <q-list>
       <q-item
-        v-for="item in menu"
+        v-for="item in filteredMenu"
         clickable
         v-close-popup
         @click="() => emit('itemClicked', item.value)"
@@ -19,7 +19,7 @@
 <script setup lang="ts">
 import { MenuValueItem } from "@/types/MenuList";
 
-defineProps<{
+const props = defineProps<{
   label: string;
   menu: MenuValueItem[];
 }>();
@@ -27,4 +27,8 @@ defineProps<{
 const emit = defineEmits<{
   (e: "itemClicked", v: string): void;
 }>();
+
+const menu = useVModel(props, 'menu')
+
+const filteredMenu = useArrayFilter(menu, (i) => !i.hidden ?? false)
 </script>
