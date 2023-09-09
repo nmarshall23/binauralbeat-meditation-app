@@ -6,9 +6,16 @@ import "@quasar/extras/material-icons/material-icons.css";
 import "quasar/src/css/index.sass";
 import "./style.css";
 
+import '@quasar/extras/animate/fadeInUpBig.css'
+import '@quasar/extras/animate/fadeOutDownBig.css'
+import '@quasar/extras/animate/fadeInRight.css'
+import '@quasar/extras/animate/fadeOutLeft.css'
+
 import App from "./App.vue";
 
 import { createVuePlugin } from "harlem";
+import routerPageTransitions from "./use/pluginRouterPageTransitions";
+
 
 const base = process.env.NODE_ENV === "production" ? '/binauralbeat-meditation-app/' : ''
 const router = createRouter({
@@ -18,8 +25,10 @@ const router = createRouter({
   // the plugin writes it for you 🤖
 });
 
+
 createApp(App)
   .use(router)
+  .use(routerPageTransitions)
   .use(createVuePlugin())
   .use(Quasar, {
     plugins: {

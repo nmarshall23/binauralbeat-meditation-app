@@ -3,8 +3,15 @@ import { Pattern, match } from "ts-pattern";
 import * as Tone from "tone";
 
 import EditEventLoopDialog from "@/components/dialogs/editEventLoopDialog.vue";
+import {
+  BinauralBeatEventSignal,
+  LooppingEventsOptions,
+  NoiseFilteredGenEventSignal,
+} from "@/types/GeneratorSignals";
+import { EventHook } from "@vueuse/core";
 
 async function showEditGenEventsDialog(
+  generatorsUpdate: EventHook<any>,
   genCtrl: GeneratorControls,
   eventType: "loop" | "seq"
 ) {
@@ -26,12 +33,20 @@ async function showEditGenEventsDialog(
       },
       async ({ eventLoop }) => {
         if (isDefined(editEventLoopDialogRef)) {
-          await editEventLoopDialogRef.value.reveal({
-            generatorType: genCtrl.type,
-            generatorName: genCtrl.generatorName,
-            eventLoop,
-            signalTypes: ["gain", "filter"],
-          });
+          const { data, isCanceled } =
+            await editEventLoopDialogRef.value.reveal({
+              generatorType: genCtrl.type,
+              generatorName: genCtrl.generatorName,
+              eventLoop,
+              signalTypes: ["gain", "filter"],
+            });
+
+          if (!isCanceled && isDefined(data)) {
+            console.log(data);
+            generatorsUpdate.trigger({});
+            genCtrl.loopEvents =
+              data as LooppingEventsOptions<NoiseFilteredGenEventSignal>;
+          }
         }
       }
     )
@@ -43,12 +58,19 @@ async function showEditGenEventsDialog(
       },
       async ({ eventLoop }) => {
         if (isDefined(editEventLoopDialogRef)) {
-          await editEventLoopDialogRef.value.reveal({
-            generatorType: genCtrl.type,
-            generatorName: genCtrl.generatorName,
-            eventLoop,
-            signalTypes: ["gain", "synth"],
-          });
+          const { data, isCanceled } =
+            await editEventLoopDialogRef.value.reveal({
+              generatorType: genCtrl.type,
+              generatorName: genCtrl.generatorName,
+              eventLoop,
+              signalTypes: ["gain", "synth"],
+            });
+
+          if (!isCanceled && isDefined(data)) {
+            console.log(data);
+            genCtrl.loopEvents =
+              data as LooppingEventsOptions<BinauralBeatEventSignal>;
+          }
         }
       }
     )
@@ -60,8 +82,14 @@ const editEventLoopDialogRef = ref<InstanceType<
 > | null>(null);
 
 export function useShowEditGenEventsDialog() {
+  const generatorsUpdate = createEventHook();
+
   return {
-    showEditGenEventsDialog,
+    showEditGenEventsDialog: (
+      genCtrl: GeneratorControls,
+      eventType: "loop" | "seq"
+    ) => showEditGenEventsDialog(generatorsUpdate, genCtrl, eventType),
     editEventLoopDialogRef,
+    onGeneratorsEventsUpdate: generatorsUpdate.on,
   };
 }

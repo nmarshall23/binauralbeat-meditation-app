@@ -67,6 +67,13 @@
     <noise-options-dialog ref="noiseOptionsDialogRef" />
     <binaural-beat-synth-ops-dialog ref="binauralBeatSynthOpsDialogRef" />
     <edit-event-loop-dialog ref="editEventLoopDialogRef" />
+    <q-page-scroller
+      position="bottom-right"
+      :scroll-offset="150"
+      :offset="[18, 18]"
+    >
+      <q-btn fab icon="keyboard_arrow_up" color="accent" />
+    </q-page-scroller>
   </nm-card>
 
   <!-- <nm-card color="bg-purple">
@@ -139,13 +146,18 @@ const {
   binauralBeatSynthOpsDialogRef,
 } = setupSoundsSettingsDialogs();
 
-const { showEditGenEventsDialog, editEventLoopDialogRef } =
-  useShowEditGenEventsDialog();
+const {
+  showEditGenEventsDialog,
+  editEventLoopDialogRef,
+  onGeneratorsEventsUpdate,
+} = useShowEditGenEventsDialog();
 
 const generators = computed(() => {
   const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;
   return setupProgramGenerators(gs, eventHandler);
 });
+
+onGeneratorsEventsUpdate(() => {});
 
 onBeforeUnmount(() => {
   generators.value.forEach((i) => i.dispose());

@@ -20,6 +20,16 @@
 <script setup lang="ts">
 import { useProgramDurationStore } from "@/state/programDuration";
 import { useMinDurationToSec } from "@/use/useDurationInSec";
+import { definePage } from "vue-router/auto";
+
+definePage({
+  meta: {
+    transition: {
+      enter: "animated fadeInUpBig",
+      leave: "animated fadeOutDownBig",
+    },
+  },
+});
 
 const durationOptions = ref([
   { label: "4 minutes", value: useMinDurationToSec(4) },
@@ -48,4 +58,6 @@ watch(
     immediate: true,
   }
 );
+
+
 </script>

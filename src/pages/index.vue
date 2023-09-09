@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="column items-start" :style-fn="tweek">
+  <q-page padding class="column items-start" >
     <nm-card color="bg-secondary">
       <template #header>
         <div class="text-h6">What Are Binaural Beats?</div>
@@ -32,8 +32,16 @@
 
 <script setup lang="ts">
 import { presetProgramsMenu } from "@/state/presetPrograms";
+import { definePage } from "vue-router/auto";
 
-function tweek(offset) {
-  return {}; // minHeight: offset ? `calc(100svh - ${offset}px)` : "100svh" };
-}
+definePage({
+  meta: {
+    transition: {
+      enter: "animated fadeInRight",
+      leave: "animated fadeOutRightBig",
+    },
+  },
+});
+
+
 </script>

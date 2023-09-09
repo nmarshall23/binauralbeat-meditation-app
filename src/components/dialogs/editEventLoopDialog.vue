@@ -9,7 +9,13 @@
   >
     <q-card dark class="q-dialog-plugin bg-blue-grey text-whit">
       <q-toolbar elevated class="bg-primary text-white justify-between">
-        <q-btn @click="confirm()" dense flat icon="close" class="item-start">
+        <q-btn
+          @click="confirm(data)"
+          dense
+          flat
+          icon="close"
+          class="item-start"
+        >
           <q-tooltip class="bg-white text-primary">Close</q-tooltip>
         </q-btn>
 
@@ -71,6 +77,16 @@
           </q-card>
         </q-item-section>
       </q-item>
+
+      <q-page-sticky position="bottom-right" :offset="[18, 18]">
+        <q-page-scroller
+          position="bottom-right"
+          :scroll-offset="150"
+          :offset="[18, 18]"
+        >
+          <q-btn fab icon="keyboard_arrow_up" color="accent" />
+        </q-page-scroller>
+      </q-page-sticky>
     </q-card>
   </q-dialog>
 </template>
@@ -92,8 +108,10 @@ type RevealData = {
   signalTypes: Array<keyof ExtendedSignal>;
 };
 
-const { isRevealed, reveal, onReveal, onConfirm, confirm } =
-  useConfirmDialog<RevealData>();
+const { isRevealed, reveal, onReveal, onConfirm, confirm } = useConfirmDialog<
+  RevealData,
+  LooppingEventsOptions<ExtendedSignal>
+>();
 
 defineExpose({
   reveal,
@@ -117,7 +135,13 @@ type IndexedItem = {
   isMoveDownDisabled: boolean;
 };
 
-const eventList = ref<Array<LoopEventValue<any> & IndexedItem>>([]);
+const data = computed(
+  () =>
+    Object.assign({}, model.value, {
+      values: eventList.value as LoopEventValue<ExtendedSignal>[],
+    }) as LooppingEventsOptions<ExtendedSignal>
+);
+const eventList = ref<Array<LoopEventValue<ExtendedSignal> & IndexedItem>>([]);
 
 onReveal((data) => {
   generatorInfo.value.name = data.generatorName;
@@ -207,12 +231,11 @@ const patternOptions = useFormatOptionsList([
   "randomWalk",
 ]);
 
-
-function defaultSignal(){
+function defaultSignal() {
   // generatorInfo.value.signalTypes
   // TODO
+  return {} as Partial<ExtendedSignal>;
 }
-
 
 function addEvent() {
   const index =
@@ -222,7 +245,7 @@ function addEvent() {
     isMoveUpDisabled: false,
     isMoveDownDisabled: false,
     rampTime: 10,
-    signal: Object.assign({}, defaultSignal())
+    signal: { gain: 1 }, //Object.assign({}, defaultSignal()),
   });
 }
 
