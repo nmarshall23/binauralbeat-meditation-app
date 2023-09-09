@@ -55,14 +55,17 @@
           <q-card>
             <q-card-section class="q-gutter-md">
               <BaseEventLoopCard
-                v-for="i in eventList"
-                :key="i.index"
-                v-bind="i"
-                v-model:signal="i.signal"
+                v-for="(item, i) in eventList"
+                :key="item.index"
+                :is-move-up-disabled="item.isMoveUpDisabled"
+                :is-move-down-disabled="item.isMoveDownDisabled"
+                :index="item.index"
+                v-model:signal="item.signal"
                 :signal-types="generatorInfo.signalTypes"
                 @remove-item="removeEvent"
                 @move-up="moveEventUp"
                 @move-down="moveEventDown"
+                :ref="(el) => (eventCards[i] = el)"
               />
             </q-card-section>
           </q-card>
@@ -100,29 +103,12 @@ const model = ref({
   pattern: "upDown",
   interval: 1,
   probability: 1,
-  values: [
-    {
-      index: 0,
-      isMoveUpDisabled: false,
-      isMoveDownDisabled: false,
-      gain: 1,
-      synth: {
-        baseFreq: 190,
-        beatFreq: 6,
-      },
-      filter: {
-        wet: 1 as const,
-        frequency: 200,
-        Q: 1,
-        gain: 0,
-      },
-    },
-  ],
 });
 
 const generatorInfo = ref({
   name: "",
   signalTypes: [] as Array<keyof ExtendedSignal>,
+  initalEventCount: 0,
 });
 
 type IndexedItem = {
@@ -136,6 +122,7 @@ const eventList = ref<Array<LoopEventValue<any> & IndexedItem>>([]);
 onReveal((data) => {
   generatorInfo.value.name = data.generatorName;
   generatorInfo.value.signalTypes = data.signalTypes;
+  generatorInfo.value.initalEventCount = data.eventLoop.values.length;
 
   model.value.pattern = data.eventLoop.pattern;
   model.value.interval = data.eventLoop.interval;
@@ -157,9 +144,11 @@ const eventLen = computed(() => eventList.value.length);
 const firstEvent = computed(() => eventList.value[0]);
 const lastEvent = computed(() => eventList.value[eventLen.value - 1]);
 
+const eventCards = ref<Array<Element | ComponentPublicInstance | null>>([]);
+
 watch(
-  [firstEvent, eventLen, lastEvent],
-  () => {
+  [eventLen, lastEvent, firstEvent],
+  ([length, ..._r]) => {
     eventList.value.forEach((item, i) => {
       if (eventLen.value === 1) {
         item.isMoveUpDisabled = true;
@@ -167,7 +156,7 @@ watch(
       } else if (i === 0) {
         item.isMoveUpDisabled = true;
         item.isMoveDownDisabled = false;
-      } else if (i === eventLen.value - 1) {
+      } else if (i === length - 1) {
         item.isMoveDownDisabled = true;
       } else {
         item.isMoveUpDisabled = false;
@@ -180,6 +169,36 @@ watch(
   }
 );
 
+const eventCardsLen = computed(() => eventCards.value.length);
+watch(eventCardsLen, (curLen, prevLen) => {
+  const lastCard = eventCards.value.at(-1) as InstanceType<
+    typeof BaseEventLoopCard
+  > | null;
+
+  if (
+    isDefined(prevLen) &&
+    curLen > generatorInfo.value.initalEventCount &&
+    curLen > prevLen &&
+    isDefined(lastCard)
+  ) {
+    console.log(
+      "scroll to last %o, %o",
+      eventCards.value.length,
+      toRaw(lastCard.index)
+    );
+
+    if (isDefined(lastCard.$el)) {
+      // console.log("scroll to last ", toRaw(lastCard.elemRef));
+
+      lastCard.$el.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "end",
+      });
+    }
+  }
+});
+
 const patternOptions = useFormatOptionsList([
   "up",
   "down",
@@ -188,28 +207,22 @@ const patternOptions = useFormatOptionsList([
   "randomWalk",
 ]);
 
+
+function defaultSignal(){
+  // generatorInfo.value.signalTypes
+  // TODO
+}
+
+
 function addEvent() {
   const index =
     eventList.value.reduce((acc, i) => (acc < i.index ? i.index : acc), 0) + 1;
-
   eventList.value.push({
     index,
     isMoveUpDisabled: false,
     isMoveDownDisabled: false,
     rampTime: 10,
-    signal: {
-      gain: 1,
-      synth: {
-        baseFreq: 190,
-        beatFreq: 6,
-      },
-      filter: {
-        wet: 1 as const,
-        frequency: 200,
-        Q: 1,
-        gain: 0,
-      },
-    },
+    signal: Object.assign({}, defaultSignal())
   });
 }
 

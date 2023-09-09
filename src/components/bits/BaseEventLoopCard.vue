@@ -1,6 +1,6 @@
 <template>
   <q-card class="q-pb-md bg-brown-9" flat bordered>
-    <q-item class="header_container">
+    <q-item ref="elemRef" class="header_container">
       <q-item-section side top>
         <dropdown-btn
           label="Add Field"
@@ -154,6 +154,13 @@ function addField(f: string) {
     })
     .otherwise(() => {});
 }
+
+const elemRef = ref<HTMLDivElement | null>(null);
+
+defineExpose({
+  elemRef,
+  index: props.index
+});
 </script>
 
 <style scoped>
