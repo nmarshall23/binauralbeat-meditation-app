@@ -28,7 +28,6 @@
             />
             <q-item-label caption></q-item-label>
           </q-item-section>
-
         </q-item>
         <q-separator />
 
@@ -61,7 +60,7 @@
             outlined
             standout="bg-blue-grey-9 text-grey-12"
             dark
-            v-model.number="q"
+            v-model.number="qValue"
             label="Q"
             type="number"
           >
@@ -103,39 +102,68 @@
 </template>
 
 <script setup lang="ts">
+import { ExtendedSignal, FilterSignalOptions } from "@/types/GeneratorSignals";
+
 const props = defineProps<{
-  wet?: 0 | 1;
-  frequency?: number;
-  q?: number;
-  gain?: number;
-}>()
+  signal: Pick<ExtendedSignal, "filter">;
+}>();
 
 const emit = defineEmits<{
   (e: "removeField", i: "filter"): void;
-  (e: "update:wet", value: 0 | 1): void;
-  (e: "update:frequency", value: number): void;
-  (e: "update:q", value: number): void;
-  (e: "update:gain", value: number): void;
+  (e: "update:signal", value: Pick<ExtendedSignal, "filter">): void;
 }>();
 
-const { wet, frequency, q, gain } = useVModels(props, emit);
+const signal = useVModel(props, "signal", emit);
 
-const fields = reactive({
-  wet: true,
-  frequency: true,
-  Q: true,
-  gain: true,
+const wet = computed({
+  get: () => signal.value.filter?.wet,
+  set: (wet) => emit("update:signal", updateSignal('wet', wet)),
 });
 
+const frequency = computed({
+  get: () => signal.value.filter?.frequency,
+  set: (frequency) => emit("update:signal", updateSignal('frequency', frequency)),
+});
+
+const qValue = computed({
+  get: () => signal.value.filter?.Q,
+  set: (Q) => emit("update:signal", updateSignal('Q', Q)),
+});
+
+const gain = computed({
+  get: () => signal.value.filter?.gain,
+  set: (gain) => emit("update:signal", updateSignal('gain', gain)),
+});
+
+type UpdateSig = FilterSignalOptions;
+type FieldKeys = keyof UpdateSig;
+// type FieldValues = FilterSignalOptions[keyof FilterSignalOptions] 
+
+function updateSignal(key: FieldKeys, value: any ): Pick<ExtendedSignal, "filter"> {
+  const filter = Object.assign({}, signal.value.filter, { [key]: value});
+
+  return Object.assign({}, signal.value, { filter });
+}
+
+// === === //
+
+const fields = computed(() => ({
+  wet: isDefined(signal.value.filter?.wet),
+  frequency: isDefined(signal.value.filter?.frequency),
+  Q: isDefined(signal.value.filter?.Q),
+  gain: isDefined(signal.value.filter?.gain),
+}));
+
 watch(fields, () => {
-  if (!fields.wet && !fields.frequency && !fields.Q && !fields.gain) {
+  if (Object.values(fields.value).every((i) => !i)) {
     emit("removeField", "filter");
   }
 });
 
-type FieldKeys = keyof typeof fields;
 
 function removeField(f: FieldKeys) {
-  fields[f] = false;
+  if (isDefined(signal.value.filter)) {
+    signal.value.filter[f] = undefined;
+  }
 }
 </script>

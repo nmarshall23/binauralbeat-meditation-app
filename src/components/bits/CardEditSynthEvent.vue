@@ -84,13 +84,26 @@ const signal = useVModel(props, "signal", emit);
 
 const baseFreq = computed({
   get: () => signal.value.synth?.baseFreq,
-  set: (baseFreq) => emit("update:signal", updateSignal({ baseFreq })),
+  set: (baseFreq) => emit("update:signal", updateSignal("baseFreq", baseFreq)),
 });
 
 const beatFreq = computed({
   get: () => signal.value.synth?.beatFreq,
-  set: (beatFreq) => emit("update:signal", updateSignal({ beatFreq })),
+  set: (beatFreq) => emit("update:signal", updateSignal("beatFreq", beatFreq)),
 });
+
+type UpdateSig = BinauralBeatSynthSignals;
+type FieldKeys = keyof UpdateSig;
+// type FieldValues = BinauralBeatSynthSignals[keyof BinauralBeatSynthSignals]
+
+function updateSignal(
+  key: FieldKeys,
+  value: any
+): Pick<ExtendedSignal, "synth"> {
+  const synth = Object.assign({}, signal.value.synth, { [key]: value });
+
+  return Object.assign({}, signal.value, { synth });
+}
 
 const fields = computed(() => ({
   baseFreq: isDefined(signal.value.synth?.baseFreq),
@@ -103,32 +116,9 @@ watch(fields, () => {
   }
 });
 
-type UpdateSig = Partial<BinauralBeatSynthSignals>;
-
-function updateSignal({
-  baseFreq,
-  beatFreq,
-}: UpdateSig): Pick<ExtendedSignal, "synth"> {
-  if (isDefined(baseFreq)) {
-    return Object.assign(signal.value, {
-      synth: { baseFreq, beatFreq: signal.value.synth?.beatFreq },
-    });
+function removeField(f: FieldKeys) {
+  if (isDefined(signal.value.synth)) {
+    signal.value.synth[f] = undefined;
   }
-
-  if (isDefined(beatFreq)) {
-    return Object.assign(signal.value, {
-      synth: { beatFreq, baseFreq: signal.value.synth?.baseFreq },
-    });
-  }
-
-  return signal.value;
-}
-
-type FieldKeys = keyof BinauralBeatSynthSignals;
-
-function removeField(_f: FieldKeys) {
-  // if (isDefined(signal.value.synth)) {
-  //   signal.value.synth[f] = undefined;
-  // }
 }
 </script>

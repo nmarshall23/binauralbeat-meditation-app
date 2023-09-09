@@ -62,14 +62,11 @@
       @remove-field="removeField"
     />
 
-    <!-- <card-edit-filter-event
+    <card-edit-filter-event
       v-if="fields.filter"
-      v-model:wet="filter.wet"
-      v-model:frequency="filter.frequency"
-      v-model:q="filter.Q"
-      v-model:gain="filter.gain"
+      v-model:signal="signal"
       @remove-field="removeField"
-    /> -->
+    />
   </q-card>
 </template>
 
