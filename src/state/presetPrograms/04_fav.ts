@@ -1,10 +1,11 @@
-import { BinauralBeatProgram } from "../bbPrograms";
+import { MeditationProgram } from "@/types/MeditationProgram";
 
-export const mixedEffectsPragram: BinauralBeatProgram = {
+export const mixedEffectsPragram: MeditationProgram = {
   id: "BR_F01",
   title: "Mix of effects",
   description: "Spatialized audio spinning in place",
   volumeLevel: 70,
+  groupId: 'sequence',
   generators: [
     {
       type: "NoiseFilteredGen",

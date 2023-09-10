@@ -11,8 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { useBinauralBeatPrograms } from '@/state/bbPrograms';
-
+import { useCurrentProgramStore } from "@/state/currentProgram";
 
 const props = defineProps<{
   id: string;
@@ -20,7 +19,7 @@ const props = defineProps<{
 
 const programId = useVModel(props, "id");
 
-const { currentProgramId } = useBinauralBeatPrograms();
+const { currentProgramId } = useCurrentProgramStore();
 
 currentProgramId.value = programId.value;
 

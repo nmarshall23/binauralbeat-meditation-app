@@ -1,5 +1,5 @@
 <template>
-  <q-page padding class="column items-start" >
+  <q-page padding class="column items-start">
     <nm-card color="bg-secondary">
       <template #header>
         <div class="text-h6">What Are Binaural Beats?</div>
@@ -25,13 +25,13 @@
         <div class="text-h6">Meditation Programs</div>
         <div class="text-subtitle2">Select one to begin your session</div>
       </template>
-      <menu-list :menu="presetProgramsMenu" />
+      <menu-list v-model:menu-state="menuState" :menu="accordionMenu" />
     </nm-card>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { presetProgramsMenu } from "@/state/presetPrograms";
+import { usePresetProgramsStore } from "@/state/presetProgramsStore";
 import { definePage } from "vue-router/auto";
 
 definePage({
@@ -43,5 +43,5 @@ definePage({
   },
 });
 
-
+const { accordionMenu, menuState } = usePresetProgramsStore();
 </script>

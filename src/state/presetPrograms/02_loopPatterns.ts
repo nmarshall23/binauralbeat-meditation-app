@@ -1,10 +1,11 @@
+import { MeditationProgram } from "@/types/MeditationProgram";
 import { useMinDurationToSec } from "@/use/useDurationInSec";
-import { BinauralBeatProgram } from "../bbPrograms";
 
-export const shiftingTonesProgram: BinauralBeatProgram = {
+export const shiftingTonesProgram: MeditationProgram = {
   id: "LPST01",
   title: "Noise & Two Binaural Beat Osc",
   description: "Frequency Sliding @ 2hz - 8hz & 8hz - 4hz",
+  groupId: 'loop',
   generators: [
     {
       type: "BasicNoiseGen",
@@ -114,10 +115,11 @@ export const shiftingTonesProgram: BinauralBeatProgram = {
   ],
 };
 
-export const shiftingNoiseProgram: BinauralBeatProgram = {
+export const shiftingNoiseProgram: MeditationProgram = {
   id: "LP01ST",
   title: "Shifting Noise & Binaural Beat",
   description: "Noise Filter Shifts, Binaural Beat @ 10hz - 4hz",
+  groupId: 'loop',
   generators: [
     {
       type: "NoiseFilteredGen",

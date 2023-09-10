@@ -1,4 +1,4 @@
-import { BinauralBeatProgram } from "../bbPrograms";
+import { MeditationProgram } from "@/types/MeditationProgram";
 import { basic01Program, basicProgram, simpleSpinEffectProgram } from "./01_basic";
 import { shiftingNoiseProgram, shiftingTonesProgram } from "./02_loopPatterns";
 import { lpBrownProgram } from "./02_lpbrown";
@@ -50,11 +50,9 @@ export const presetProgramsMenu = [
   const newGroupItem = Object.assign({},groupItem, { menu } )
   return newGroupItem
 }
-
-  
 );
 
-export const presetPrograms: BinauralBeatProgram[] = [
+export const presetPrograms: MeditationProgram[] = [
   basicProgram,
   basic01Program,
   simpleSpinEffectProgram,

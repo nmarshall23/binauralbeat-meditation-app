@@ -1,9 +1,10 @@
-import { BinauralBeatProgram } from "../bbPrograms";
+import { MeditationProgram } from "@/types/MeditationProgram";
 
-export const basicProgram: BinauralBeatProgram = {
+export const basicProgram: MeditationProgram = {
   id: "Sd01",
   title: "Noise / Binaural Beat Osc",
   description: "Pink Noise & Binaural Beat @ 4hz",
+  groupId: 'simple',
   generators: [
     {
       type: "BasicNoiseGen",
@@ -27,11 +28,12 @@ export const basicProgram: BinauralBeatProgram = {
   ],
 };
 
-export const simpleSpinEffectProgram: BinauralBeatProgram = {
+export const simpleSpinEffectProgram: MeditationProgram = {
   id: "Sd02",
   title: "Noise / Spinning Binaural Beat Osc ",
   description: "Spatialized audio spinning in place",
   volumeLevel: 60,
+  groupId: 'simple',
   generators: [
     {
       type: "NoiseFilteredGen",
@@ -60,10 +62,11 @@ export const simpleSpinEffectProgram: BinauralBeatProgram = {
   ],
 };
 
-export const basic01Program: BinauralBeatProgram = {
+export const basic01Program: MeditationProgram = {
   id: "Sd03",
   title: "Noise / Binaural Beat FmSawtooth",
   description: "Pink Noise & Binaural Beat @ 4hz & 10hz",
+  groupId: 'simple',
   generators: [
     {
       type: "BasicNoiseGen",

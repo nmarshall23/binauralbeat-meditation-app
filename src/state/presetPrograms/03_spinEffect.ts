@@ -1,12 +1,13 @@
-import { BinauralBeatProgram } from "../bbPrograms";
+import { MeditationProgram } from "@/types/MeditationProgram";
 
 
 
-export const evolvingSpinEffectProgram: BinauralBeatProgram = {
+export const evolvingSpinEffectProgram: MeditationProgram = {
   id: "EvoSpEffP01",
   title: "Evolving Spinning Binaural Beat",
   description: "Spin Cycle evolves from 2 to 4 cyc/sec",
   volumeLevel: 60,
+  groupId: 'loop',
   generators: [
     {
       type: "NoiseFilteredGen",

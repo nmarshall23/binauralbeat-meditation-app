@@ -90,7 +90,6 @@
 <script setup lang="ts">
 import * as Tone from "tone";
 import VolumeDialog from "@/components/dialogs/volumeDialog.vue";
-import { useBinauralBeatPrograms } from "@/state/bbPrograms";
 import { useMainChannel } from "@/state/mainChannel";
 import { usePlaybackState } from "@/state/playbackState";
 import { useProgramDurationStore } from "@/state/programDuration";
@@ -99,10 +98,16 @@ import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 import BinauralBeatSynthOpsDialog from "@/components/dialogs/binauralBeatSynthOpsDialog.vue";
 import { setupSoundsSettingsDialogs } from "@/use/setupSoundsSettingsDialogs";
 import { useShowEditGenEventsDialog } from "@/use/useShowEditGenEventsDialog";
+import { useInitializeProgram } from "@/use/useInitializeProgram";
+import { useCurrentProgramStore } from "@/state/currentProgram";
 
-const { currentProgram, initializeProgram } = useBinauralBeatPrograms();
+// const { currentProgram, initializeProgram } = useBinauralBeatPrograms();
 
-initializeProgram();
+// initializeProgram();
+
+const { currentProgram } = useCurrentProgramStore()
+
+useInitializeProgram()
 
 const { isPlaying, toggleIsPlaying, eventHandler } = usePlaybackState();
 

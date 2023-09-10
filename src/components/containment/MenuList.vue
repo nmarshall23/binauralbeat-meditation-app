@@ -1,7 +1,13 @@
 <template>
   <q-list dark bordered separator>
-    <template v-for="item in menu">
-      <q-item clickable v-ripple :to="item" v-if="isMenuListLinkItem(item)">
+    <template v-for="(item, i) in menu">
+      <q-item
+        v-if="isMenuListLinkItem(item)"
+        :key="`im${i}`"
+        clickable
+        v-ripple
+        :to="item"
+      >
         <q-item-section>
           <q-item-label top class="text-grey-12">{{ item.title }}</q-item-label>
           <q-item-label caption>{{ item.subtitle }}</q-item-label>
@@ -10,6 +16,8 @@
 
       <q-expansion-item
         v-if="isMenuListGroupItem(item)"
+        :key="`xp${i}`"
+        v-model="menuStateModel[i]"
         :group="item.group"
         :label="item.title"
         :caption="item.subtitle"
@@ -46,7 +54,43 @@ import {
   isMenuListLinkItem,
 } from "@/types/MenuList";
 
-defineProps<{
-  menu: MenuList;
+const props = withDefaults(
+  defineProps<{
+    menu: MenuList;
+    menuState: Array<boolean>;
+  }>(),
+  {
+    menuState: () => [],
+  }
+);
+
+const emit = defineEmits<{
+  (e: "update:menuState", value: Array<boolean>): void;
 }>();
+
+const menu = useVModel(props, "menu");
+const menuState = useVModel(props, "menuState");
+
+const menuStateModel = ref<Array<boolean>>([]);
+
+init();
+async function init() {
+  menuStateModel.value = Array(menu.value.length).fill(false);
+
+  const i = menuState.value.findIndex((v) => v === true);
+  menuStateModel.value[i] = true;
+  //console.log('menuStateModel i %o', i)
+  await nextTick();
+
+  watch(
+    menuStateModel,
+    (state) => {
+      // console.log("menuStateModel", state);
+      emit("update:menuState", state);
+    },
+    {
+      deep: true,
+    }
+  );
+}
 </script>
