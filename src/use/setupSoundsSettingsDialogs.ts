@@ -41,9 +41,14 @@ const binauralBeatSynthOpsDialogRef = ref<InstanceType<
 > | null>();
 
 export function setupSoundsSettingsDialogs() {
+  const genUpdate = createEventHook();
+
+
+
   return {
     showGenOptionsDialog,
     noiseOptionsDialogRef,
     binauralBeatSynthOpsDialogRef,
+    onUpdategeneratorSettings: genUpdate.on
   };
 }

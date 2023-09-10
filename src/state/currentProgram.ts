@@ -4,6 +4,8 @@ import composeExtension from "@harlem/extension-compose";
 import storageExtension from "@harlem/extension-storage";
 import { MeditationProgram } from "@/types/MeditationProgram";
 import { usePresetProgramsStore } from "./presetProgramsStore";
+import { usePlaybackState } from "./playbackState";
+import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 
 const STATE = {
   currentProgramId: null as string | null,
@@ -12,7 +14,6 @@ const STATE = {
 
 export const {
   state,
-
   computeState,
   getter,
   onMutationSuccess,
@@ -49,9 +50,26 @@ const currentProgram = computeState(
   (state) => state.meditationProgram
 );
 
+const { eventHandler } = usePlaybackState();
+const sourceGenCtrls = computed(() => {
+  const sourceGen = (currentProgram.value?.generators ?? []) 
+
+  return setupProgramGenerators(sourceGen, eventHandler);
+})
+
+function cleanUpCurrentProgram() {
+  sourceGenCtrls.value.forEach(gen => {
+    gen.dispose()
+  })
+  currentProgram.value = null
+  currentProgramId.value = null
+}
+
 export function useCurrentProgramStore() {
   return {
     currentProgramId,
     currentProgram,
+    sourceGenCtrls,
+    cleanUpCurrentProgram,
   };
 }

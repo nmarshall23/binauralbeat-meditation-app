@@ -94,6 +94,7 @@ export type SamplePlayerGenerator = {
 export type GeneratorDefBase<T extends GeneratorDefType, OptionsType> = {
   type: T;
   options: OptionsType;
+  
 };
 
 export type GeneratorBasicNoiseGen = GeneratorDefBase<

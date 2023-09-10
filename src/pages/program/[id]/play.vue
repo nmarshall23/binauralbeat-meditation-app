@@ -42,7 +42,7 @@
     <q-card-section class="sg-container">
       <div class="text-subtitle2">Sound Generators</div>
 
-      <template v-for="g in generators">
+      <template v-for="g in sourceGenCtrls">
         <sound-generator-controls
           :name="g.generatorName"
           :gen-type="g.type"
@@ -88,13 +88,11 @@
 </template>
 
 <script setup lang="ts">
-import * as Tone from "tone";
+// import * as Tone from "tone";
 import VolumeDialog from "@/components/dialogs/volumeDialog.vue";
 import { useMainChannel } from "@/state/mainChannel";
 import { usePlaybackState } from "@/state/playbackState";
 import { useProgramDurationStore } from "@/state/programDuration";
-import { SoundGenerators } from "@/types/GeneratorDef";
-import { setupProgramGenerators } from "@/use/setupProgramGenerators";
 import BinauralBeatSynthOpsDialog from "@/components/dialogs/binauralBeatSynthOpsDialog.vue";
 import { setupSoundsSettingsDialogs } from "@/use/setupSoundsSettingsDialogs";
 import { useShowEditGenEventsDialog } from "@/use/useShowEditGenEventsDialog";
@@ -105,11 +103,11 @@ import { useCurrentProgramStore } from "@/state/currentProgram";
 
 // initializeProgram();
 
-const { currentProgram } = useCurrentProgramStore()
+const { currentProgram, sourceGenCtrls } = useCurrentProgramStore()
 
 useInitializeProgram()
 
-const { isPlaying, toggleIsPlaying, eventHandler } = usePlaybackState();
+const { isPlaying, toggleIsPlaying } = usePlaybackState();
 
 const { remandingDuration, remandingDurationPercentage } =
   useProgramDurationStore();
@@ -157,17 +155,8 @@ const {
   onGeneratorsEventsUpdate,
 } = useShowEditGenEventsDialog();
 
-const generators = computed(() => {
-  const gs = (currentProgram.value?.generators ?? []) as Array<SoundGenerators>;
-  return setupProgramGenerators(gs, eventHandler);
-});
-
 onGeneratorsEventsUpdate(() => {});
 
-onBeforeUnmount(() => {
-  generators.value.forEach((i) => i.dispose());
-  Tone.Transport.stop("+0.1");
-});
 </script>
 
 <style scoped lang="scss">

@@ -19,9 +19,13 @@ const props = defineProps<{
 
 const programId = useVModel(props, "id");
 
-const { currentProgramId } = useCurrentProgramStore();
+const { currentProgramId, cleanUpCurrentProgram } = useCurrentProgramStore();
 
 currentProgramId.value = programId.value;
 
 console.log("programId %o", programId.value);
+
+onBeforeUnmount(() => {
+  cleanUpCurrentProgram()
+});
 </script>
