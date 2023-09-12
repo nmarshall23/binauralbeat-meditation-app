@@ -1,7 +1,7 @@
 import * as Tone from "tone";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { BasicBinauralBeatOscOptions } from "@/types/GeneratorDef";
-import { GeneratorControls } from "@/types/GeneratorControls";
+import { GeneratorCtrlBasicBinauralBeat } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { noop } from "@vueuse/core";
@@ -10,7 +10,7 @@ export function createBasicBinauralBeatOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BasicBinauralBeatOscOptions
-): GeneratorControls {
+): GeneratorCtrlBasicBinauralBeat {
   const { gain, beatFreq, osc: oscOptions } = options;
 
   console.debug(
@@ -99,11 +99,19 @@ export function createBasicBinauralBeatOsc(
   return reactive({
     generatorName,
     type: "BasicBinauralBeatOsc",
+    generatorDef: {
+      type: "BasicBinauralBeatOsc",
+      options
+    },
+
     muteCtrl,
 
     volumeCtrl: volumeRef,
     dispose,
     hasOptions: false,
     updateOptions: noop,
+    getOptionValues: () => {},
+    toggleGenSoundTest: () => {},
+    additionalRecords: null,
   });
 }

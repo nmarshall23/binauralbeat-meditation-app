@@ -20,10 +20,10 @@
       <q-btn flat @click="showVolumeDialog">Volume</q-btn>
     </q-card-actions>
 
-    <q-separator v-if="hasOptions" />
+    <q-separator v-if="hasOptions && featureFlag.editGenOptions" />
 
     <q-card-actions
-      v-if="hasOptions"
+      v-if="hasOptions && featureFlag.editGenOptions"
       align="center"
       class="q-pt-md bg-blue-grey"
     >
@@ -33,27 +33,27 @@
     </q-card-actions>
 
     <q-expansion-item
-      v-if="hasEvents || hasLoopEvents"
+      v-if="hasEventSequence || hasEventLoop"
       class="bg-blue-grey"
       label="Events"
       header-class="text-subtitle1 text-weight-medium"
       dense
     >
       <event-sequence-info
-        v-if="isDefined(eventSequence)"
-        :event-sequence="eventSequence"
+        v-if="hasEventSequence"
+        :event-sequence="eventSequenceFmt"
         @show-dialog="() => emit('showEditEventSequenceDialog')"
       />
 
       <q-separator
-        v-if="hasEvents && hasLoopEvents"
+        v-if="hasEventSequence && hasEventLoop"
         dark
         inset
         class="q-mb-md q-mt-sm"
       />
 
       <event-loop-info
-        v-if="hasLoopEvents"
+        v-if="hasEventLoop"
         :event-loop="eventLoopFmt"
         @show-dialog="() => emit('showEditEventLoopDialog')"
       />
@@ -62,20 +62,20 @@
 </template>
 
 <script setup lang="ts">
-import { GeneratorDefType } from "@/types/GeneratorDef";
-import { EventSequence, LooppingEventsOptions } from "@/types/GeneratorSignals";
+import { GeneratorDefType, SoundGeneratorDef } from "@/types/GeneratorDef";
 import { capitalCase } from "change-case";
 
 import { isDefined } from "@vueuse/core";
+import { Pattern, match } from "ts-pattern";
+import { useAppFeatures } from "@/state/appFeatures";
 // type E = SignalBase & Record<string, any>;
 
 const props = defineProps<{
   name: string;
+  generatorDef: SoundGeneratorDef;
   muteCtrl: boolean;
   genType: GeneratorDefType;
   hasOptions: boolean;
-  eventLoop?: LooppingEventsOptions<any>;
-  eventSequence?: EventSequence<any>;
 }>();
 
 const emit = defineEmits<{
@@ -92,7 +92,13 @@ const emit = defineEmits<{
 }>();
 
 const muteCtrl = useVModel(props, "muteCtrl", emit);
-const { genType, eventLoop, eventSequence } = useVModels(props);
+const { generatorDef } = useVModels(props);
+
+
+//=== App Feature Flags ===//
+
+const featureFlag = useAppFeatures()
+
 
 function showVolumeDialog() {
   emit("showVolumeDialog", {
@@ -100,15 +106,53 @@ function showVolumeDialog() {
   });
 }
 
-const hasEvents = computed(() => isDefined(eventSequence));
-const hasLoopEvents = computed(() => isDefined(eventLoop));
+const events = computed(() => getEvents(generatorDef.value));
+const hasEventSequence = computed(() => isDefined(events.value.eventSequence));
+const hasEventLoop = computed(() => isDefined(events.value.eventLoop));
 
 const eventLoopFmt = computed(() => {
   return {
-    pattern: capitalCase(eventLoop?.value?.pattern ?? "upDown"),
-    interval: `${eventLoop?.value?.interval ?? 60} seconds`,
-    probability: `${(eventLoop?.value?.probability ?? 1) * 100}%`,
-    values: eventLoop?.value?.values ?? [],
+    pattern: capitalCase(events.value.eventLoop?.pattern ?? "upDown"),
+    interval: `${events.value.eventLoop?.interval ?? 60} seconds`,
+    probability: `${(events.value.eventLoop?.probability ?? 1) * 100}%`,
+    values: events.value.eventLoop?.values ?? [],
   };
 });
+
+const eventSequenceFmt = computed(() => {
+  return {
+    events: events.value.eventSequence?.events ?? [],
+    ...events.value.eventSequence,
+  };
+});
+
+function getEvents(generatorDef: SoundGeneratorDef) {
+  return match(generatorDef)
+    .with(
+      {
+        type: Pattern.union(
+          "BinauralBeatSpinOsc",
+          "BinauralBeatwLoop",
+          "NoiseFilteredGen",
+          "SamplePlayer"
+        ),
+        options: {
+          loopEvents: Pattern.optional(Pattern.any),
+          eventSequence: Pattern.optional(Pattern.any),
+        },
+      },
+      (def) => {
+        return {
+          eventLoop: def.options.loopEvents,
+          eventSequence: def.options.eventSequence,
+        };
+      }
+    )
+    .otherwise(() => {
+      return {
+        eventLoop: undefined,
+        eventSequence: undefined,
+      };
+    });
+}
 </script>

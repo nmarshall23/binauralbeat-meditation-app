@@ -4,11 +4,11 @@ import * as Tone from "tone";
 
 import EditEventLoopDialog from "@/components/dialogs/editEventLoopDialog.vue";
 import {
-  BinauralBeatEventSignal,
   LooppingEventsOptions,
   NoiseFilteredGenEventSignal,
 } from "@/types/GeneratorSignals";
 import { EventHook } from "@vueuse/core";
+
 
 async function showEditGenEventsDialog(
   generatorsUpdate: EventHook<any>,
@@ -20,31 +20,33 @@ async function showEditGenEventsDialog(
   }
 
   match({
-    genType: genCtrl.type,
+    generatorDef: genCtrl.generatorDef,
     eventType,
-    eventLoop: genCtrl.loopEvents,
-    eventSequence: genCtrl.eventSequence,
   })
     .with(
       {
-        genType: Pattern.union("NoiseFilteredGen"),
         eventType: "loop",
-        eventLoop: Pattern.not(Pattern.nullish),
+        generatorDef: {
+          type: "NoiseFilteredGen",
+          options: {
+            loopEvents: Pattern.not(Pattern.nullish)
+          }
+        },
       },
-      async ({ eventLoop }) => {
+      async (ctrl) => {
         if (isDefined(editEventLoopDialogRef)) {
           const { data, isCanceled } =
             await editEventLoopDialogRef.value.reveal({
               generatorType: genCtrl.type,
               generatorName: genCtrl.generatorName,
-              eventLoop,
+              eventLoop: ctrl.generatorDef.options.loopEvents,
               signalTypes: ["gain", "filter"],
             });
 
           if (!isCanceled && isDefined(data)) {
             console.log(data);
             generatorsUpdate.trigger({});
-            genCtrl.loopEvents =
+            ctrl.generatorDef.options.loopEvents =
               data as LooppingEventsOptions<NoiseFilteredGenEventSignal>;
           }
         }
@@ -52,24 +54,28 @@ async function showEditGenEventsDialog(
     )
     .with(
       {
-        genType: Pattern.union("BinauralBeatwLoop"),
         eventType: "loop",
-        eventLoop: Pattern.not(Pattern.nullish),
+        generatorDef: {
+          type: Pattern.union('BinauralBeatwLoop', 'BinauralBeatSpinOsc'),
+          options: {
+            loopEvents: Pattern.not(Pattern.nullish)
+          }
+        },
       },
-      async ({ eventLoop }) => {
+      async (ctrl) => {
         if (isDefined(editEventLoopDialogRef)) {
           const { data, isCanceled } =
             await editEventLoopDialogRef.value.reveal({
               generatorType: genCtrl.type,
               generatorName: genCtrl.generatorName,
-              eventLoop,
+              eventLoop: ctrl.generatorDef.options.loopEvents,
               signalTypes: ["gain", "synth"],
             });
 
           if (!isCanceled && isDefined(data)) {
             console.log(data);
-            genCtrl.loopEvents =
-              data as LooppingEventsOptions<BinauralBeatEventSignal>;
+            ctrl.generatorDef.options.loopEvents =
+              data as LooppingEventsOptions<NoiseFilteredGenEventSignal>;
           }
         }
       }

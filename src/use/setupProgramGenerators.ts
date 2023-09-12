@@ -2,7 +2,7 @@ import { match } from "ts-pattern";
 import { createBasicNoiseGen } from "../tones/gen/BasicNoiseGen";
 import { createBasicBinauralBeatOsc } from "../tones/gen/BasicBinauralBeatOsc";
 import {
-  SoundGenerators,
+  SoundGeneratorDef,
 } from "../types/GeneratorDef";
 import { createNoiseFilteredGen } from "../tones/gen/NoiseFilteredGen";
 import { createBinauralBeatwLoop } from "../tones/gen/BinauralBeatwLoop";
@@ -12,7 +12,7 @@ import { PlaybackTriggers } from "@/types/PlaybackState";
 import { createPlayerGen } from "@/tones/gen/PlayerGen";
 
 export function setupProgramGenerators(
-  generators: Array<SoundGenerators>,
+  generators: Array<SoundGeneratorDef>,
   eventHandler: PlaybackTriggers
 ): Array<GeneratorControls> {
   let noiseGenCount = 0;
@@ -21,7 +21,7 @@ export function setupProgramGenerators(
 
   return generators
     .map((genDef) =>
-      match<SoundGenerators, GeneratorControls | null>(genDef)
+      match<SoundGeneratorDef, GeneratorControls | null>(genDef)
         .with(
           {
             type: "BasicNoiseGen",

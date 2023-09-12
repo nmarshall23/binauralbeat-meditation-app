@@ -1,4 +1,4 @@
-import { SoundGenerators } from "./GeneratorDef";
+import { SoundGeneratorDef } from "./GeneratorDef";
 
 export type MeditationProgramGroupId = 'simple' | 'loop' | 'sequence'
 
@@ -7,6 +7,6 @@ export type MeditationProgram = {
     title: string;
     description: string;
     groupId: MeditationProgramGroupId
-    generators: Array<SoundGenerators>;
+    generators: Array<SoundGeneratorDef>;
     volumeLevel?: number;
   };

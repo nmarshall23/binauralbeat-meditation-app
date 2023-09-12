@@ -44,6 +44,7 @@ declare module 'vue-router/auto/routes' {
     '/info': RouteRecordInfo<'/info', '/info', Record<never, never>, Record<never, never>>,
     '/program/[id]': RouteRecordInfo<'/program/[id]', '/program/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/program/[id]/edit/eventLoop': RouteRecordInfo<'/program/[id]/edit/eventLoop', '/program/:id/edit/eventLoop', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/program/[id]/edit_[genIdx]': RouteRecordInfo<'/program/[id]/edit_[genIdx]', '/program/:id/edit_:genIdx', { id: ParamValue<true>, genIdx: ParamValue<true> }, { id: ParamValue<false>, genIdx: ParamValue<false> }>,
     '/program/[id]/play': RouteRecordInfo<'/program/[id]/play', '/program/:id/play', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/program/[id]/select-duration': RouteRecordInfo<'/program/[id]/select-duration', '/program/:id/select-duration', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/test': RouteRecordInfo<'/test', '/test', Record<never, never>, Record<never, never>>,

@@ -2,7 +2,7 @@ import * as Tone from "tone";
 import { capitalCase } from "change-case";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { BasicNoiseGenOptions } from "@/types/GeneratorDef";
-import { GeneratorControls } from "@/types/GeneratorControls";
+import { GeneratorCtrlBasicNoise } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import { noop } from "@vueuse/core";
 
@@ -10,7 +10,7 @@ export function createBasicNoiseGen(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BasicNoiseGenOptions
-): GeneratorControls {
+): GeneratorCtrlBasicNoise {
   const { gain, noise: noiseOptions } = options;
 
   console.debug(
@@ -92,11 +92,18 @@ export function createBasicNoiseGen(
   return reactive({
     generatorName: displayName,
     type: 'BasicNoiseGen',
+    generatorDef: {
+      type: "BasicNoiseGen",
+      options
+    },
     muteCtrl,
     gainCtrl,
     volumeCtrl,
     dispose,
     hasOptions: false,
     updateOptions: noop,
+    getOptionValues: () => {},
+    toggleGenSoundTest: (_value?: boolean) => {},
+    additionalRecords: null
   });
 }

@@ -6,6 +6,7 @@
       </q-item-section>
       <q-item-section avatar>
         <q-btn
+          v-if="featureFlag.editGenEventSequ"
           size="sm"
           outline
           label="edit"
@@ -49,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+import { useAppFeatures } from "@/state/appFeatures";
 import { EventValueType } from "@/types/GeneratorSignals";
 
 const props = defineProps<{
@@ -57,7 +59,7 @@ const props = defineProps<{
     loop?: boolean | number;
     loopStart?: string;
     loopEnd?: string;
-    events: EventValueType<unknown>[];
+    events: EventValueType<any>[];
   };
 }>();
 
@@ -70,5 +72,9 @@ const eventSequence = useVModel(props, 'eventSequence');
 const hasValues = computed(
   () => Object.keys(eventSequence.value ?? {}).length > 1
 );
+
+//=== App Feature Flags ===//
+
+const featureFlag = useAppFeatures()
 
 </script>

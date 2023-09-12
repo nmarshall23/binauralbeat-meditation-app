@@ -6,6 +6,7 @@
       </q-item-section>
       <q-item-section avatar>
         <q-btn
+          v-if="featureFlag.editGenEventLoops"
           size="sm"
           outline
           label="edit"
@@ -45,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { useAppFeatures } from "@/state/appFeatures";
 import { LoopEventValue } from "@/types/GeneratorSignals";
 
 defineProps<{
@@ -59,4 +61,9 @@ defineProps<{
 const emit = defineEmits<{
   (e: "showDialog"): void;
 }>();
+
+//=== App Feature Flags ===//
+
+const featureFlag = useAppFeatures()
+
 </script>

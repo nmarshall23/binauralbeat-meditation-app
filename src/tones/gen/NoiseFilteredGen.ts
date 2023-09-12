@@ -251,6 +251,11 @@ export function createNoiseFilteredGen(
   return reactive({
     generatorName: displayName,
     type: "NoiseFilteredGen",
+    generatorDef: {
+      type: "NoiseFilteredGen",
+      options,
+    },
+
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
@@ -258,7 +263,6 @@ export function createNoiseFilteredGen(
     updateOptions,
     getOptionValues,
     toggleGenSoundTest,
-    loopEvents,
-    eventSequence,
+    additionalRecords: null
   });
 }

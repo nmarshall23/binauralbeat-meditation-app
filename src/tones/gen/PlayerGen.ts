@@ -1,4 +1,4 @@
-import { GeneratorControls } from "@/types/GeneratorControls";
+import { GeneratorCtrlSamplePlayer } from "@/types/GeneratorControls";
 import { SamplePlayerGenerator } from "@/types/GeneratorDef";
 import {
   LoopEventValue,
@@ -45,7 +45,7 @@ export function createPlayerGen(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: SamplePlayerGenerator
-): GeneratorControls {
+): GeneratorCtrlSamplePlayer {
   const {
     gain = 1,
     player,
@@ -240,11 +240,21 @@ export function createPlayerGen(
 
   return reactive({
     generatorName: displayName,
-    type: "BinauralBeatSpinOsc",
+    type: "SamplePlayer",
+    generatorDef: {
+      type: "SamplePlayer",
+      options,
+    },
+
+
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
     hasOptions: false,
     updateOptions: noop,
+
+    getOptionValues: () => {},
+    toggleGenSoundTest: () => {},
+    additionalRecords: null,
   });
 }

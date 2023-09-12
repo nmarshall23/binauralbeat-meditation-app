@@ -7,7 +7,7 @@ export interface SpinningPannerOptions
     LFOEffectOptions,
     "min" | "max" | "phase" | "units" | "amplitude"
   > {
-  panner3d: Tone.Panner3DOptions;
+  panner3d: Partial<Omit<Tone.Panner3DOptions, keyof Tone.ToneAudioNodeOptions>>; 
 }
 
 export class SpinningPanner extends LFOEffect<SpinningPannerOptions> {

@@ -4,7 +4,7 @@ import { isMatching } from "ts-pattern";
 import { useTrackToneNode } from "@/use/useTrackToneNode";
 import { useVolumeControl } from "@/use/useVolumeControl";
 import { BinauralBeatSynthSpinGenerator } from "@/types/GeneratorDef";
-import { GeneratorControls } from "@/types/GeneratorControls";
+import { GeneratorCtrlBinauralBeatSpin } from "@/types/GeneratorControls";
 import { PlaybackTriggers } from "@/types/PlaybackState";
 import {
   eventMatcherBinauralBeatFreq,
@@ -28,7 +28,7 @@ export function createBinauralBeatSpinOsc(
   generatorName: string,
   eventHandler: PlaybackTriggers,
   options: BinauralBeatSynthSpinGenerator
-): GeneratorControls {
+): GeneratorCtrlBinauralBeatSpin {
   const { gain, synth, spinPanner, loopEvents, eventSequence } = options;
 
   console.debug(
@@ -155,12 +155,17 @@ export function createBinauralBeatSpinOsc(
   return reactive({
     generatorName: displayName,
     type: "BinauralBeatSpinOsc",
+    generatorDef: {
+      type: "BinauralBeatSpinOsc",
+      options
+    },
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
     hasOptions: false,
     updateOptions: noop,
-    loopEvents,
-    eventSequence,
+    getOptionValues: () => {},
+    toggleGenSoundTest: (_value?: boolean) => {},
+    additionalRecords: null
   });
 }

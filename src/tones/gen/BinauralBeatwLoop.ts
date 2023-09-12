@@ -221,6 +221,11 @@ export function createBinauralBeatwLoop(
   return reactive({
     generatorName: displayName,
     type: "BinauralBeatwLoop",
+    generatorDef: {
+      type: "BinauralBeatwLoop",
+      options
+    },
+
     muteCtrl,
     volumeCtrl: volumeRef,
     dispose,
@@ -229,7 +234,5 @@ export function createBinauralBeatwLoop(
     getOptionValues,
     toggleGenSoundTest,
     additionalRecords,
-    loopEvents,
-    eventSequence,
   });
 }

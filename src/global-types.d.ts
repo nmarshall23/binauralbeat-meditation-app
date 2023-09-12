@@ -10,7 +10,9 @@ type RequireAtLeastOne<T, Keys extends keyof T = keyof T> = Pick<
 import 'vue-router'
 
 // To ensure it is treated as a module, add at least one `export` statement
-export {}
+export {
+  RequireAtLeastOne,
+}
 
 declare module 'vue-router' {
   interface RouteMeta {

@@ -59,15 +59,15 @@ export type NoiseFilteredGenOptions = {
 
 export type BinauralBeatSynthGenerator = {
   gain: Tone.Unit.GainFactor;
-  synth: Partial<BinauralBeatSynthOptions>;
+  synth: Partial<Omit<BinauralBeatSynthOptions, 'context'>>;
   loopEvents?: LooppingEventsOptions<BinauralBeatEventSignal>;
   eventSequence?: EventSequence<BinauralBeatEventSignal>;
 };
 
 export type BinauralBeatSynthSpinGenerator = {
-  synth: Partial<BinauralBeatSynthOptions>;
+  synth: Partial<Omit<BinauralBeatSynthOptions, 'context'>>;
   gain: Tone.Unit.GainFactor;
-  spinPanner?: Partial<SpinningPannerOptions>;
+  spinPanner?: Partial<Omit<SpinningPannerOptions, 'context'>>;
   loopEvents?: LooppingEventsOptions<BinauralBeatSpinEventSignal>;
   eventSequence?: EventSequence<BinauralBeatSpinEventSignal>;
 };
@@ -94,23 +94,22 @@ export type SamplePlayerGenerator = {
 export type GeneratorDefBase<T extends GeneratorDefType, OptionsType> = {
   type: T;
   options: OptionsType;
-  
 };
 
-export type GeneratorBasicNoiseGen = GeneratorDefBase<
-  "BasicNoiseGen",
-  BasicNoiseGenOptions
->;
+export type GeneratorBasicNoiseGen = {
+  type: "BasicNoiseGen";
+  options: BasicNoiseGenOptions;
+};
 
-export type GeneratorNoiseFilteredGen = GeneratorDefBase<
-  "NoiseFilteredGen",
-  NoiseFilteredGenOptions
->;
+export type GeneratorNoiseFilteredGen = {
+  type: "NoiseFilteredGen";
+  options: NoiseFilteredGenOptions;
+};
 
-export type GeneratorBasicBinauralBeatOsc = GeneratorDefBase<
-  "BasicBinauralBeatOsc",
-  BasicBinauralBeatOscOptions
->;
+export type GeneratorBasicBinauralBeatOsc = {
+  type: "BasicBinauralBeatOsc";
+  options: BasicBinauralBeatOscOptions;
+};
 
 export type GeneratorBinauralBeatwLoopOsc = GeneratorDefBase<
   "BinauralBeatwLoop",
@@ -127,10 +126,12 @@ export type SamplePlayerGeneratorDef = GeneratorDefBase<
   SamplePlayerGenerator
 >;
 
-export type SoundGenerators =
+export type SoundGeneratorDef =
   | GeneratorBasicNoiseGen
   | GeneratorBasicBinauralBeatOsc
   | GeneratorNoiseFilteredGen
   | GeneratorBinauralBeatwLoopOsc
   | GeneratorBinauralBeatSpinOsc
   | SamplePlayerGeneratorDef;
+
+

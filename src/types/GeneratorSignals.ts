@@ -1,3 +1,4 @@
+import { RequireAtLeastOne } from "@/global-types";
 import * as Tone from "tone";
 import { PatternName } from "tone/build/esm/event/PatternGenerator";
 
@@ -20,8 +21,8 @@ export type LooppingEventsOptions<E> = {
 
 export type LoopEventValue<S> = {
   rampTime: number;
-  signal: RequireAtLeastOne<S>;
-  // signal: Partial<S>
+  //signal: RequireAtLeastOne<S>;
+  signal: Partial<S>
 };
 
 export type EventValueType<S> = {

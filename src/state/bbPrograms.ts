@@ -1,7 +1,7 @@
 import { createStore } from "harlem";
 
 import composeExtension from "@harlem/extension-compose";
-import { SoundGenerators } from "@/types/GeneratorDef";
+import { SoundGeneratorDef } from "@/types/GeneratorDef";
 import { useMainChannel } from "./mainChannel";
 import { usePlaybackState } from "./playbackState";
 import { useProgramDurationStore } from "./programDuration";
@@ -12,7 +12,7 @@ export type BinauralBeatProgram = {
   id: string;
   title: string;
   description: string;
-  generators: Array<SoundGenerators>;
+  generators: Array<SoundGeneratorDef>;
   volumeLevel?: number;
 };
 

@@ -6,6 +6,7 @@ import { MeditationProgram } from "@/types/MeditationProgram";
 import { usePresetProgramsStore } from "./presetProgramsStore";
 import { usePlaybackState } from "./playbackState";
 import { setupProgramGenerators } from "@/use/setupProgramGenerators";
+import { MaybeRef } from "vue";
 
 const STATE = {
   currentProgramId: null as string | null,
@@ -65,11 +66,18 @@ function cleanUpCurrentProgram() {
   currentProgramId.value = null
 }
 
+// ===  === //
+
+function getGenCtrlFromIndex(index: MaybeRef<number>) {
+  return sourceGenCtrls.value[unref(index)]
+}
+
 export function useCurrentProgramStore() {
   return {
     currentProgramId,
     currentProgram,
-    sourceGenCtrls,
     cleanUpCurrentProgram,
+    sourceGenCtrls,
+    getGenCtrlFromIndex
   };
 }

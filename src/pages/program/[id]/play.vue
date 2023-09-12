@@ -46,6 +46,7 @@
         <sound-generator-controls
           :name="g.generatorName"
           :gen-type="g.type"
+          :generator-def="g.generatorDef"
           v-model:mute-ctrl="g.muteCtrl"
           @show-volume-dialog="
             showVolumeDialog(
@@ -55,8 +56,6 @@
             )
           "
           :has-options="g.hasOptions"
-          :event-sequence="g.eventSequence"
-          :event-loop="g.loopEvents"
           @show-options-dialog="showGenOptionsDialog(g)"
           @show-edit-event-loop-dialog="showEditGenEventsDialog(g, 'loop')"
         />

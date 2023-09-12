@@ -14,7 +14,7 @@ import {
 import { Source } from "tone/build/esm/source/Source";
 import { OmniOscillatorSynthOptions } from "tone/build/esm/source/oscillator/OscillatorInterface";
 
-export interface BinauralBeatSynthOptions extends InstrumentOptions {
+export interface BinauralBeatSynthOptions extends InstrumentOptions{
   oscillator: Partial<OmniOscillatorSynthOptions>;
   envelope: Omit<Tone.EnvelopeOptions, keyof Tone.ToneAudioNodeOptions>;
   baseFrequency: Frequency;
