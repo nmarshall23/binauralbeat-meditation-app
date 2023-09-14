@@ -53,7 +53,7 @@ export function createNoiseFilteredGen(
 
   const filterEffectNode = new FilterEffect({
     filter: filterOptions,
-    //wet: filterOptions?.wet ?? 1,
+    wet: filterOptions?.wet ?? 1,
   });
 
   const noiseSythNode = new Tone.NoiseSynth({

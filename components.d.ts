@@ -8,6 +8,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BaseEventLoopCard: typeof import('./src/components/bits/BaseEventLoopCard.vue')['default']
+    BCard: typeof import('./src/components/b-card/b-card.vue')['default']
+    BCardHeader: typeof import('./src/components/b-card/b-card-header.vue')['default']
     BinauralBeatSynthOpsDialog: typeof import('./src/components/dialogs/binauralBeatSynthOpsDialog.vue')['default']
     BinauralFftVis: typeof import('./src/components/playbackVis/BinauralFftVis.vue')['default']
     CardEditFilterEvent: typeof import('./src/components/bits/CardEditFilterEvent.vue')['default']
@@ -18,6 +20,7 @@ declare module 'vue' {
     EditEventLoopDialog: typeof import('./src/components/dialogs/editEventLoopDialog.vue')['default']
     EditLoopEventsDialog: typeof import('./src/components/dialogs/editLoopEventsDialog.vue')['default']
     EventEntryFilter: typeof import('./src/components/bits/EventEntryFilter.vue')['default']
+    EventEntryPlayer: typeof import('./src/components/bits/EventEntryPlayer.vue')['default']
     EventEntrySynth: typeof import('./src/components/bits/EventEntrySynth.vue')['default']
     EventLoopChunck: typeof import('./src/components/bits/EventLoopChunck.vue')['default']
     EventLoopEntry: typeof import('./src/components/bits/EventLoopEntry.vue')['default']
@@ -26,6 +29,7 @@ declare module 'vue' {
     EventSequenceEntry: typeof import('./src/components/bits/EventSequenceEntry.vue')['default']
     EventSequenceInfo: typeof import('./src/components/bits/EventSequenceInfo.vue')['default']
     FftVis: typeof import('./src/components/playbackVis/fftVis.vue')['default']
+    GridContainer: typeof import('./src/components/containment/gridContainer.vue')['default']
     ListItemNumberInput: typeof import('./src/components/bits/ListItemNumberInput.vue')['default']
     ListItemSelectionInput: typeof import('./src/components/bits/ListItemSelectionInput.vue')['default']
     MenuList: typeof import('./src/components/containment/MenuList.vue')['default']

@@ -114,12 +114,12 @@ function durationCountDown(time: number) {
   Tone.Draw.schedule(() => {
     subtractDuration(1);
 
-    console.log(
-      "Duration Timer - Remaning Duration: %o : %o : %o",
-      remandingDuration.value.hours,
-      remandingDuration.value.minutes,
-      remandingDuration.value.seconds
-    );
+    // console.log(
+    //   "Duration Timer - Remaning Duration: %o : %o : %o",
+    //   remandingDuration.value.hours,
+    //   remandingDuration.value.minutes,
+    //   remandingDuration.value.seconds
+    // );
   }, time);
 }
 

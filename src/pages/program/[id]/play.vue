@@ -47,6 +47,7 @@
           :name="g.generatorName"
           :gen-type="g.type"
           :generator-def="g.generatorDef"
+          :is-playing="isPlaying"
           v-model:mute-ctrl="g.muteCtrl"
           @show-volume-dialog="
             showVolumeDialog(
@@ -97,10 +98,6 @@ import { setupSoundsSettingsDialogs } from "@/use/setupSoundsSettingsDialogs";
 import { useShowEditGenEventsDialog } from "@/use/useShowEditGenEventsDialog";
 import { useInitializeProgram } from "@/use/useInitializeProgram";
 import { useCurrentProgramStore } from "@/state/currentProgram";
-
-// const { currentProgram, initializeProgram } = useBinauralBeatPrograms();
-
-// initializeProgram();
 
 const { currentProgram, sourceGenCtrls } = useCurrentProgramStore()
 

@@ -51,7 +51,7 @@ export type NoiseFilteredGenOptions = {
     Q?: number;
     gain?: number;
     detune?: number;
-    wet?: 0 | 1;
+    wet?: Tone.Unit.NormalRange;
   };
   loopEvents?: LooppingEventsOptions<NoiseFilteredGenEventSignal>;
   eventSequence?: EventSequence<NoiseFilteredGenEventSignal>;

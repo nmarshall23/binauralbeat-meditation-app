@@ -9,11 +9,6 @@ import { setupEventSequenceHandlers } from "@/use/setupEventSequenceHandlers";
 import { setupLoopEventsHandlers } from "@/use/setupLoopEventsHandlers";
 import {
   eventMatcherGain,
-  eventMatcherPanner3dPositionX,
-  eventMatcherPanner3dPositionY,
-  eventMatcherPanner3dPositionZ,
-  eventMatcherPitchShiftPitch,
-  eventMatcherPitchShiftWet,
   eventMatcherStartLoopBool,
   eventMatcherStartLoopPatten,
   eventMatcherStartSample,
@@ -30,6 +25,7 @@ import cookieTin2 from "@/assets/berklee/CookieTin2.wav";
 import iron_bell1 from "@/assets/berklee/iron_bell1.wav";
 import tinybell5 from "@/assets/berklee/tinybell5.wav";
 import { noop } from "@vueuse/core";
+import { PlayersInst } from "../Instrument/PlayersInst";
 
 const sampleLookup = {
   bell_mallett_1: bell_mallett_1,
@@ -49,8 +45,6 @@ export function createPlayerGen(
   const {
     gain = 1,
     player,
-    pichShift,
-    panner3d,
     loopEvents,
     eventSequence,
   } = options;
@@ -63,14 +57,16 @@ export function createPlayerGen(
 
   const channel = new Tone.Channel();
 
-  const gainNode = new Tone.Gain(1);
+  const gainNode = new Tone.Gain(gain);
 
-  const panner3dNode = new Tone.Panner3D(panner3d);
+  // const panner3dNode = new Tone.Panner3D(panner3d);
 
-  const pichShiftNode = new Tone.PitchShift(pichShift?.pich);
-  pichShiftNode.wet.value = isDefined(pichShift) ? 1 : 0;
+  // const pichShiftNode = new Tone.PitchShift(pichShift?.pich);
+  // pichShiftNode.wet.value = isDefined(pichShift) ? 1 : 0;
 
-  const playerNode = new Tone.Player(sampleLookup[player.sample]);
+  // const playerNode = new Tone.Player(sampleLookup[player.sample]);
+
+  const playerNode = new PlayersInst(player)
 
   // === Signals === //
 
@@ -106,26 +102,18 @@ export function createPlayerGen(
   // === Connections === //
 
   channel.send("main");
-  playerNode.chain(pichShiftNode, panner3dNode, gainNode, channel);
+  // playerNode.chain(pichShiftNode, panner3dNode, gainNode, channel);
+  playerNode.connect(channel)
 
   /* === eventHandler  === */
-  eventHandler.onPlayBackStarted(() => {
-    playerNode.fadeOut = 0;
-  });
-
   eventHandler.onPlayBackStopped((time) => {
-    if (playerNode.state === "started") {
-      playerNode.fadeOut = 2;
-      playerNode.stop(time);
-    }
+    // if (playerNode.state === "started") {
+    //   playerNode.fadeOut = 2;
+    //   playerNode.stop(time);
+    // }
+    playerNode.triggerRelease(time)
   });
 
-  eventHandler.onPlayBackPaused((time) => {
-    if (playerNode.state === "started") {
-      playerNode.fadeOut = 2;
-      playerNode.stop(time);
-    }
-  });
 
   // === Playback Events === //
 
@@ -148,37 +136,39 @@ export function createPlayerGen(
       gainNode.gain.rampTo(signal.gain, rampTime, time);
     }
 
-    if (isMatching(eventMatcherPitchShiftPitch, event)) {
-      const { signal } = event;
-      pichShiftNode.pitch = signal.pitchShift.pitch;
-    }
+    // if (isMatching(eventMatcherPitchShiftPitch, event)) {
+    //   const { signal } = event;
+    //   pichShiftNode.pitch = signal.pitchShift.pitch;
+    // }
 
-    if (isMatching(eventMatcherPitchShiftWet, event)) {
-      const { rampTime, signal } = event;
-      pichShiftNode.wet.rampTo(signal.pitchShift.wet, rampTime, time);
-    }
+    // if (isMatching(eventMatcherPitchShiftWet, event)) {
+    //   const { rampTime, signal } = event;
+    //   pichShiftNode.wet.rampTo(signal.pitchShift.wet, rampTime, time);
+    // }
 
-    if (isMatching(eventMatcherPanner3dPositionX, event)) {
-      const { rampTime, signal } = event;
-      panner3dNode.positionX.rampTo(signal.panner3d.positionX, rampTime, time);
-    }
+    // if (isMatching(eventMatcherPanner3dPositionX, event)) {
+    //   const { rampTime, signal } = event;
+    //   panner3dNode.positionX.rampTo(signal.panner3d.positionX, rampTime, time);
+    // }
 
-    if (isMatching(eventMatcherPanner3dPositionY, event)) {
-      const { rampTime, signal } = event;
-      panner3dNode.positionY.rampTo(signal.panner3d.positionY, rampTime, time);
-    }
+    // if (isMatching(eventMatcherPanner3dPositionY, event)) {
+    //   const { rampTime, signal } = event;
+    //   panner3dNode.positionY.rampTo(signal.panner3d.positionY, rampTime, time);
+    // }
 
-    if (isMatching(eventMatcherPanner3dPositionZ, event)) {
-      const { rampTime, signal } = event;
-      panner3dNode.positionZ.rampTo(signal.panner3d.positionZ, rampTime, time);
-    }
+    // if (isMatching(eventMatcherPanner3dPositionZ, event)) {
+    //   const { rampTime, signal } = event;
+    //   panner3dNode.positionZ.rampTo(signal.panner3d.positionZ, rampTime, time);
+    // }
 
     if (isMatching(eventMatcherStartSample, event)) {
-      if (playerNode.state === "started") {
-        playerNode.restart(time);
-      } else {
-        playerNode.start(time);
-      }
+      playerNode.triggerAttack(time)
+     
+      // if (playerNode.state === "started") {
+      //   playerNode.restart(time);
+      // } else {
+      //   playerNode.start(time);
+      // }
     }
 
     if (isMatching(eventMatcherStartLoopPatten, event)) {

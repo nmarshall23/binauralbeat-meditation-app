@@ -11,6 +11,7 @@
 defineProps<{
   color: string;
 }>();
+
 </script>
 
 <style scoped lang="scss">

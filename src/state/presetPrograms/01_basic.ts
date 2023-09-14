@@ -32,13 +32,13 @@ export const simpleSpinEffectProgram: MeditationProgram = {
   id: "Sd02",
   title: "Noise / Spinning Binaural Beat Osc ",
   description: "Spatialized audio spinning in place",
-  volumeLevel: 60,
+  volumeLevel: 50,
   groupId: 'simple',
   generators: [
     {
       type: "NoiseFilteredGen",
       options: {
-        gain: 1,
+        gain: 0.9,
         noise: {
           type: "brown",
         },
@@ -50,9 +50,23 @@ export const simpleSpinEffectProgram: MeditationProgram = {
       },
     },
     {
+      type: "NoiseFilteredGen",
+      options: {
+        gain: 0.2,
+        noise: {
+          type: "pink",
+        },
+        filter: {
+          wet: 1,
+          frequency: 300,
+          type: "bandpass",
+        },
+      },
+    },
+    {
       type: "BinauralBeatSpinOsc",
       options: {
-        gain: 0.4,
+        gain: 0.1,
         synth: {
           baseFrequency: 90,
           beatFrequency: 6,
@@ -67,20 +81,30 @@ export const basic01Program: MeditationProgram = {
   title: "Noise / Binaural Beat FmSawtooth",
   description: "Pink Noise & Binaural Beat @ 4hz & 10hz",
   groupId: 'simple',
+  volumeLevel: 10,
   generators: [
     {
       type: "BasicNoiseGen",
       options: {
-        gain: 1,
+        gain: 0.1,
         noise: {
           type: "pink",
         },
       },
     },
     {
-      type: "BinauralBeatwLoop",
+      type: "BasicNoiseGen",
       options: {
         gain: 0.5,
+        noise: {
+          type: "brown",
+        },
+      },
+    },
+    {
+      type: "BinauralBeatwLoop",
+      options: {
+        gain: 0.25,
         synth: {
           baseFrequency: 120,
           beatFrequency: 4,
@@ -96,7 +120,7 @@ export const basic01Program: MeditationProgram = {
     {
       type: "BinauralBeatwLoop",
       options: {
-        gain: 0.5,
+        gain: 0.25,
         synth: {
           baseFrequency: 180,
           beatFrequency: 10,

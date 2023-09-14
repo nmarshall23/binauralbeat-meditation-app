@@ -4,7 +4,9 @@
     style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)"
   >
     <q-card-section class="q-pb-none">
-      <div class="text-h6 text-left">{{ name }}</div>
+      <div :class="['text-h6 text-left', { 'text-grey-4': muteCtrl }]">
+        {{ name }}
+      </div>
     </q-card-section>
 
     <q-card-actions align="right" class="q-py-none">
@@ -15,22 +17,35 @@
         unchecked-icon="volume_up"
         keep-color
         left-label
-        color="red"
+        :color="muteColor"
       />
       <q-btn flat @click="showVolumeDialog">Volume</q-btn>
     </q-card-actions>
 
-    <q-separator v-if="hasOptions && featureFlag.editGenOptions" />
+    <q-separator
+      v-if="hasOptions && featureFlag.editGenOptions"
+      class="bg-grey-6"
+    />
 
     <q-card-actions
       v-if="hasOptions && featureFlag.editGenOptions"
       align="center"
-      class="q-pt-md bg-blue-grey"
+      class="q-py-md bg-blue-grey"
     >
-      <q-btn outline padding="xs 3rem" @click="emit('showOptionsDialog')"
-        >Options</q-btn
+      <q-btn
+        outline
+        padding="xs 3rem"
+        @click="emit('showOptionsDialog')"
+        :disable="isPlaying"
       >
+        Options
+      </q-btn>
     </q-card-actions>
+
+    <q-separator
+      v-if="hasOptions || hasEventSequence || hasEventLoop"
+      class="bg-grey-6"
+    />
 
     <q-expansion-item
       v-if="hasEventSequence || hasEventLoop"
@@ -76,6 +91,7 @@ const props = defineProps<{
   muteCtrl: boolean;
   genType: GeneratorDefType;
   hasOptions: boolean;
+  isPlaying: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -92,13 +108,14 @@ const emit = defineEmits<{
 }>();
 
 const muteCtrl = useVModel(props, "muteCtrl", emit);
-const { generatorDef } = useVModels(props);
 
+const muteColor = computed(() => (muteCtrl.value ? "orange-14" : "orange-12"));
+
+const { generatorDef } = useVModels(props);
 
 //=== App Feature Flags ===//
 
-const featureFlag = useAppFeatures()
-
+const featureFlag = useAppFeatures();
 
 function showVolumeDialog() {
   emit("showVolumeDialog", {

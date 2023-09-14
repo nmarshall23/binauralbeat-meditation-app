@@ -1,11 +1,14 @@
 import { MeditationProgram } from "@/types/MeditationProgram";
-import { useMinDurationToSec } from "@/use/useDurationInSec";
+import {
+  useFromDurationToSeconds,
+  useMinDurationToSec,
+} from "@/use/useDurationInSec";
 
 export const lpBrownProgram: MeditationProgram = {
   id: "BrNBB_03",
-  title: "Noise w/ LP filter | Binaural Beat @ 8hz & 6hz",
-  description: "",
-  groupId: 'loop',
+  title: "Noise w/ LP filter | Binaural Beat @ 8.2hz & 4hz",
+  description: "Spins Effect is Randomly Toggled",
+  groupId: "loop",
   generators: [
     {
       type: "NoiseFilteredGen",
@@ -64,47 +67,86 @@ export const lpBrownProgram: MeditationProgram = {
         },
       },
     },
-
     {
-      type: "BinauralBeatwLoop",
+      type: "BinauralBeatSpinOsc",
       options: {
-        gain: 0.5,
+        gain: 0.25,
         synth: {
-          baseFrequency: 210,
-          beatFrequency: 8,
+          baseFrequency: 196,
+          beatFrequency: 8.2,
+        },
+        spinPanner: {
+          wet: 1,
+        },
+        loopEvents: {
+          humanize: false,
+          interval: useFromDurationToSeconds({ seconds: 60 }),
+          probability: 1,
+          pattern: "random",
+          values: [
+            {
+              rampTime: 20,
+              signal: {
+                gain: 0.25,
+                spinEffect: {
+                  wet: 1,
+                },
+              },
+            },
+            {
+              rampTime: 20,
+              signal: {
+                gain: 0.15,
+                spinEffect: {
+                  wet: 0,
+                },
+              },
+            },
+            {
+              rampTime: 20,
+              signal: {
+                gain: 0.15,
+                spinEffect: {
+                  wet: 0,
+                },
+              },
+            },
+          ],
         },
       },
     },
     {
       type: "BinauralBeatwLoop",
       options: {
-        gain: 0.5,
+        gain: 0.4,
         synth: {
-          baseFrequency: 160,
+          baseFrequency: 164.81,
           beatFrequency: 4,
         },
         loopEvents: {
           humanize: 10,
-          interval: 30, //useMinDurationToSec(1),
+          interval: useFromDurationToSeconds({ seconds: 60 }),
           probability: 1,
           pattern: "upDown",
           values: [
             {
-              rampTime: 30, //useMinDurationToSec(1),
-              signal: {
-                gain: 0.6,
-                synth: {
-                  baseFreq: 140
-                }
-              },
-            },
-            {
-              rampTime: 30, //useMinDurationToSec(1),
+              rampTime: 30,
               signal: {
                 gain: 0.4,
                 synth: {
-                  baseFreq: 170
-                }
+                  baseFreq: 164.81,
+                  beatFreq: 4,
+                },
+              },
+            },
+            {
+              rampTime: 30,
+              signal: {
+                gain: 0.36,
+                synth: {
+                  baseFreq: 185.00,
+                  beatFreq: 3.6,
+                },
               },
             },
           ],
