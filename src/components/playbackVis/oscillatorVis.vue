@@ -10,19 +10,18 @@ import { useSimpleToneVis } from "@/use/useToneVis";
 
 const props = defineProps<{
   watch: boolean;
-  getAsArray: () => Promise<Float32Array>;
+  updateVisCb: () => Promise<Float32Array>
 }>();
 
-const { watch, getAsArray } = useVModels(props);
+const { watch, updateVisCb } = useVModels(props);
 
 // === Canvas  === //
 const canvasWFRef = ref<HTMLCanvasElement>();
 
 // === Setup Canvas === //
 
+useSimpleToneVis(canvasWFRef, watch, () => updateVisCb.value());
 
-
-useSimpleToneVis(canvasWFRef, watch, () => getAsArray.value());
 </script>
 
 <style scoped>

@@ -14,7 +14,7 @@ const props = withDefaults(
   }>(),
   {
     rounded: true,
-    color: 'colors.indigo.800'
+    color: '#27272a'
   }
 );
 
@@ -34,7 +34,7 @@ const roundedCss = computed(() =>
 <style scoped>
 
 .b-card {
-  color: theme('colors.zinc.800'); 
+  color: v-bind(color); 
 }
 
 </style>

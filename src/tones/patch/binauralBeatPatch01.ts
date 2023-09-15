@@ -24,7 +24,7 @@ export function binauralBeatPatch01() {
     },
   });
 
-  const synth02GainNode = new Tone.Gain(0.5);
+  const synth02GainNode = new Tone.Gain(0);
 
   const synth02Node = new Tone.Synth({
     oscillator: {
@@ -45,33 +45,38 @@ export function binauralBeatPatch01() {
 
   // === Wire ToneNodes === //
 
-  finalGainNode.chain(filterNode, binauralBeatNode, channel);
+  finalGainNode.chain(filterNode, channel);
 
-  synth01Node.chain(synth01GainNode, finalGainNode);
-  synth02Node.chain(synth02GainNode, finalGainNode);
+  synth01Node.chain(synth01GainNode, binauralBeatNode, finalGainNode);
+  synth02Node.chain(synth02GainNode, binauralBeatNode, finalGainNode);
 
   // === Wire filterNode.frequency to lfoNode === //
 
-  const filterLfoAmount = new Tone.CrossFade(1);
-  const filterLfoFac = new Tone.Multiply();
+  const {
+    signal: filterFrequencySignal,
+    effectAmountRef: filterLFOamountRef,
+    dispose: filterFrequencyDispose,
+  } = useToneConnectEffect(lfoNode, filterNode.frequency);
 
-  const filterFrequencySignal = new Tone.Signal({
-    value: "400",
-    units: "frequency",
-  });
-
-  lfoNode.chain(filterLfoFac.factor);
-
-  filterFrequencySignal.chain(filterLfoFac, filterLfoAmount.b);
-  filterFrequencySignal.chain(filterLfoAmount.a);
-  filterLfoAmount.connect(filterNode.frequency);
+  // const {
+  //   // signalRef: filterFrequencyRef,
+  //   // effectAmountRef: filterLFOamountRef,
+  //   // dispose: filterFrequencyDispose
+  // } = useToneConnectEffect(synth01Node.frequency, filterFrequencySignal, {
+  //   modulatorInline: true,
+  // });
 
   // === Wire  to lfoNode === //
 
-  const { signalRef: synth02DetuneSignal, lfoAmountRef: synth02DetuneLfoAmount } =
-    useToneConnectEffect(synth02Node.detune, lfoNode);
+  const {
+    signalRef: synth02DetuneSignal,
+    effectAmountRef: synth02DetuneLfoAmount,
+    dispose: synth02DetuneDispose,
+  } = useToneConnectEffect(lfoNode, synth02Node.detune);
 
   // === Control Refs === //
+
+  const synth01NodeGain = useTrackPramNode(synth01GainNode.gain);
 
   const synth01NodeOscBaseType = useTrackToneNode(
     synth01Node.oscillator,
@@ -85,21 +90,25 @@ export function binauralBeatPatch01() {
     "oscillator"
   );
 
-  const synth01NodeGain = useTrackPramNode(synth01GainNode.gain);
+  const synth01NodeModulationIndex = useTrackToneNodeSignal(
+    synth01Node.modulationIndex
+  );
+
+  // === Synth 02 === //
 
   const synth02NodeOscBaseType = useTrackToneNode(
-    synth01Node.oscillator,
+    synth02Node.oscillator,
     "baseType",
     "sine"
   );
 
   const synth02NodeOscSourceType = useTrackToneNode(
-    synth01Node.oscillator,
+    synth02Node.oscillator,
     "sourceType",
     "oscillator"
   );
 
-  const synth02NodeGain = useTrackPramNode(synth01GainNode.gain);
+  const synth02NodeGain = useTrackPramNode(synth02GainNode.gain);
 
   const filterNodeSignalWet = useTrackToneNodeSignal(filterNode.wet);
 
@@ -110,7 +119,7 @@ export function binauralBeatPatch01() {
     (n) => filterNode.toFrequency(n)
   );
 
-  const filterLFOamountSignal = useTrackToneNodeSignal(filterLfoAmount.fade);
+  // const filterLFOamountSignal = useTrackToneNodeSignal(filterLfoAmount.fade);
 
   const lfoNodeType = useTrackToneNode(lfoNode, "type", "sine");
 
@@ -121,24 +130,43 @@ export function binauralBeatPatch01() {
     (n) => filterNode.toFrequency(n)
   );
 
+  function triggerAttack(note: Tone.Unit.Frequency, time?: Tone.Unit.Time) {
+    synth01Node.triggerAttack(note, time);
+    synth02Node.triggerAttack(note, time);
+  }
+
+  function triggerRelease(time?: Tone.Unit.Time) {
+    synth01Node.triggerRelease(time);
+    synth02Node.triggerRelease(time);
+  }
+
+  function dispose() {
+    synth01Node.dispose();
+    synth02Node.dispose();
+    synth02DetuneDispose();
+    filterFrequencyDispose();
+  }
+
   return {
-    triggerAttack: (note: Tone.Unit.Frequency, time?: Tone.Unit.Time) => {
-      synth01Node.triggerAttack(note, time);
-      synth02Node.triggerAttack(note, time);
-    },
-    triggerRelease: (time?: Tone.Unit.Time) => {
-      synth01Node.triggerRelease(time);
-      synth02Node.triggerRelease(time);
-    },
+    synth01Node,
+    synth02Node,
+    filterNode,
+    lfoNode,
+
+    dispose,
+    triggerAttack,
+    triggerRelease,
     synth01NodeOscBaseType,
     synth01NodeOscSourceType,
     synth01NodeGain,
+    synth01NodeModulationIndex,
+
     synth02NodeOscBaseType,
     synth02NodeOscSourceType,
     synth02NodeGain,
     filterNodeSignalWet,
     filterNodeSignalFreq,
-    filterLFOamountSignal,
+    filterLFOamountRef,
     lfoNodeFreq,
     lfoNodeType,
 

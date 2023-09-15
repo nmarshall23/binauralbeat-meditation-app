@@ -8,25 +8,45 @@
 <script setup lang="ts">
 import * as Tone from "tone";
 
-import { useMainChannel } from "@/state/mainChannel";
+// import { useMainChannel } from "@/state/mainChannel";
 import { useToneVis } from "@/use/useToneVis";
 
 const props = defineProps<{
   isPlaying: boolean;
+  toneNode?: Tone.ToneAudioNode;
 }>();
 
-const { isPlaying } = useVModels(props);
+const { isPlaying, toneNode } = useVModels(props);
 
-// === Canvas  === //
+// === Define const  === //
+
 const canvasWFRef = ref<HTMLCanvasElement>();
-
-// === Connect to MainChannel === //
-
-const { mainChannel } = useMainChannel();
-
+// const { mainChannel } = useMainChannel();
 const analysisNode = new Tone.Waveform();
 
-mainChannel.connect(analysisNode);
+// === Connect to MainChannel === //
+onMounted(() => {});
+
+watch(
+  () => toneNode?.value,
+  (node, prevNode) => {
+    if (isDefined(prevNode)) {
+      console.log("prev %o", prevNode);
+      prevNode.disconnect(analysisNode);
+    }
+
+    if (isDefined(node)) {
+      console.log("node %o", node);
+      node.connect(analysisNode);
+    }
+    // else {
+    //   mainChannel.connect(analysisNode);
+    // }
+  },
+  {
+    immediate: true,
+  }
+);
 
 // === Setup Canvas === //
 

@@ -1,6 +1,6 @@
 <template>
-  <q-page class="container py-4 grid">
-    <b-card>
+  <q-page class="container py-4 inline-grid gap-4">
+    <b-card class="md:col-span-2 object-contain">
       <b-card-header color="bg-secondary text-grey-3 text-h6">
         Test Sounds
       </b-card-header>
@@ -15,7 +15,7 @@
         />
       </div>
       <q-separator dark />
-      <div class="p-2 grid gap-3 sm:grid-cols-5 md:grid-cols-7 ">
+      <div class="p-2 grid gap-3 sm:grid-cols-5 md:grid-cols-7">
         <q-btn
           v-for="note in notesScale"
           @click="onPlay(note)"
@@ -28,37 +28,122 @@
         />
       </div>
 
+      <section>
+        <wave-form-vis :is-playing="isPlaying" :tone-node="waveFormNode" />
+        <div class="q-gutter-sm text-white">
+          <q-radio
+            v-model="waveFormNodeName"
+            checked-icon="task_alt"
+            val="mainChannel"
+            label="mainChannel"
+          />
+          <q-radio
+            v-model="waveFormNodeName"
+            checked-icon="task_alt"
+            val="synth01Node"
+            label="synth01Node"
+          />
+          <q-radio
+            v-model="waveFormNodeName"
+            checked-icon="task_alt"
+            val="lfoNode"
+            label="lfoNode"
+          />
+          <q-radio
+            v-model="waveFormNodeName"
+            checked-icon="task_alt"
+            val="filterNode"
+            label="filterNode"
+          />
+        </div>
+        <q-separator />
+        <FftVis :is-playing="isPlaying" />
+      </section>
     </b-card>
 
-    <nm-card color="bg-secondary" style="width: 428px">
-      <template #header>
-        <div class="text-h6">Test Sounds</div>
-      </template>
+    <pb-fm-synth-filter
+      synth-name=" FM Synth 01"
+      v-model:synth-gain="synth01NodeGain"
+      v-model:osc-base-type="synth01NodeOscBaseType"
+      v-model:osc-source-type="synth01NodeOscSourceType"
+      v-model:modulation-index="synth01NodeModulationIndex"
+      :update-vis-cb="onUpdateSynth01Vis"
+    />
 
-      <q-separator dark />
-      <q-card-actions align="center" class="q-pt-md playToggle_section">
-        <q-btn
-          @click="changeMainVolume()"
-          round
-          color="secondary"
-          icon="tune"
-          class="playToggle_section_vol"
+    <pb-synth-filter
+      synth-name="Synth 02"
+      v-model:synth-gain="synth02NodeGain"
+      v-model:osc-base-type="synth02NodeOscBaseType"
+      v-model:osc-source-type="synth02NodeOscSourceType"
+      :update-vis-cb="onUpdateSynth02Vis"
+    />
+
+    <!-- <b-card color="#334155">
+      <b-card-header color="bg-indigo-500 text-grey-3 text-h6">
+        Synth 01
+      </b-card-header>
+      <section class="pl-2 py-1">
+        <div class="text-left text-slate-50 text-caption">Oscillator</div>
+      </section>
+      <oscillator-vis
+        :get-as-array="getOscAsArray"
+        :watch="hasUpDated"
+        class="self-start bg-blue-grey-10"
+      />
+      <section class="py-4 px-2">
+        <q-btn-toggle
+          v-model="synth01NodeOscBaseType"
+          no-caps
+          rounded
+          unelevated
+          toggle-color="accent"
+          color="white"
+          text-color="primary"
+          :options="oscTypeOptions"
         />
-      </q-card-actions>
-      <grid-container :cols="7" class="mx-4 my-3 gap-4">
-        <q-btn
-          v-for="note in notesScale"
-          @click="onPlay(note)"
-          @mousedown="onMouseDown(note)"
-          class="btn-fixed-width playToggle_section_btn"
-          color="green"
-          :label="note"
-          padding="4px 20px 4px 12px"
-          size="1rem"
+      </section>
+      <section class="py-4 px-2">
+        <q-btn-toggle
+          v-model="synth01NodeOscSourceType"
+          no-caps
+          rounded
+          unelevated
+          toggle-color="accent"
+          color="white"
+          text-color="primary"
+          :options="oscSourceTypeOptions"
         />
-      </grid-container>
-    </nm-card>
-    <nm-card color="bg-blue-8">
+      </section>
+
+      <section class="py-4 px-2">
+        <q-badge color="secondary">
+          Synth 01 Gain: {{ synth01NodeGain }}
+        </q-badge>
+        <q-slider
+          dense
+          :model-value="synth01NodeGain"
+          @change="
+            (val) => {
+              synth01NodeGain = val;
+            }
+          "
+          v-bind="normalRangeSliderSettings"
+          class="px-4"
+        />
+      </section>
+
+      <q-separator />
+      <section class="pl-2 py-1">
+        <div class="text-left text-slate-50 text-caption">Modulator</div>
+      </section>
+
+      <q-separator />
+      <section class="pl-2 py-1">
+        <div class="text-left text-slate-50 text-caption">Filter</div>
+      </section>
+    </b-card> -->
+
+    <!--  <nm-card color="bg-blue-8">
       <template #header>
         <div class="text-h6">Synth Controls</div>
       </template>
@@ -68,14 +153,14 @@
       </q-card-section>
 
       <oscillator-vis
-        :get-as-array="getOscAsArray"
+        :get-as-array="synth01OscAsArray"
         :watch="hasUpDated"
         class="self-start bg-blue-grey-10"
       />
 
       <section class="py-4 px-2">
         <q-btn-toggle
-          v-model="synthNodeOscBaseType"
+          v-model="synth01NodeOscBaseType"
           no-caps
           rounded
           unelevated
@@ -88,7 +173,7 @@
 
       <section class="py-4 px-2">
         <q-btn-toggle
-          v-model="synthNodeOscSourceType"
+          v-model="synth01NodeOscSourceType"
           no-caps
           rounded
           unelevated
@@ -100,6 +185,57 @@
       </section>
 
       <section class="py-4 px-2">
+        <q-badge color="secondary">
+          Synth 01 Gain: {{ synth01NodeGain }}
+        </q-badge>
+        <q-slider
+          dense
+          :model-value="synth01NodeGain"
+          @change="
+            (val) => {
+              synth01NodeGain = val;
+            }
+          "
+          v-bind="normalRangeSliderSettings"
+          class="px-4"
+        />
+      </section>
+
+      <section class="py-4 px-2">
+        <q-badge color="secondary">
+          Synth 02 Gain: {{ synth02NodeGain }}
+        </q-badge>
+        <q-slider
+          dense
+          :model-value="synth02NodeGain"
+          @change="
+            (val) => {
+              synth02NodeGain = val;
+            }
+          "
+          v-bind="normalRangeSliderSettings"
+          class="px-4"
+        />
+      </section>
+
+      <section class="py-4 px-2">
+        <q-badge color="secondary">
+          Synth Detune: {{ synth02DetuneSignal }}
+        </q-badge>
+        <q-slider
+          dense
+          :model-value="synth02DetuneSignal"
+          @change="
+            (val) => {
+              synth02DetuneSignal = val;
+            }
+          "
+          v-bind="multiplySliderSettings"
+          class="px-4"
+        />
+      </section>
+
+             <section class="py-4 px-2">
         <q-badge color="secondary">
           Partial Count: {{ synthNodeOscPartialCount }}
         </q-badge>
@@ -114,14 +250,9 @@
           v-bind="partialCountSliderSettings"
           class="px-4"
         />
-      </section>
+      </section> -->
 
-      <q-separator />
-      <q-card-section class="py-2">
-        <div class="text-subtitle2">Synth Modulator</div>
-      </q-card-section>
-
-      <section class="py-4 px-2">
+    <!--       <section class="py-4 px-2">
         <q-btn-toggle
           v-model="synthNodeModulationBaseType"
           no-caps
@@ -132,9 +263,9 @@
           text-color="primary"
           :options="oscTypeOptions"
         />
-      </section>
+      </section> -->
 
-      <section class="py-4 px-2">
+    <!--      <section class="py-4 px-2">
         <q-badge color="secondary">
           Modulation Index: {{ synthNodeSignalModulationIndex }}
         </q-badge>
@@ -149,8 +280,8 @@
           v-bind="multiplySliderSettings"
           class="px-4"
         />
-      </section>
-    </nm-card>
+      </section> 
+    </nm-card> -->
 
     <nm-card color="bg-blue-8">
       <template #header>
@@ -192,14 +323,14 @@
 
       <section class="py-4 px-2">
         <q-badge color="secondary">
-          Amount LFO {{ filterLFOamountSignal * 100 }}%
+          Amount LFO {{ filterLFOamountRef * 100 }}%
         </q-badge>
         <q-slider
           dense
-          :model-value="filterLFOamountSignal"
+          :model-value="filterLFOamountRef"
           @change="
             (val) => {
-              filterLFOamountSignal = val;
+              filterLFOamountRef = val;
             }
           "
           v-bind="normalRangeSliderSettings"
@@ -251,13 +382,14 @@
 import VolumeDialog from "@/components/dialogs/volumeDialog.vue";
 import { useMainChannel } from "@/state/mainChannel";
 import { FilterEffect } from "@/tones/effect/filterEffect";
-import {
-  useTrackToneNode,
-  useTrackToneNodeSignal,
-} from "@/use/useTrackToneNode";
+
 import * as Tone from "tone";
 
-const { volumeRef } = useMainChannel();
+import { binauralBeatPatch01 } from "@/tones/patch/binauralBeatPatch01";
+import { useComponentSettings } from "@/use/useComponentSettings";
+import { match } from "ts-pattern";
+
+const { volumeRef, mainChannel } = useMainChannel();
 
 function updateVolume(value: number) {
   console.log("updateVol %o", value);
@@ -303,131 +435,50 @@ onUpdated(async () => {
 
 // === Slider Setup === //
 
-const partialCountSliderSettings = {
-  min: 0,
-  //innerMin: 1,
-  max: 5,
-  step: 1,
-  snap: true,
-  label: true,
-  markers: true,
-  markerLabels: true,
-};
+const {
+  normalRangeSliderSettings,
+  freqLfoSliderSettings,
+  frequencySliderSettings,
+  // Select Option
+  lfoTypeOptions,
+} = useComponentSettings();
 
-const multiplySliderSettings = {
-  min: 1,
-  //innerMin: 1,
-  max: 20,
-  step: 1,
-  snap: true,
-  label: true,
-  markers: 20,
-  markerLabels: true,
-};
-
-const normalRangeSliderSettings = {
-  min: 0,
-  max: 1,
-  step: 0.1,
-  snap: true,
-  label: true,
-  markers: 0.5,
-  markerLabels: (v: number) => v.toFixed(1),
-};
-
-const frequencySliderSettings = {
-  min: 20,
-  max: 2000,
-  step: 100,
-  snap: true,
-  label: true,
-  markers: 500,
-  markerLabels: [
-    { value: 20, label: "20 Hz" },
-    { value: 500, label: "500 Hz" },
-    { value: 1000, label: "1KHz" },
-    { value: 1500, label: "1.5KHz" },
-    { value: 2000, label: "2KHz" },
-  ],
-};
-
-const freqLfoSliderSettings = {
-  min: 0.1,
-  max: 10,
-  step: 0.1,
-  snap: true,
-  label: true,
-  markers: 10,
-  markerLabels: (v: number) => v.toFixed(1),
-};
-
-const lfoTypeOptions = [
-  { label: "Sine", value: "sine" },
-  { label: "Triangle", value: "triangle" },
-  { label: "Square", value: "square" },
-];
-
-const oscTypeOptions = [
-  { label: "Sine", value: "sine" },
-  { label: "SawTooth", value: "sawtooth" },
-  { label: "Triangle", value: "triangle" },
-  { label: "Square", value: "square" },
-];
-
-const oscSourceTypeOptions = [
-  { label: "Oscillator", value: "oscillator" },
-  { label: "AM", value: "am" },
-  { label: "FM", value: "fm" },
-  { label: "Fat", value: "fat" },
-];
-
+const waveFormNodeName = ref<string>('mainChannel');
+const waveFormNode = computed<Tone.ToneAudioNode | undefined>(() =>
+  match(waveFormNodeName.value)
+    .with("mainChannel", () => mainChannel)
+    .with("synth01Node", () => synth01Node)
+    .with("lfoNode", () => lfoNode)
+    .with("filterNode", () => filterNode)
+    .otherwise(() => undefined)
+);
 // === Synth Setup === //
 
-const channel = new Tone.Channel();
-const gain01Node = new Tone.Gain(0.5);
-const gain02Node = new Tone.Gain(0.5);
+const {
+  synth01Node,
+  synth02Node,
+  lfoNode,
+  filterNode,
 
-const synthNode = new Tone.FMSynth({
-  oscillator: {
-    type: "sawtooth",
-  },
-});
+  triggerAttack,
+  triggerRelease,
+  synth01NodeOscBaseType,
+  synth01NodeOscSourceType,
+  synth01NodeGain,
+  synth01NodeModulationIndex,
 
-const synth02Node = new Tone.Synth({
-  oscillator: {
-    type: "sine",
-  },
-});
+  synth02NodeOscBaseType,
+  synth02NodeOscSourceType,
+  synth02NodeGain,
+  filterNodeSignalWet,
+  filterNodeSignalFreq,
+  filterLFOamountRef,
+  lfoNodeFreq,
+  lfoNodeType,
 
-const filterNode = new FilterEffect({
-  filter: {
-    type: "lowpass",
-    frequency: 400,
-  },
-});
-
-const lfoNode = new Tone.LFO({
-  min: -0.5,
-  max: 0.5,
-});
-
-synthNode.chain(gain01Node, filterNode, channel);
-synth02Node.chain(gain02Node, channel);
-
-channel.send("main");
-
-const filterLfoAmount = new Tone.CrossFade(1);
-const filterLfoFac = new Tone.Multiply();
-
-const filterFrequencySignal = new Tone.Signal({
-  value: "400",
-  units: "frequency",
-});
-
-lfoNode.chain(filterLfoFac.factor);
-filterFrequencySignal.chain(filterLfoFac, filterLfoAmount.b);
-filterFrequencySignal.chain(filterLfoAmount.a);
-filterLfoAmount.connect(filterNode.frequency);
+  synth02DetuneSignal,
+  synth02DetuneLfoAmount,
+} = binauralBeatPatch01();
 
 // === === //
 
@@ -451,9 +502,9 @@ const noiseSythNode = new Tone.NoiseSynth({
   },
 });
 
-noiseSythNode.chain(noiseFilterEffectNode, noiseGainNode, channel);
+noiseSythNode.chain(noiseFilterEffectNode, noiseGainNode);
 
-synthNode.frequency.connect(noiseFilterEffectNode.frequency)
+synth01Node.frequency.connect(noiseFilterEffectNode.frequency);
 
 // synthNodeHarmonicityFactorSignal.connect(synthNode.harmonicity.factor)
 
@@ -467,76 +518,32 @@ synthNode.frequency.connect(noiseFilterEffectNode.frequency)
 
 // === Synth Refs === //
 
-const synthNodeOscBaseType = useTrackToneNode(
-  synthNode.oscillator,
-  "baseType",
-  "sine"
-);
+function onUpdateSynth01Vis() {
+  const v = synth01Node.oscillator.asArray();
+  console.info("synth01Node.oscillator %o", v);
 
-const synthNodeOscSourceType = useTrackToneNode(
-  synthNode.oscillator,
-  "sourceType",
-  "oscillator"
-);
+  return v;
+}
 
-const synthNodeOscPartialCount = useTrackToneNode(
-  synthNode.oscillator,
-  "partialCount",
-  1
-);
+function onUpdateSynth02Vis() {
+  const v = synth02Node.oscillator.asArray();
+  console.info("synth02Node.oscillator %o", v);
 
-// const synthNodeHarmonicityFactor = useTrackToneNodeSignal(
-//   synthNodeHarmonicityFactorSignal
-// );
-
-const synthNodeModulationBaseType = useTrackToneNode(
-  synthNode.modulation,
-  "baseType",
-  "sine"
-);
-
-const synthNodeSignalModulationIndex = useTrackToneNodeSignal(
-  synthNode.modulationIndex
-);
-
-const getOscAsArray = computed(() => {
-  if (isDefined(synthNode.oscillator)) {
-    return () => synthNode.oscillator.asArray();
-  }
-  return () => Promise.resolve<Float32Array>(new Float32Array());
-});
-
-const filterNodeSignalWet = useTrackToneNodeSignal(filterNode.wet);
-
-const filterNodeSignalFreq = useTrackToneNodeSignal(
-  filterFrequencySignal,
-  0.1,
-  (n: number) => filterNode.toFrequency(n),
-  (n) => filterNode.toFrequency(n)
-);
-
-const lfoNodeType = useTrackToneNode(lfoNode, "type", "sine");
-
-const lfoNodeFreq = useTrackToneNodeSignal(
-  lfoNode.frequency,
-  0.1,
-  (n: number) => filterNode.toFrequency(n),
-  (n) => filterNode.toFrequency(n)
-);
-
-const filterLFOamountSignal = useTrackToneNodeSignal(filterLfoAmount.fade);
+  return v;
+}
 
 // === Trigger Synth === //
 
+const isPlaying = ref(false);
 const needsInit = ref(true);
 
 function onPlay(_note: string) {
   console.log("play");
 
-  synthNode.triggerRelease();
-  synth02Node.triggerRelease();
+  triggerRelease();
   noiseSythNode.triggerRelease();
   hasUpDated.value = false;
+  isPlaying.value = false;
 }
 
 function onMouseDown(note: string) {
@@ -547,24 +554,7 @@ function onMouseDown(note: string) {
     needsInit.value = false;
   }
 
-  console.log("onMouseDown");
-
-  synthNode.triggerAttack(note);
-  synth02Node.triggerAttack(note);
-  noiseSythNode.triggerAttack();
-
-  console.log(
-    "synthNode oscillator.baseType %o frequency %o, harmonicity %o modulationIndex %o",
-    synthNode.oscillator.baseType,
-    synthNode.frequency.value,
-    synthNode.harmonicity.factor.value,
-    synthNode.modulationIndex.value
-  );
-
-  console.log(
-    "FilterNode frequency %o, Q %o",
-    filterNode.frequency.value,
-    filterNode.Q.value
-  );
+  isPlaying.value = true;
+  triggerAttack(note);
 }
 </script>

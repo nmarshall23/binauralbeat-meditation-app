@@ -7,9 +7,11 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    AmSynthFilter: typeof import('./src/components/patchboards/AmSynthFilter.vue')['default']
     BaseEventLoopCard: typeof import('./src/components/bits/BaseEventLoopCard.vue')['default']
     BCard: typeof import('./src/components/b-card/b-card.vue')['default']
     BCardHeader: typeof import('./src/components/b-card/b-card-header.vue')['default']
+    BCardSection: typeof import('./src/components/b-card/b-card-section.vue')['default']
     BinauralBeatSynthOpsDialog: typeof import('./src/components/dialogs/binauralBeatSynthOpsDialog.vue')['default']
     BinauralFftVis: typeof import('./src/components/playbackVis/BinauralFftVis.vue')['default']
     CardEditFilterEvent: typeof import('./src/components/bits/CardEditFilterEvent.vue')['default']
@@ -38,6 +40,9 @@ declare module 'vue' {
     NmCard: typeof import('./src/components/containment/nmCard.vue')['default']
     NoiseOptionsDialog: typeof import('./src/components/dialogs/noiseOptionsDialog.vue')['default']
     OscillatorVis: typeof import('./src/components/playbackVis/oscillatorVis.vue')['default']
+    PbAmSynthFilter: typeof import('./src/components/patchboards/pbAmSynthFilter.vue')['default']
+    PbFmSynthFilter: typeof import('./src/components/patchboards/pbFmSynthFilter.vue')['default']
+    PbSynthFilter: typeof import('./src/components/patchboards/pbSynthFilter.vue')['default']
     PlayBackProgress: typeof import('./src/components/playbackVis/PlayBackProgress.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

@@ -10,7 +10,7 @@ export const evolve01Program: MeditationProgram = {
     {
       type: "NoiseFilteredGen",
       options: {
-        gain: 1,
+        gain: 1.2,
         noise: {
           type: "brown",
         },
