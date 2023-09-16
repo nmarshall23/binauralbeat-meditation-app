@@ -62,6 +62,7 @@ export function useToneConnectEffect<
     effectAmount,
     signalRef,
     effectAmountRef,
+    effectScaleFac,
     effectScaleFacRef,
     dispose,
   };

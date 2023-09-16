@@ -29,35 +29,13 @@
       </div>
 
       <section>
+        <section class="flex justify-center">
+
         <wave-form-vis :is-playing="isPlaying" :tone-node="waveFormNode" />
-        <div class="q-gutter-sm text-white">
-          <q-radio
-            v-model="waveFormNodeName"
-            checked-icon="task_alt"
-            val="mainChannel"
-            label="mainChannel"
-          />
-          <q-radio
-            v-model="waveFormNodeName"
-            checked-icon="task_alt"
-            val="synth01Node"
-            label="synth01Node"
-          />
-          <q-radio
-            v-model="waveFormNodeName"
-            checked-icon="task_alt"
-            val="lfoNode"
-            label="lfoNode"
-          />
-          <q-radio
-            v-model="waveFormNodeName"
-            checked-icon="task_alt"
-            val="filterNode"
-            label="filterNode"
-          />
-        </div>
-        <q-separator />
         <FftVis :is-playing="isPlaying" />
+        </section>
+        <radio-group v-model="waveFormNodeName" :menu="selectAnalysisMenu" />
+        <q-separator />
       </section>
     </b-card>
 
@@ -67,6 +45,11 @@
       v-model:osc-base-type="synth01NodeOscBaseType"
       v-model:osc-source-type="synth01NodeOscSourceType"
       v-model:modulation-index="synth01NodeModulationIndex"
+      v-model:harmonicity-factor="synth01NodeHarmonicityFactor"
+      v-model:osc-modulation-type="synth01NodeOscModulationType"
+      v-model:osc-modulation-index="synth01NodeOscModulationIndex"
+      v-model:osc-harmonicity="synth01NodeOscHarmonicity"
+      v-model:osc-spread="synth01NodeOscSpread"
       :update-vis-cb="onUpdateSynth01Vis"
     />
 
@@ -388,6 +371,9 @@ import * as Tone from "tone";
 import { binauralBeatPatch01 } from "@/tones/patch/binauralBeatPatch01";
 import { useComponentSettings } from "@/use/useComponentSettings";
 import { match } from "ts-pattern";
+import {
+  useFormatMenuList,
+} from "@/use/useFormatOptionsList";
 
 const { volumeRef, mainChannel } = useMainChannel();
 
@@ -443,13 +429,15 @@ const {
   lfoTypeOptions,
 } = useComponentSettings();
 
-const waveFormNodeName = ref<string>('mainChannel');
+
+const waveFormNodeName = ref<string>("mainChannel");
+const selectAnalysisMenu = useFormatMenuList(["mainChannel", "synth01Node", "lfoNode", "filterNode"]);
 const waveFormNode = computed<Tone.ToneAudioNode | undefined>(() =>
   match(waveFormNodeName.value)
     .with("mainChannel", () => mainChannel)
     .with("synth01Node", () => synth01Node)
     .with("lfoNode", () => lfoNode)
-    .with("filterNode", () => filterNode)
+    .with("filterNode", () => filterNode.frequency)
     .otherwise(() => undefined)
 );
 // === Synth Setup === //
@@ -466,6 +454,12 @@ const {
   synth01NodeOscSourceType,
   synth01NodeGain,
   synth01NodeModulationIndex,
+  synth01NodeHarmonicityFactor,
+
+  synth01NodeOscModulationType,
+  synth01NodeOscModulationIndex,
+  synth01NodeOscHarmonicity,
+  synth01NodeOscSpread,
 
   synth02NodeOscBaseType,
   synth02NodeOscSourceType,
@@ -556,5 +550,16 @@ function onMouseDown(note: string) {
 
   isPlaying.value = true;
   triggerAttack(note);
+
+  console.log(
+    "synth01 freq %o, %o %o osc %o osc spread %o",
+    synth01Node.frequency.value,
+    synth01Node.harmonicity.value,
+    synth01Node.harmonicity.factor.value,
+    synth01Node.oscillator.modulationType,
+    synth01Node.oscillator.spread,
+  
+  );
+  console.log('filter frequency %o', filterNode.frequency.value)
 }
 </script>

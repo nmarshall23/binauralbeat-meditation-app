@@ -3,6 +3,7 @@ import { FilterEffect } from "../effect/filterEffect";
 import { BinauralBeatEffect } from "../effect/binauralBeatEffect";
 import {
   useTrackPramNode,
+  useTrackToneField,
   useTrackToneNode,
   useTrackToneNodeSignal,
 } from "@/use/useTrackToneNode";
@@ -59,12 +60,25 @@ export function binauralBeatPatch01() {
   } = useToneConnectEffect(lfoNode, filterNode.frequency);
 
   // const {
-  //   // signalRef: filterFrequencyRef,
-  //   // effectAmountRef: filterLFOamountRef,
+  //   signal: filterFrequencySignal,
+  //   effectAmountRef: synth01FreqToFilterFreq,
+  //   effectScaleFac,
   //   // dispose: filterFrequencyDispose
-  // } = useToneConnectEffect(synth01Node.frequency, filterFrequencySignal, {
-  //   modulatorInline: true,
+  // } = useToneConnectEffect(synth01Node.frequency, filterFrequencyPSignal, {
+  //   modulatorInline: false,
   // });
+
+  // synth01FreqToFilterFreq.value = 0
+  // effectScaleFac.value = 0.5
+  const synFreqFactor = new Tone.Multiply(2)
+  synth01Node.frequency.chain(synFreqFactor, filterNode.frequency)
+
+   const filterNodeSignalFreq = useTrackToneNodeSignal(
+    filterFrequencySignal,
+    0.1,
+    (n: number) => filterNode.toFrequency(n),
+    (n) => filterNode.toFrequency(n)
+  );
 
   // === Wire  to lfoNode === //
 
@@ -94,6 +108,28 @@ export function binauralBeatPatch01() {
     synth01Node.modulationIndex
   );
 
+  const synth01NodeHarmonicityFactor = useTrackPramNode(
+    synth01Node.harmonicity.factor
+  );
+
+  const synth01NodeOscModulationType = useTrackToneNode(
+    synth01Node.oscillator,
+    "modulationType",
+    "square"
+  ) as Ref<OscillatorType>
+
+  const synth01NodeOscModulationIndex = useTrackToneField(
+    synth01Node.oscillator, 'modulationIndex'
+  ) as Ref<number>
+
+  const synth01NodeOscHarmonicity = useTrackToneField(
+    synth01Node.oscillator, 'harmonicity'
+  ) as Ref<number>
+
+  const synth01NodeOscSpread = useTrackToneNode(
+    synth01Node.oscillator, 'spread', 20
+  ) 
+
   // === Synth 02 === //
 
   const synth02NodeOscBaseType = useTrackToneNode(
@@ -112,12 +148,7 @@ export function binauralBeatPatch01() {
 
   const filterNodeSignalWet = useTrackToneNodeSignal(filterNode.wet);
 
-  const filterNodeSignalFreq = useTrackToneNodeSignal(
-    filterFrequencySignal,
-    0.1,
-    (n: number) => filterNode.toFrequency(n),
-    (n) => filterNode.toFrequency(n)
-  );
+ 
 
   // const filterLFOamountSignal = useTrackToneNodeSignal(filterLfoAmount.fade);
 
@@ -160,6 +191,12 @@ export function binauralBeatPatch01() {
     synth01NodeOscSourceType,
     synth01NodeGain,
     synth01NodeModulationIndex,
+    synth01NodeHarmonicityFactor,
+    synth01NodeOscSpread,
+
+    synth01NodeOscModulationType,
+    synth01NodeOscModulationIndex,
+    synth01NodeOscHarmonicity,
 
     synth02NodeOscBaseType,
     synth02NodeOscSourceType,
@@ -174,3 +211,5 @@ export function binauralBeatPatch01() {
     synth02DetuneLfoAmount,
   };
 }
+
+

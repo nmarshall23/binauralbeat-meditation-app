@@ -44,6 +44,7 @@ declare module 'vue' {
     PbFmSynthFilter: typeof import('./src/components/patchboards/pbFmSynthFilter.vue')['default']
     PbSynthFilter: typeof import('./src/components/patchboards/pbSynthFilter.vue')['default']
     PlayBackProgress: typeof import('./src/components/playbackVis/PlayBackProgress.vue')['default']
+    RadioGroup: typeof import('./src/components/controls/RadioGroup.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SaveProgramBtnGroup: typeof import('./src/components/controls/SaveProgramBtnGroup.vue')['default']

@@ -4,6 +4,7 @@ export function useComponentSettings() {
     gainSliderSettings,
     partialCountSliderSettings,
     multiplySliderSettings,
+    multiplyLowSliderSettings,
     normalRangeSliderSettings,
     freqLfoSliderSettings,
     frequencySliderSettings,
@@ -61,13 +62,25 @@ const partialCountSliderSettings = {
 };
 
 const multiplySliderSettings = {
-  min: 1,
+  min: 0,
  // innerMin: 1,
-  max: 20,
+  max: 100,
   step: 1,
   snap: true,
   label: true,
-  markers: 20,
+  markers: 10,
+  markerLabelsClass: 'text-white',
+  markerLabels: true,
+};
+
+const multiplyLowSliderSettings = {
+  min: 0,
+ // innerMin: 1,
+  max: 10,
+  step: 1,
+  snap: true,
+  label: true,
+  markers: 5,
   markerLabelsClass: 'text-white',
   markerLabels: true,
 };

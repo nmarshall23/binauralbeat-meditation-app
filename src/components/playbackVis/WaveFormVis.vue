@@ -23,6 +23,7 @@ const { isPlaying, toneNode } = useVModels(props);
 const canvasWFRef = ref<HTMLCanvasElement>();
 // const { mainChannel } = useMainChannel();
 const analysisNode = new Tone.Waveform();
+// const analysisNode = new Tone.Analyser('fft')
 
 // === Connect to MainChannel === //
 onMounted(() => {});
@@ -50,9 +51,13 @@ watch(
 
 // === Setup Canvas === //
 
-useToneVis(canvasWFRef, isPlaying, async () => analysisNode.getValue());
+useToneVis(
+  canvasWFRef,
+  isPlaying,
+  async () => analysisNode.getValue()
+);
 
 onUnmounted(() => {
-  analysisNode.dispose();
+  // analysisNode.dispose();
 });
 </script>

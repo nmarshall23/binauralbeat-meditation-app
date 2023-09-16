@@ -14,7 +14,7 @@ function draw(
   canvasRef: Ref<HTMLCanvasElement | undefined>,
   values: Float32Array
 ) {
-  console.debug("values %o", values[2]);
+  // console.debug("values %o", values[2]);
 
   if (isDefined(canvasRef)) {
     const context = canvasRef.value.getContext("2d");
