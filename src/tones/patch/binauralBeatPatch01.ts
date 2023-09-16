@@ -171,7 +171,7 @@ export function binauralBeatPatch01() {
     synth02Node.triggerRelease(time);
   }
 
-  function dispose() {
+  function patchDispose() {
     synth01Node.dispose();
     synth02Node.dispose();
     synth02DetuneDispose();
@@ -184,7 +184,7 @@ export function binauralBeatPatch01() {
     filterNode,
     lfoNode,
 
-    dispose,
+    patchDispose,
     triggerAttack,
     triggerRelease,
     synth01NodeOscBaseType,

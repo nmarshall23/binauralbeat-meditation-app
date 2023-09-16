@@ -8,27 +8,27 @@
 <script setup lang="ts">
 import * as Tone from "tone";
 
-import { useMainChannel } from "@/state/mainChannel";
 import { useToneVis } from "@/use/useToneVis";
 
 const props = defineProps<{
   isPlaying: boolean;
 }>();
 
-const isPlaying = useVModel(props, "isPlaying");
+const isPlaying = useVModel(props, 'isPlaying');
 
-// === Canvas  === //
+// === define  === //
 const canvasFFTRef = ref<HTMLCanvasElement>();
+const analysisNode = new Tone.FFT();
 
-// === Connect to MainChannel === //
+const channel = new Tone.Channel()
 
-const { mainChannel } = useMainChannel();
+// === Wire Connections ==== //
 
-const analysisNode = new Tone.FFT(512);
+channel.receive('analysis')
+channel.connect(analysisNode)
 
-mainChannel.connect(analysisNode);
 
-// === Setup Canvas === //
+// === Draw Canvas === //
 
 useToneVis(canvasFFTRef, isPlaying, async () => analysisNode.getValue());
 

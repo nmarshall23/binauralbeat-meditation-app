@@ -31,8 +31,8 @@
       <section>
         <section class="flex justify-center">
 
-        <wave-form-vis :is-playing="isPlaying" :tone-node="waveFormNode" />
-        <FftVis :is-playing="isPlaying" />
+        <wave-form-vis :is-playing="isPlaying" />
+        <FftVis :is-playing="isPlaying"  />
         </section>
         <radio-group v-model="waveFormNodeName" :menu="selectAnalysisMenu" />
         <q-separator />
@@ -374,6 +374,7 @@ import { match } from "ts-pattern";
 import {
   useFormatMenuList,
 } from "@/use/useFormatOptionsList";
+import { useManageAudioNodeConnection } from "@/use/useManageAudioNodeConnection";
 
 const { volumeRef, mainChannel } = useMainChannel();
 
@@ -429,10 +430,11 @@ const {
   lfoTypeOptions,
 } = useComponentSettings();
 
+// === analysis Connection === //
 
 const waveFormNodeName = ref<string>("mainChannel");
 const selectAnalysisMenu = useFormatMenuList(["mainChannel", "synth01Node", "lfoNode", "filterNode"]);
-const waveFormNode = computed<Tone.ToneAudioNode | undefined>(() =>
+const analyzedNode = computed<Tone.ToneAudioNode | undefined>(() =>
   match(waveFormNodeName.value)
     .with("mainChannel", () => mainChannel)
     .with("synth01Node", () => synth01Node)
@@ -440,6 +442,13 @@ const waveFormNode = computed<Tone.ToneAudioNode | undefined>(() =>
     .with("filterNode", () => filterNode.frequency)
     .otherwise(() => undefined)
 );
+
+const analysisChannel = new Tone.Channel()
+
+analysisChannel.send('analysis')
+
+useManageAudioNodeConnection(analyzedNode, analysisChannel)
+
 // === Synth Setup === //
 
 const {
@@ -472,6 +481,7 @@ const {
 
   synth02DetuneSignal,
   synth02DetuneLfoAmount,
+  patchDispose,
 } = binauralBeatPatch01();
 
 // === === //
@@ -500,17 +510,7 @@ noiseSythNode.chain(noiseFilterEffectNode, noiseGainNode);
 
 synth01Node.frequency.connect(noiseFilterEffectNode.frequency);
 
-// synthNodeHarmonicityFactorSignal.connect(synthNode.harmonicity.factor)
 
-// filterFreqFollowsSythFreqAmount.fade.connect(filterFreqFollowsSythFreqFac.factor)
-// synthNode.frequency.chain(filterFreqFollowsSythFreqAmount.b )
-
-// // synthNode.frequency.chain(filterFreqFollowsSythFreqFac, filterFreqFollowsSythFreqAmount.b)
-// // filterFrequencySignal.chain(filterFreqFollowsSythFreqAmount.a);
-
-//  filterFreqFollowsSythFreqAmount.connect(filterNode.frequency)
-
-// === Synth Refs === //
 
 function onUpdateSynth01Vis() {
   const v = synth01Node.oscillator.asArray();
@@ -562,4 +562,9 @@ function onMouseDown(note: string) {
   );
   console.log('filter frequency %o', filterNode.frequency.value)
 }
+
+onUnmounted(() => {
+  analysisChannel.dispose()
+  patchDispose()
+})
 </script>

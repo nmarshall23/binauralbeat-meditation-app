@@ -8,48 +8,27 @@
 <script setup lang="ts">
 import * as Tone from "tone";
 
-// import { useMainChannel } from "@/state/mainChannel";
 import { useToneVis } from "@/use/useToneVis";
 
 const props = defineProps<{
   isPlaying: boolean;
-  toneNode?: Tone.ToneAudioNode;
 }>();
 
-const { isPlaying, toneNode } = useVModels(props);
+const isPlaying = useVModel(props, 'isPlaying');
 
-// === Define const  === //
+// === define  === //
 
 const canvasWFRef = ref<HTMLCanvasElement>();
-// const { mainChannel } = useMainChannel();
 const analysisNode = new Tone.Waveform();
-// const analysisNode = new Tone.Analyser('fft')
+const channel = new Tone.Channel()
 
-// === Connect to MainChannel === //
-onMounted(() => {});
+// === Wire Connections ==== //
 
-watch(
-  () => toneNode?.value,
-  (node, prevNode) => {
-    if (isDefined(prevNode)) {
-      console.log("prev %o", prevNode);
-      prevNode.disconnect(analysisNode);
-    }
+channel.receive('analysis')
+channel.connect(analysisNode)
 
-    if (isDefined(node)) {
-      console.log("node %o", node);
-      node.connect(analysisNode);
-    }
-    // else {
-    //   mainChannel.connect(analysisNode);
-    // }
-  },
-  {
-    immediate: true,
-  }
-);
 
-// === Setup Canvas === //
+// === Draw Canvas === //
 
 useToneVis(
   canvasWFRef,
@@ -58,6 +37,6 @@ useToneVis(
 );
 
 onUnmounted(() => {
-  // analysisNode.dispose();
+  analysisNode.dispose();
 });
 </script>

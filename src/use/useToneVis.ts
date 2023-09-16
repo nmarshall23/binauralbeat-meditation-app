@@ -1,5 +1,6 @@
 import { logicNot } from "@vueuse/math";
 
+
 function scale(
   v: number,
   inMin: number,
@@ -96,3 +97,4 @@ export function useSimpleToneVis(
   //   }
   // );
 }
+
